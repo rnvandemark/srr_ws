@@ -1,0 +1,4 @@
+# ignore build, devel, and install directories
+build/
+devel/
+install/
