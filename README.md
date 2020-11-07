@@ -10,3 +10,6 @@ with, and survive in a harsh Martian environment. This repo is an
 attempt to model and simulate an extraterrestrial vehicle inspired by
 an early iteration of the SRR, complete with the vehicle’s foundation
 and the onboard serial kinematic chain used for sample collection.
+
+Anticipated phases of development:
+![Timeline block diagram](src/srr/docs/images/timeline.png)
