@@ -1,0 +1,27 @@
+<launch>
+  <arg name="world" default="basic" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" >
+		<arg name="world_name" value="$(find srr_sim)/world/$(arg world).world" />
+		<arg name="paused" value="false" />
+		<arg name="verbose" value="true" />
+	</include>
+
+  <node
+    name="joint_state_publisher"
+    pkg="joint_state_publisher"
+    type="joint_state_publisher" >
+    <param name="use_gui" value="false" />
+  </node>
+  <node
+    name="robot_state_publisher"
+    pkg="robot_state_publisher"
+    type="robot_state_publisher"
+    respawn="false"
+    output="screen" />
+  <node
+    name="fake_joint_calibration"
+    pkg="rostopic"
+    type="rostopic"
+    args="pub /calibrated std_msgs/Bool true" />
+</launch>

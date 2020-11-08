@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>srr_sim</name>
+  <version>0.0.0</version>
+  <description>The srr_sim package</description>
+  <maintainer email="rnvandemark@gmail.com">R. Nick Vandemark</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+</package>
