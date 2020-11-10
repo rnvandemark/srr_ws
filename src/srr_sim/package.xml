@@ -7,5 +7,10 @@
   <license>MIT</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <depend>roslaunch</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>rviz</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>gazebo</depend>
 
 </package>

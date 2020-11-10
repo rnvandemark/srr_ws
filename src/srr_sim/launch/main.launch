@@ -7,6 +7,11 @@
 		<arg name="verbose" value="true" />
 	</include>
 
+  <arg name="model" />
+  <arg name="init_pose" value="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" />
+  <param name="robot_description" textfile="$(find srr_sim)/urdf/srr_integrated.urdf" />
+  <param name="my_robot" value="srr_integrated" />
+
   <node
     name="joint_state_publisher"
     pkg="joint_state_publisher"
@@ -20,8 +25,19 @@
     respawn="false"
     output="screen" />
   <node
+    name="world_frame_broadcaster"
+    pkg="tf"
+    type="static_transform_publisher"
+    args="1 0 0 0 0 0 1 map dummy_link 50" />
+  <node
     name="fake_joint_calibration"
     pkg="rostopic"
     type="rostopic"
     args="pub /calibrated std_msgs/Bool true" />
+  <node
+    name="spawn_model"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    args="$(arg init_pose) -param robot_description -urdf -model srr_integrated"
+    output="screen" />
 </launch>
