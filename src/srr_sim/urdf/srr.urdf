@@ -334,7 +334,7 @@
     <limit
       lower="0"
       upper="1.5707963"
-      effort="100"
+      effort="12.5"
       velocity="0" />
   </joint>
   <joint name="FL_Wheel_Joint" type="continuous">
@@ -344,6 +344,9 @@
     <parent link="Front_Left" />
     <child link="Front_Left_Wheel" />
     <axis xyz="0 0 1" />
+    <limit
+      effort="12.5"
+      velocity="0" />
   </joint>
   <joint name="FR_Joint" type="revolute">
     <origin
@@ -355,7 +358,7 @@
     <limit
       lower="0"
       upper="1.5707963"
-      effort="100"
+      effort="12.5"
       velocity="0" />
   </joint>
   <joint name="FR_Wheel_Joint" type="continuous">
@@ -365,6 +368,9 @@
     <parent link="Front_Right" />
     <child link="Front_Right_Wheel" />
     <axis xyz="0 0 1" />
+    <limit
+      effort="12.5"
+      velocity="0" />
   </joint>
   <joint name="RL_Wheel_Joint" type="continuous">
     <origin
@@ -373,6 +379,9 @@
     <parent link="Rear_Left" />
     <child link="Rear_Left_Wheel" />
     <axis xyz="0 0 1" />
+    <limit
+      effort="12.5"
+      velocity="0" />
   </joint>
   <joint name="RL_Joint" type="revolute">
     <origin
@@ -384,7 +393,7 @@
     <limit
       lower="0"
       upper="1.5707963"
-      effort="100"
+      effort="12.5"
       velocity="0" />
   </joint>
   <joint name="RR_Joint" type="revolute">
@@ -397,7 +406,7 @@
     <limit
       lower="0"
       upper="1.5707963"
-      effort="100"
+      effort="12.5"
       velocity="0" />
   </joint>
   <joint name="RR_Wheel_Joint" type="continuous">
@@ -407,6 +416,9 @@
     <parent link="Rear_Right" />
     <child link="Rear_Right_Wheel" />
     <axis xyz="0 0 1" />
+    <limit
+      effort="12.5"
+      velocity="0" />
   </joint>
 
 </robot>
