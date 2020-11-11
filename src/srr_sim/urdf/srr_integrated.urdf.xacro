@@ -4,48 +4,12 @@
 
   <!-- ROBOT JOINT TRANSMISSIONS -->
 
-  <transmission name="FR_Transmitter">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="FR_Joint">
-      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="FR_Motor">
-      <mechanicalReduction>50</mechanicalReduction>
-    </actuator>
-  </transmission>
   <transmission name="FL_Transmitter">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="FL_Joint">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="FL_Motor">
-      <mechanicalReduction>50</mechanicalReduction>
-    </actuator>
-  </transmission>
-  <transmission name="RR_Transmitter">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="RR_Joint">
-      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="RR_Motor">
-      <mechanicalReduction>50</mechanicalReduction>
-    </actuator>
-  </transmission>
-  <transmission name="RL_Transmitter">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="RL_Joint">
-      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="RL_Motor">
-      <mechanicalReduction>50</mechanicalReduction>
-    </actuator>
-  </transmission>
-  <transmission name="FR_Wheel_Transmitter">
-    <type>transmission_interface/SimpleTransmission</type>
-    <joint name="FR_Wheel_Joint">
-      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-    </joint>
-    <actuator name="FR_Wheel_Motor">
       <mechanicalReduction>50</mechanicalReduction>
     </actuator>
   </transmission>
@@ -58,12 +22,30 @@
       <mechanicalReduction>50</mechanicalReduction>
     </actuator>
   </transmission>
-  <transmission name="RR_Wheel_Transmitter">
+  <transmission name="FR_Wheel_Transmitter">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="RR_Wheel_Joint">
+    <joint name="FR_Wheel_Joint">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="RR_Wheel_Motor">
+    <actuator name="FR_Wheel_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="FR_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FR_Joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FR_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="RL_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RL_Joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RL_Motor">
       <mechanicalReduction>50</mechanicalReduction>
     </actuator>
   </transmission>
@@ -73,6 +55,24 @@
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="RL_Wheel_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="RR_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RR_Joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RR_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="RR_Wheel_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="RR_Wheel_Joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="RR_Wheel_Motor">
       <mechanicalReduction>50</mechanicalReduction>
     </actuator>
   </transmission>

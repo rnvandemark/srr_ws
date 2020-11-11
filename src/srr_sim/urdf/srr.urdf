@@ -49,8 +49,7 @@
       </geometry>
     </collision>
   </link>
-  <link
-    name="Front_Left">
+  <link name="Front_Left">
     <inertial>
       <origin
         xyz="0.1296 -0.00016693 -0.0127"
@@ -325,18 +324,47 @@
 
   <!-- ROBOT JOINTS -->
 
-  <joint name="RR_Joint" type="revolute">
+  <joint name="FL_Joint" type="revolute">
     <origin
-      xyz="0 -0.18161 0.034606"
-      rpy="1.5708 -0.37306 0" />
+      xyz="0 0.15621 0.034606"
+      rpy="1.5708 0.23089 0" />
     <parent link="base_link" />
-    <child link="Rear_Right" />
+    <child link="Front_Left" />
     <axis xyz="0 0 1" />
     <limit
       lower="0"
       upper="1.5707963"
       effort="0"
       velocity="0" />
+  </joint>
+  <joint name="FL_Wheel_Joint" type="continuous">
+    <origin
+      xyz="0.25908 0 0"
+      rpy="0 0 -0.79784" />
+    <parent link="Front_Left" />
+    <child link="Front_Left_Wheel" />
+    <axis xyz="0 0 1" />
+  </joint>
+  <joint name="FR_Joint" type="revolute">
+    <origin
+      xyz="0 -0.15621 0.034606"
+      rpy="1.5708 0.43239 0" />
+    <parent link="base_link" />
+    <child link="Front_Right" />
+    <axis xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.5707963"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <joint name="FR_Wheel_Joint" type="continuous">
+    <origin
+      xyz="0.25908 0 0"
+      rpy="0 0 -2.5083" />
+    <parent link="Front_Right" />
+    <child link="Front_Right_Wheel" />
+    <axis xyz="0 0 1" />
   </joint>
   <joint name="RL_Wheel_Joint" type="continuous">
     <origin
@@ -359,41 +387,12 @@
       effort="0"
       velocity="0" />
   </joint>
-  <joint name="FR_Wheel_Joint" type="continuous">
+  <joint name="RR_Joint" type="revolute">
     <origin
-      xyz="0.25908 0 0"
-      rpy="0 0 -2.5083" />
-    <parent link="Front_Right" />
-    <child link="Front_Right_Wheel" />
-    <axis xyz="0 0 1" />
-  </joint>
-  <joint name="FR_Joint" type="revolute">
-    <origin
-      xyz="0 -0.15621 0.034606"
-      rpy="1.5708 0.43239 0" />
+      xyz="0 -0.18161 0.034606"
+      rpy="1.5708 -0.37306 0" />
     <parent link="base_link" />
-    <child link="Front_Right" />
-    <axis xyz="0 0 1" />
-    <limit
-      lower="0"
-      upper="1.5707963"
-      effort="0"
-      velocity="0" />
-  </joint>
-  <joint name="FL_Wheel_Joint" type="continuous">
-    <origin
-      xyz="0.25908 0 0"
-      rpy="0 0 -0.79784" />
-    <parent link="Front_Left" />
-    <child link="Front_Left_Wheel" />
-    <axis xyz="0 0 1" />
-  </joint>
-  <joint name="FL_Joint" type="revolute">
-    <origin
-      xyz="0 0.15621 0.034606"
-      rpy="1.5708 0.23089 0" />
-    <parent link="base_link" />
-    <child link="Front_Left" />
+    <child link="Rear_Right" />
     <axis xyz="0 0 1" />
     <limit
       lower="0"
