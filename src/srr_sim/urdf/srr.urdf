@@ -334,7 +334,7 @@
     <limit
       lower="0"
       upper="1.5707963"
-      effort="0"
+      effort="100"
       velocity="0" />
   </joint>
   <joint name="FL_Wheel_Joint" type="continuous">
@@ -355,7 +355,7 @@
     <limit
       lower="0"
       upper="1.5707963"
-      effort="0"
+      effort="100"
       velocity="0" />
   </joint>
   <joint name="FR_Wheel_Joint" type="continuous">
@@ -384,7 +384,7 @@
     <limit
       lower="0"
       upper="1.5707963"
-      effort="0"
+      effort="100"
       velocity="0" />
   </joint>
   <joint name="RR_Joint" type="revolute">
@@ -397,7 +397,7 @@
     <limit
       lower="0"
       upper="1.5707963"
-      effort="0"
+      effort="100"
       velocity="0" />
   </joint>
   <joint name="RR_Wheel_Joint" type="continuous">
