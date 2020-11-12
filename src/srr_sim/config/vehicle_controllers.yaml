@@ -1,0 +1,44 @@
+srr_integrated:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  front_left_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: FL_Joint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  front_right_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: FR_Joint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  rear_left_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: RL_Joint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  rear_right_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: RR_Joint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  front_left_wheel_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: FL_Wheel_Joint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  front_right_wheel_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: FR_Wheel_Joint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  rear_left_wheel_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: RL_Wheel_Joint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  rear_right_wheel_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: RR_Wheel_Joint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}

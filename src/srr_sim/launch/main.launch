@@ -1,0 +1,58 @@
+<launch>
+  <arg name="world" default="basic" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" >
+		<arg name="world_name" value="$(find srr_sim)/world/$(arg world).world" />
+		<arg name="paused" value="false" />
+		<arg name="verbose" value="true" />
+	</include>
+
+  <arg name="init_vehicle_pose" value="-x 0 -y 0 -z 2 -R 0 -P 0 -Y 0" />
+  <arg name="vehicle_controllers" value="front_left_joint_controller
+                                         front_right_joint_controller
+                                         rear_left_joint_controller
+                                         rear_right_joint_controller
+                                         front_left_wheel_joint_controller
+                                         front_right_wheel_joint_controller
+                                         rear_left_wheel_joint_controller
+                                         rear_right_wheel_joint_controller" />
+  <param name="robot_description" textfile="$(find srr_sim)/urdf/srr_integrated.urdf" />
+  <rosparam file="$(find srr_sim)/config/vehicle_controllers.yaml" command="load"/>
+
+  <node
+    name="joint_state_publisher"
+    pkg="joint_state_publisher"
+    type="joint_state_publisher" >
+    <param name="use_gui" value="false" />
+  </node>
+  <node
+    name="robot_state_publisher"
+    pkg="robot_state_publisher"
+    type="robot_state_publisher"
+    respawn="false"
+    output="screen" />
+  <node
+    name="controller_spawner"
+    pkg="controller_manager"
+    type="spawner"
+    respawn="false"
+    output="screen"
+    ns="/srr_integrated"
+    args="$(arg vehicle_controllers)" />
+  <node
+    name="world_frame_broadcaster"
+    pkg="tf"
+    type="static_transform_publisher"
+    args="1 0 0 0 0 0 1 map dummy_link 50" />
+  <node
+    name="fake_joint_calibration"
+    pkg="rostopic"
+    type="rostopic"
+    args="pub /calibrated std_msgs/Bool true" />
+  <node
+    name="spawn_model"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    args="$(arg init_vehicle_pose) -param robot_description -urdf -model srr_integrated"
+    output="screen" />
+</launch>
