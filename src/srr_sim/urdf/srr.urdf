@@ -460,7 +460,7 @@
 
   <!-- ROBOT JOINTS -->
   <!-- Assumed a range of motion for each chassis elevation joint to be [0, 44] degrees -->
-  <!--    "    "   "   "     "    "    "  front wheel's steering to be [-12.5, 12.5] degrees -->
+  <!--    "    "   "   "     "    "    "  front wheel's steering to be [-15, 15] degrees -->
 
   <joint name="FL_Joint" type="revolute">
     <origin
@@ -473,7 +473,7 @@
       lower="-0.767945"
       upper="0.0"
       effort="125"
-      velocity="0" />
+      velocity="1.25" />
   </joint>
   <joint name="FL_Rev_Joint" type="revolute">
     <origin
@@ -483,8 +483,8 @@
     <child link="Front_Left_Rev_Link" />
     <axis xyz="0 1 0" />
     <limit
-      lower="-0.02"
-      upper="0.02"
+      lower="-0.2618"
+      upper="0.2618"
       effort="125"
       velocity="0" />
   </joint>
@@ -497,7 +497,7 @@
     <axis xyz="0 0 1" />
     <limit
       effort="12.5"
-      velocity="0" />
+      velocity="2.5" />
   </joint>
   <joint name="FR_Joint" type="revolute">
     <origin
@@ -510,7 +510,7 @@
       lower="-0.767945"
       upper="0.0"
       effort="125"
-      velocity="0" />
+      velocity="1.25" />
   </joint>
   <joint name="FR_Rev_Joint" type="revolute">
     <origin
@@ -520,8 +520,8 @@
     <child link="Front_Right_Rev_Link" />
     <axis xyz="0 1 0" />
     <limit
-      lower="-0.02"
-      upper="0.02"
+      lower="-0.2618"
+      upper="0.2618"
       effort="125"
       velocity="0" />
   </joint>
@@ -534,7 +534,7 @@
     <axis xyz="0 0 1" />
     <limit
       effort="12.5"
-      velocity="0" />
+      velocity="2.5" />
   </joint>
   <joint name="RL_Joint" type="revolute">
     <origin
@@ -547,7 +547,7 @@
       lower="0.0"
       upper="0.767945"
       effort="125"
-      velocity="0" />
+      velocity="1.25" />
   </joint>
   <joint name="RL_Fixed_Joint" type="fixed">
     <origin
@@ -566,7 +566,7 @@
     <axis xyz="0 0 1" />
     <limit
       effort="12.5"
-      velocity="0" />
+      velocity="2.5" />
   </joint>
   <joint name="RR_Joint" type="revolute">
     <origin
@@ -579,7 +579,7 @@
       lower="0.0"
       upper="0.767945"
       effort="125"
-      velocity="0" />
+      velocity="1.25" />
   </joint>
   <joint name="RR_Fixed_Joint" type="fixed">
     <origin
@@ -598,7 +598,7 @@
     <axis xyz="0 0 1" />
     <limit
       effort="12.5"
-      velocity="0" />
+      velocity="2.5" />
   </joint>
 
 </robot>
