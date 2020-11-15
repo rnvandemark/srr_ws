@@ -47,8 +47,9 @@ class ROSWrapper(object):
     def __init__(self, hz, joint_names, joint_positions, modelX, modelY, modelZ, modelAxisAngle):
         rospy.init_node(NODE_NAME)
 
-        self.model_name_is_set,        self.model_name        = ROSWrapper.get_rosparam("/srr_model_name")
-        self.init_vehicle_pose_is_set, self.init_vehicle_pose = ROSWrapper.get_rosparam("/srr_init_pose")
+        self.model_name_is_set, self.model_name = ROSWrapper.get_rosparam("/srr_model_name")
+        if self.model_name_is_set:
+            self.init_vehicle_pose_is_set, self.init_vehicle_pose = ROSWrapper.get_rosparam("/{0}/init_pose".format(self.model_name))
 
         self.call_rate       = None if hz < 1 else rospy.Rate(hz)
         self.joint_names     = joint_names

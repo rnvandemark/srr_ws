@@ -21,7 +21,7 @@
   <rosparam file="$(find srr_sim)/config/vehicle_controllers.yaml" command="load"/>
   <rosparam subst_value="True">
     /srr_model_name: $(arg integrated_model_name)
-    /srr_init_pose: $(arg init_vehicle_pose)
+    /$(arg integrated_model_name)/init_pose: $(arg init_vehicle_pose)
   </rosparam>
 
   <node
