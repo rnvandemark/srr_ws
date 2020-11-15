@@ -1,27 +1,9 @@
 #include "srr_kinematics/JointOffsetsCollection.hpp"
 
-// This will move in the future to a common C++ utilities hpp
-double rads(double degrees)
-{
-    return degrees / 180.0 * M_PI;
-}
+#include "srr_utils/math_utils.hpp"
+#include "srr_utils/string_utils.hpp"
 
-bool SRR::JointOffsetsCollection::split_string_at(std::string input, std::string delim, std::string& left, std::string& right)
-{
-    size_t idx = -1;
-    if ((idx = input.find(delim)) == std::string::npos)
-    {
-        left  = input;
-        right = "";
-        return false;
-    }
-    else
-    {
-        left  = input.substr(0, idx);
-        right = input.substr(idx + 1);
-        return true;
-    }
-}
+#include <assert.h>
 
 SRR::JointOffsetsCollection::JointOffsetsCollection(std::string list_joint_name_and_offset, std::string list_joint_name_and_direction)
 {
@@ -29,10 +11,10 @@ SRR::JointOffsetsCollection::JointOffsetsCollection(std::string list_joint_name_
     bool continue_loop = true;
     do
     {
-        continue_loop = split_string_at(input, ",", next_pair, remaining_pairs);
-        assert(split_string_at(next_pair, "=", joint_name, value));
+        continue_loop = SRR::split_string_at(input, ",", next_pair, remaining_pairs);
+        assert(SRR::split_string_at(next_pair, "=", joint_name, value));
         assert(joint_name_offset_map.find(joint_name) == joint_name_offset_map.end());
-        joint_name_offset_map[joint_name] = rads(std::stod(value));
+        joint_name_offset_map[joint_name] = SRR::rads(std::stod(value));
         input = remaining_pairs;
     } while (continue_loop);
 
@@ -40,8 +22,8 @@ SRR::JointOffsetsCollection::JointOffsetsCollection(std::string list_joint_name_
     continue_loop = true;
     do
     {
-        continue_loop = split_string_at(input, ",", next_pair, remaining_pairs);
-        assert(split_string_at(next_pair, "=", joint_name, value));
+        continue_loop = SRR::split_string_at(input, ",", next_pair, remaining_pairs);
+        assert(SRR::split_string_at(next_pair, "=", joint_name, value));
         assert((joint_name_direction_map.find(joint_name) == joint_name_direction_map.end())
                 && (joint_name_offset_map.find(joint_name) != joint_name_offset_map.end()));
         joint_name_direction_map[joint_name] = static_cast<JointDirectionEnum>(std::stoi(value));
@@ -63,14 +45,14 @@ bool SRR::JointOffsetsCollection::handle_callback(srr_msgs::CalculatePositionWit
     for (size_t i = 0; i < req.joint_names.size(); i++)
     {
         std::string joint_name = req.joint_names[i];
-        double goal_position   = req.goal_positions[i];
         if (joint_name_offset_map.find(joint_name) == joint_name_offset_map.end())
         {
             return false;
         }
         else
         {
-            double joint_offset = joint_name_offset_map[joint_name];
+            double goal_position = req.goal_positions[i];
+            double joint_offset  = joint_name_offset_map[joint_name];
             JointDirectionEnum joint_direction = joint_name_direction_map[joint_name];
             switch (joint_direction)
             {
