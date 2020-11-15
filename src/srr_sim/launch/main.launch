@@ -65,7 +65,7 @@
   <node
     name="vehicle_joint_offsets_server"
     pkg="srr_kinematics"
-    type="account_for_joints_offsets_server"
+    type="incorporate_joints_offsets_server"
     args="$(arg integrated_model_name)"
     output="screen" />
 </launch>
