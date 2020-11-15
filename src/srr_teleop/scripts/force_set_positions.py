@@ -246,7 +246,7 @@ def main():
                 print "Each value for --joint must be a joint name and a position (in degrees) separated by a space. Exiting."
                 return
             joint_names.append(j[0])
-            joint_positions.append(float(j[1]))
+            joint_positions.append(rads(float(j[1])))
 
     wrapper = ROSWrapper(args.hz, joint_names, joint_positions, args.mx, args.my, args.mz, args.maa)
 
