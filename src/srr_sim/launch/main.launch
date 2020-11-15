@@ -22,6 +22,8 @@
   <rosparam subst_value="True">
     /srr_model_name: $(arg integrated_model_name)
     /$(arg integrated_model_name)/init_pose: $(arg init_vehicle_pose)
+    /$(arg integrated_model_name)/joint_zero_offsets: FL_Joint=13.2290,FR_Joint=24.7309,RL_Joint=22.0742,RR_Joint=21.3561
+    /$(arg integrated_model_name)/joint_rotations_of_direction: FL_Joint=-1,FR_Joint=-1,RL_Joint=+1,RR_Joint=+1
   </rosparam>
 
   <node
@@ -59,5 +61,11 @@
     pkg="gazebo_ros"
     type="spawn_model"
     args="$(arg init_vehicle_pose) -param robot_description -urdf -model $(arg integrated_model_name)"
+    output="screen" />
+  <node
+    name="vehicle_joint_offsets_server"
+    pkg="srr_kinematics"
+    type="account_for_joints_offsets_server"
+    args="$(arg integrated_model_name)"
     output="screen" />
 </launch>

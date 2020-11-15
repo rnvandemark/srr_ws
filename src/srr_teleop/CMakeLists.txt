@@ -5,7 +5,7 @@ add_compile_options(-std=c++14)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
-  std_msgs
+  srr_msgs
 )
 
 catkin_package()
