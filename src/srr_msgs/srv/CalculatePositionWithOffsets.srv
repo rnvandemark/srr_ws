@@ -1,0 +1,4 @@
+string[] joint_names
+float64[] goal_positions
+---
+float64[] joint_positions
