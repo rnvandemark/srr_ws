@@ -4,12 +4,14 @@ from argparse import ArgumentParser
 from tf import transformations as tft
 from math import radians as rads
 
+from srr_msgs.srv import CalculatePositionWithOffsets
 from gazebo_msgs.msg import ModelStates, ModelState
 from gazebo_msgs.srv import SetModelState, SetModelConfiguration
 
 NODE_NAME = "srr_teleop_force_set_positions"
 SUB_MODEL_STATES_TOPIC = "/gazebo/model_states"
 CLI_SET_MODEL_STATE_TOPIC = "/gazebo/set_model_state"
+CLI_CALCULATE_POSITION_WITH_OFFSETS_TOPIC_SUFFIX = "calculate_position_with_offsets"
 CLI_SET_MODEL_CONFIGURATION_TOPIC = "/gazebo/set_model_configuration"
 
 APPLICATION_HELP = """
@@ -33,6 +35,7 @@ class ROSWrapper(object):
     call_rate       = None
     joint_names     = None
     joint_positions = None
+    fixed_positions = None
     modelX          = None
     modelY          = None
     modelZ          = None
@@ -54,12 +57,20 @@ class ROSWrapper(object):
         self.call_rate       = None if hz < 1 else rospy.Rate(hz)
         self.joint_names     = joint_names
         self.joint_positions = joint_positions
+        self.fixed_positions = None
         self.modelX          = modelX
         self.modelY          = modelY
         self.modelZ          = modelZ
         self.modelAxisAngle  = modelAxisAngle
 
-        self.cli_set_model_state         = rospy.ServiceProxy(CLI_SET_MODEL_STATE_TOPIC, SetModelState)
+        self.cli_set_model_state = rospy.ServiceProxy(CLI_SET_MODEL_STATE_TOPIC, SetModelState)
+        if self.model_name_is_set:
+            self.cli_calculate_position_with_offsets = rospy.ServiceProxy(
+                "/{0}/{1}".format(self.model_name, CLI_CALCULATE_POSITION_WITH_OFFSETS_TOPIC_SUFFIX),
+                CalculatePositionWithOffsets
+            )
+            srv_response = self.cli_calculate_position_with_offsets(joint_names=self.joint_names, goal_positions=self.joint_positions)
+            self.fixed_positions = srv_response.joint_positions
         self.cli_set_model_configuration = rospy.ServiceProxy(CLI_SET_MODEL_CONFIGURATION_TOPIC, SetModelConfiguration)
 
         self.objective_model_state        = None
@@ -181,7 +192,7 @@ class ROSWrapper(object):
             model_name=self.model_name,
             urdf_param_name=self.model_name,
             joint_names=self.joint_names,
-            joint_positions=self.joint_positions
+            joint_positions=self.fixed_positions
         )
 
     def call_cli_set_model_state(self):

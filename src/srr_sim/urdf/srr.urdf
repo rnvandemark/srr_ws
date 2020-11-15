@@ -332,7 +332,7 @@
     <child link="Front_Left" />
     <axis xyz="0 0 1" />
     <limit
-      lower="0"
+      lower="-1.5707963"
       upper="1.5707963"
       effort="125"
       velocity="0" />
@@ -356,7 +356,7 @@
     <child link="Front_Right" />
     <axis xyz="0 0 1" />
     <limit
-      lower="0"
+      lower="-1.5707963"
       upper="1.5707963"
       effort="125"
       velocity="0" />
@@ -380,7 +380,7 @@
     <child link="Rear_Left" />
     <axis xyz="0 0 1" />
     <limit
-      lower="0"
+      lower="-1.5707963"
       upper="1.5707963"
       effort="125"
       velocity="0" />
@@ -404,7 +404,7 @@
     <child link="Rear_Right" />
     <axis xyz="0 0 1" />
     <limit
-      lower="0"
+      lower="-1.5707963"
       upper="1.5707963"
       effort="125"
       velocity="0" />
