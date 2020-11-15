@@ -115,7 +115,7 @@ class ROSWrapper(object):
                     self.objective_model_state.pose.position.x = ix
             else:
                 try:
-                    self.objective_model_state.pose.position.x = rads(float(self.modelX))
+                    self.objective_model_state.pose.position.x = float(self.modelX)
                 except ValueError as e:
                     print "Could not set inital X position from {0}, defaulting to current.".format(self.modelX)
                     self.objective_model_state.pose.position.x = cx
@@ -130,7 +130,7 @@ class ROSWrapper(object):
                     self.objective_model_state.pose.position.y = iy
             else:
                 try:
-                    self.objective_model_state.pose.position.y = rads(float(self.modelY))
+                    self.objective_model_state.pose.position.y = float(self.modelY)
                 except ValueError as e:
                     print "Could not set inital Y position from {0}, defaulting to current.".format(self.modelY)
                     self.objective_model_state.pose.position.y = cy
@@ -145,7 +145,7 @@ class ROSWrapper(object):
                     self.objective_model_state.pose.position.z = iz
             else:
                 try:
-                    self.objective_model_state.pose.position.z = rads(float(self.modelZ))
+                    self.objective_model_state.pose.position.z = float(self.modelZ)
                 except ValueError as e:
                     print "Could not set inital Z position from {0}, defaulting to current.".format(self.modelZ)
                     self.objective_model_state.pose.position.z = cz
