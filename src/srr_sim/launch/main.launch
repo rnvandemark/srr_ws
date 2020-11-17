@@ -22,8 +22,8 @@
   <rosparam subst_value="True">
     /srr_model_name: $(arg integrated_model_name)
     /$(arg integrated_model_name)/init_pose: $(arg init_vehicle_pose)
-    /$(arg integrated_model_name)/joint_zero_offsets: FL_Joint=13.2290,FR_Joint=24.7309,RL_Joint=22.0742,RR_Joint=21.3561
-    /$(arg integrated_model_name)/joint_rotations_of_direction: FL_Joint=-1,FR_Joint=-1,RL_Joint=+1,RR_Joint=+1
+    /$(arg integrated_model_name)/joint_zero_offsets: FL_Joint=-1.5,FL_Rev_Joint=0.0,FR_Joint=-14.0,FR_Rev_Joint=0.0,RL_Joint=0.0,RR_Joint=1.0
+    /$(arg integrated_model_name)/joint_rotations_of_direction: FL_Joint=-1,FL_Rev_Joint=+1,FR_Joint=-1,FR_Rev_Joint=+1,RL_Joint=+1,RR_Joint=+1
   </rosparam>
 
   <node

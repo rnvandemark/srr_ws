@@ -22,12 +22,12 @@
         rpy="0 0 0" />
       <mass value="16.6773118924852" />
       <inertia
-        ixx="0.172132504372258"
-        ixy="0.0449197071976965"
-        ixz="2.75949391271907E-09"
-        iyy="0.38731436241578"
-        iyz="7.04934018548932E-08"
-        izz="0.296570770449391" />
+        ixx="0.172590277832974"
+        ixy="-2.75414253705877E-09"
+        ixz="0.0449381276570209"
+        iyy="0.296611240719803"
+        iyz="-7.04971494883016E-08"
+        izz="0.387785538961407" />
     </inertial>
     <visual>
       <origin
@@ -52,9 +52,9 @@
   <link name="Front_Left">
     <inertial>
       <origin
-        xyz="0.1296 -0.00016693 -0.0127"
+        xyz="0.08668 0.0019677 -0.01905"
         rpy="0 0 0" />
-      <mass value="0.13037" />
+      <mass value="0.097852" />
       <inertia
         ixx="2.2243E-05"
         ixy="7.9264E-09"
@@ -83,19 +83,53 @@
       </geometry>
     </collision>
   </link>
+  <link name="Front_Left_Rev_Link">
+    <inertial>
+      <origin
+        xyz="0 -0.033064 0"
+        rpy="0 0 0" />
+      <mass value="0.063238" />
+      <inertia
+        ixx="4.7373E-05"
+        ixy="1.7961E-20"
+        ixz="2.2235E-21"
+        iyy="1.1555E-05"
+        iyz="2.8067E-21"
+        izz="4.9992E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://srr_sim/meshes/Front_Left_Rev_Link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://srr_sim/meshes/Front_Left_Rev_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
   <link name="Front_Left_Wheel">
     <inertial>
       <origin
-        xyz="2.7756E-17 5.5511E-17 -0.040393"
+        xyz="5.55111512312578E-17 8.32667268468867E-17 -0.0659585874549844"
         rpy="0 0 0" />
-      <mass value="0.68474" />
+      <mass value="0.72193847666214" />
       <inertia
-        ixx="0.0021142"
-        ixy="-5.421E-20"
-        ixz="-2.2294E-19"
-        iyy="0.0021142"
-        iyz="7.4853E-20"
-        izz="0.0039865" />
+        ixx="0.00217503268969959"
+        ixy="-4.79844164619561E-19"
+        ixz="-1.28749007982654E-18"
+        iyy="0.00217503268969959"
+        iyz="-2.07353665487853E-18"
+        izz="0.00399122024811154" />
     </inertial>
     <visual>
       <origin
@@ -120,16 +154,16 @@
   <link name="Front_Right">
     <inertial>
       <origin
-        xyz="0.1296 -0.00016693 0.0127"
+        xyz="0.0841644725318393 0.0208238283846831 0.0190500131425785"
         rpy="0 0 0" />
-      <mass value="0.13037" />
+      <mass value="0.0978518395980198" />
       <inertia
-        ixx="2.2243E-05"
-        ixy="7.9264E-09"
-        ixz="-3.4772E-22"
-        iyy="0.0013778"
-        iyz="7.5437E-22"
-        izz="0.0013896" />
+        ixx="5.22109602469777E-05"
+        ixy="-0.000149460319430953"
+        ixz="-1.19430278845215E-10"
+        iyy="0.000612890773966618"
+        iyz="-5.22705653083454E-11"
+        izz="0.000653981235525709" />
     </inertial>
     <visual>
       <origin
@@ -139,7 +173,7 @@
         <mesh filename="package://srr_sim/meshes/Front_Right.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -151,19 +185,53 @@
       </geometry>
     </collision>
   </link>
+  <link name="Front_Right_Rev_Link">
+    <inertial>
+      <origin
+        xyz="-6.66133814775094E-16 -0.0486821054711925 0.0195531661804494"
+        rpy="0 0 0" />
+      <mass value="0.1436780324417" />
+      <inertia
+        ixx="0.000121635979212494"
+        ixy="4.41083187630774E-20"
+        ixz="3.60571337734315E-19"
+        iyy="8.58181467246999E-05"
+        iyz="1.52860469579376E-20"
+        izz="6.01279888666829E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://srr_sim/meshes/Front_Right_Rev_Link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://srr_sim/meshes/Front_Right_Rev_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
   <link name="Front_Right_Wheel">
     <inertial>
       <origin
-        xyz="-2.77555756156289E-17 0 0.0403928887604011"
+        xyz="6.9389E-17 -5.5511E-17 0.065959"
         rpy="0 0 0" />
-      <mass value="0.684735063470279" />
+      <mass value="0.72194" />
       <inertia
-        ixx="0.00211423848377032"
-        ixy="-2.71050543121376E-20"
-        ixz="1.21439126579021E-20"
-        iyy="0.00211423848377032"
-        iyz="-5.65063558005809E-20"
-        izz="0.0039865323273977" />
+        ixx="0.002175"
+        ixy="-5.6447E-21"
+        ixz="1.8588E-18"
+        iyy="0.002175"
+        iyz="-1.0842E-19"
+        izz="0.0039912" />
     </inertial>
     <visual>
       <origin
@@ -173,7 +241,7 @@
         <mesh filename="package://srr_sim/meshes/Front_Right_Wheel.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        <color rgba="0.79216 0.81961 0.93333 1" />
       </material>
     </visual>
     <collision>
@@ -188,16 +256,16 @@
   <link name="Rear_Left">
     <inertial>
       <origin
-        xyz="-0.12948 -0.00016693 -0.0127"
+        xyz="-0.129484101501797 -0.000479080079523499 -0.0190500000000001"
         rpy="0 0 0" />
-      <mass value="0.13037" />
+      <mass value="0.13036735305509" />
       <inertia
-        ixx="2.2243E-05"
-        ixy="7.9264E-09"
-        ixz="-1.3157E-20"
-        iyy="0.0013778"
-        iyz="3.0594E-21"
-        izz="0.0013896" />
+        ixx="2.22512720679362E-05"
+        ixy="-3.25978990830839E-06"
+        ixz="-2.15250899622258E-21"
+        iyy="0.00137775885904674"
+        iyz="-9.1846719439127E-22"
+        izz="0.00138959248730674" />
     </inertial>
     <visual>
       <origin
@@ -207,7 +275,7 @@
         <mesh filename="package://srr_sim/meshes/Rear_Left.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -222,16 +290,16 @@
   <link name="Rear_Left_Wheel">
     <inertial>
       <origin
-        xyz="2.77555756156289E-17 -1.38777878078145E-17 -0.0403928887604008"
+        xyz="0.00035855 -0.00051139 -0.052821"
         rpy="0 0 0" />
-      <mass value="0.684735063470277" />
+      <mass value="0.69177" />
       <inertia
-        ixx="0.00211423848377032"
-        ixy="-6.50521303491303E-19"
-        ixz="3.54350337780674E-20"
-        iyy="0.00211423848377032"
-        iyz="7.76577613395464E-20"
-        izz="0.00398653232739769" />
+        ixx="0.0021208"
+        ixy="1.6263E-19"
+        ixz="3.5887E-20"
+        iyy="0.0021208"
+        iyz="-1.5005E-19"
+        izz="0.0039874" />
     </inertial>
     <visual>
       <origin
@@ -241,7 +309,7 @@
         <mesh filename="package://srr_sim/meshes/Rear_Left_Wheel.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        <color rgba="0.79216 0.81961 0.93333 1" />
       </material>
     </visual>
     <collision>
@@ -256,15 +324,15 @@
   <link name="Rear_Right">
     <inertial>
       <origin
-        xyz="-0.129484880168611 -0.000166934629764387 0.0127"
+        xyz="-0.129455683958967 -0.00275462341653285 0.01905"
         rpy="0 0 0" />
       <mass value="0.13036735305509" />
       <inertia
-        ixx="2.22434328599032E-05"
-        ixy="7.92643638985341E-09"
-        ixz="1.10564735972895E-21"
-        iyy="0.00137776669825477"
-        iyz="-3.98778970545126E-21"
+        ixx="2.27844985113073E-05"
+        ixy="-2.70764545199952E-05"
+        ixz="4.92677162109119E-21"
+        iyy="0.00137722563260337"
+        iyz="2.5929948639206E-22"
         izz="0.00138959248730674" />
     </inertial>
     <visual>
@@ -290,16 +358,16 @@
   <link name="Rear_Right_Wheel">
     <inertial>
       <origin
-        xyz="2.7756E-17 0 0.040393"
+        xyz="0.00205246820321092 -0.00475374418181555 0.0528212788637445"
         rpy="0 0 0" />
-      <mass value="0.68474" />
+      <mass value="0.691773547047117" />
       <inertia
-        ixx="0.0021142"
-        ixy="-2.9477E-19"
-        ixz="1.5023E-20"
-        iyy="0.0021142"
-        iyz="-5.8887E-20"
-        izz="0.0039865" />
+        ixx="0.00212083019020282"
+        ixy="-1.11808349037568E-19"
+        ixz="6.06587706562296E-20"
+        iyy="0.00212083019020282"
+        iyz="-1.37947198653022E-19"
+        izz="0.00398741923131654" />
     </inertial>
     <visual>
       <origin
@@ -309,7 +377,7 @@
         <mesh filename="package://srr_sim/meshes/Rear_Right_Wheel.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -327,7 +395,7 @@
   <joint name="FL_Joint" type="revolute">
     <origin
       xyz="0 0.15621 0.034606"
-      rpy="1.5708 0.23089 0" />
+      rpy="1.5708 0 0" />
     <parent link="base_link" />
     <child link="Front_Left" />
     <axis xyz="0 0 1" />
@@ -337,11 +405,24 @@
       effort="125"
       velocity="0" />
   </joint>
+  <joint name="FL_Rev_Joint" type="revolute">
+    <origin
+      xyz="0.21838 0.0052363 -0.01905"
+      rpy="0 0.036515 0.023974" />
+    <parent link="Front_Left" />
+    <child link="Front_Left_Rev_Link" />
+    <axis xyz="0 1 0" />
+    <limit
+      lower="-0.218166"
+      upper="0.218166"
+      effort="125"
+      velocity="0" />
+  </joint>
   <joint name="FL_Wheel_Joint" type="continuous">
     <origin
-      xyz="0.25908 0 0"
-      rpy="0 0 -0.79784" />
-    <parent link="Front_Left" />
+      xyz="0 -0.06096 0"
+      rpy="0 0 -0.75345" />
+    <parent link="Front_Left_Rev_Link" />
     <child link="Front_Left_Wheel" />
     <axis xyz="0 0 1" />
     <limit
@@ -351,7 +432,7 @@
   <joint name="FR_Joint" type="revolute">
     <origin
       xyz="0 -0.15621 0.034606"
-      rpy="1.5708 0.43239 0" />
+      rpy="1.5708 0 0" />
     <parent link="base_link" />
     <child link="Front_Right" />
     <axis xyz="0 0 1" />
@@ -361,11 +442,24 @@
       effort="125"
       velocity="0" />
   </joint>
+  <joint name="FR_Rev_Joint" type="revolute">
+    <origin
+      xyz="0.21198 0.052735 0.01905"
+      rpy="0 -0.0080108 0.24382" />
+    <parent link="Front_Right" />
+    <child link="Front_Right_Rev_Link" />
+    <axis xyz="0 1 0" />
+    <limit
+      lower="-0.218166"
+      upper="0.218166"
+      effort="125"
+      velocity="0" />
+  </joint>
   <joint name="FR_Wheel_Joint" type="continuous">
     <origin
-      xyz="0.25908 0 0"
-      rpy="0 0 -2.5083" />
-    <parent link="Front_Right" />
+      xyz="0 -0.06096 0"
+      rpy="0 0 -1.311" />
+    <parent link="Front_Right_Rev_Link" />
     <child link="Front_Right_Wheel" />
     <axis xyz="0 0 1" />
     <limit
@@ -375,7 +469,7 @@
   <joint name="RL_Joint" type="revolute">
     <origin
       xyz="0 0.18161 0.034606"
-      rpy="1.5708 -0.38556 0" />
+      rpy="1.5708 0 0" />
     <parent link="base_link" />
     <child link="Rear_Left" />
     <axis xyz="0 0 1" />
@@ -388,7 +482,7 @@
   <joint name="RL_Wheel_Joint" type="continuous">
     <origin
       xyz="-0.25908 0 0"
-      rpy="0 0 -0.610274581412076" />
+      rpy="0 0 -0.61027" />
     <parent link="Rear_Left" />
     <child link="Rear_Left_Wheel" />
     <axis xyz="0 0 1" />
@@ -398,8 +492,8 @@
   </joint>
   <joint name="RR_Joint" type="revolute">
     <origin
-      xyz="0 -0.18161 0.034606"
-      rpy="1.5708 -0.37306 0" />
+      xyz="0 -0.18161 0.0346062035203441"
+      rpy="1.5707963267949 0 0" />
     <parent link="base_link" />
     <child link="Rear_Right" />
     <axis xyz="0 0 1" />
@@ -412,7 +506,7 @@
   <joint name="RR_Wheel_Joint" type="continuous">
     <origin
       xyz="-0.25908 0 0"
-      rpy="0 0 -0.397587942822765" />
+      rpy="0 0 -0.39759" />
     <parent link="Rear_Right" />
     <child link="Rear_Right_Wheel" />
     <axis xyz="0 0 1" />
