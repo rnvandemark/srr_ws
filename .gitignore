@@ -2,6 +2,7 @@
 build/
 devel/
 install/
+*.autosave.xopp
 src/srr_sim/urdf/sra_integrated.urdf
 src/srr_sim/urdf/srr_integrated.urdf
 src/srr_sim/urdf/combined_integrated.urdf
