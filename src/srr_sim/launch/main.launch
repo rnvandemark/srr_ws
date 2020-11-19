@@ -35,9 +35,9 @@
     type="rostopic"
     args="pub /calibrated std_msgs/Bool true" />
   <node
-    name="spawn_arm_model"
+    name="spawn_model"
     pkg="gazebo_ros"
     type="spawn_model"
-    args="$(arg init_pose) -param robot_description -urdf -model $(arg model)"
+    args="$(arg init_pose) -param robot_description -urdf -model $(arg model)_integrated"
     output="screen" />
 </launch>
