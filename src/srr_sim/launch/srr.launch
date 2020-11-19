@@ -1,0 +1,39 @@
+<launch>
+  <arg name="vehicle_model_name" value="srr_integrated" />
+  <arg name="init_vehicle_pose" default="-x 0 -y 0 -z 2 -R 0 -P 0 -Y 0" />
+  <arg name="vehicle_controllers" value="front_left_joint_controller
+                                         front_right_joint_controller
+                                         rear_left_joint_controller
+                                         rear_right_joint_controller
+                                         front_left_wheel_joint_controller
+                                         front_right_wheel_joint_controller
+                                         rear_left_wheel_joint_controller
+                                         rear_right_wheel_joint_controller" />
+  <rosparam file="$(find srr_sim)/config/vehicle_controllers.yaml" command="load"/>
+  <rosparam subst_value="True">
+    /srr/vehicle_model_name: $(arg vehicle_model_name)
+    /$(arg vehicle_model_name)/init_pose: $(arg init_vehicle_pose)
+    /$(arg vehicle_model_name)/joint_zero_offsets: FL_Joint=0,FL_Rev_Joint=0,FR_Joint=0,FR_Rev_Joint=0,RL_Joint=0,RR_Joint=0
+    /$(arg vehicle_model_name)/joint_directions_of_rotation: FL_Joint=-1,FL_Rev_Joint=+1,FR_Joint=-1,FR_Rev_Joint=+1,RL_Joint=+1,RR_Joint=+1
+  </rosparam>
+
+  <node
+    name="vehicle_controller_spawner"
+    pkg="controller_manager"
+    type="spawner"
+    respawn="false"
+    output="screen"
+    ns="/$(arg vehicle_model_name)"
+    args="$(arg vehicle_controllers)" />
+  <node
+    name="map_frame_broadcaster"
+    pkg="tf"
+    type="static_transform_publisher"
+    args="1 0 0 0 0 0 1 map VehicleDummyLink 50" />
+  <node
+    name="vehicle_joint_offsets_server"
+    pkg="srr_kinematics"
+    type="incorporate_joints_offsets_server"
+    args="$(arg vehicle_model_name)"
+    output="screen" />
+</launch>

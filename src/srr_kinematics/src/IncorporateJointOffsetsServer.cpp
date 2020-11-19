@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     std::string list_joint_name_and_offset;
     std::string list_joint_name_and_direction;
     assert(n.getParam(std::string("/") + rosparam_namespace + "/joint_zero_offsets", list_joint_name_and_offset));
-    assert(n.getParam(std::string("/") + rosparam_namespace + "/joint_rotations_of_direction", list_joint_name_and_direction));
+    assert(n.getParam(std::string("/") + rosparam_namespace + "/joint_directions_of_rotation", list_joint_name_and_direction));
     SRR::JointOffsetsCollection collection(list_joint_name_and_offset, list_joint_name_and_direction);
 
     ros::ServiceServer srv_calc_joint_position = n.advertiseService(
