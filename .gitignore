@@ -2,4 +2,5 @@
 build/
 devel/
 install/
+src/srr_sim/urdf/sra_integrated.urdf
 src/srr_sim/urdf/srr_integrated.urdf

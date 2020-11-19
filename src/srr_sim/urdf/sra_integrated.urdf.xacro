@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<robot name ="sra_integrated" xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <!-- WORLD -->
+
+  <link name="world"/>
+  <joint name="WorldJoint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+  <!-- ROBOT -->
+
+  <xacro:include filename="sra.urdf"/>
+
+  <!-- ROS CONTROL LIBRARY -->
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/sra_integrated</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>true</legacyModeNS>
+    </plugin>
+  </gazebo>
+</robot>
