@@ -6,16 +6,16 @@
 
   <!-- ROBOT DUMMIES -->
 
-  <link name="dummy_link"/>
-  <joint name="DummyJoint" type="fixed">
+  <link name="VehicleDummyLink"/>
+  <joint name="VehicleDummyJoint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="dummy_link"/>
-    <child link="base_link"/>
+    <parent link="VehicleDummyLink"/>
+    <child link="Vehicle_Base_Link"/>
   </joint>
 
   <!-- ROBOT LINKS -->
 
-  <link name="base_link">
+  <link name="Vehicle_Base_Link">
     <inertial>
       <origin
         xyz="-0.05113081011494 1.04025499845068E-08 0.0704137823724448"
@@ -34,7 +34,7 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://srr_sim/meshes/srr/base_link.STL" />
+        <mesh filename="package://srr_sim/meshes/srr/Vehicle_Base_Link.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -45,7 +45,7 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://srr_sim/meshes/srr/base_link.STL" />
+        <mesh filename="package://srr_sim/meshes/srr/Vehicle_Base_Link.STL" />
       </geometry>
     </collision>
   </link>
@@ -464,7 +464,7 @@
     <origin
       xyz="0 0.15304 0.034606"
       rpy="1.5708 0 0" />
-    <parent link="base_link" />
+    <parent link="Vehicle_Base_Link" />
     <child link="Front_Left" />
     <axis xyz="0 0 1" />
     <limit
@@ -501,7 +501,7 @@
     <origin
       xyz="0 -0.153035 0.0346062035203441"
       rpy="1.5707963267949 0 0" />
-    <parent link="base_link" />
+    <parent link="Vehicle_Base_Link" />
     <child link="Front_Right" />
     <axis xyz="0 0 1" />
     <limit
@@ -538,7 +538,7 @@
     <origin
       xyz="0 0.17844 0.034606"
       rpy="-1.5708 0 -3.1416" />
-    <parent link="base_link" />
+    <parent link="Vehicle_Base_Link" />
     <child link="Rear_Left" />
     <axis xyz="0 0 1" />
     <limit
@@ -570,7 +570,7 @@
     <origin
       xyz="0 -0.17844 0.034606"
       rpy="-1.5708 0 -3.1416" />
-    <parent link="base_link" />
+    <parent link="Vehicle_Base_Link" />
     <child link="Rear_Right" />
     <axis xyz="0 0 1" />
     <limit

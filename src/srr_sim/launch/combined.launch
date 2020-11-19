@@ -1,0 +1,11 @@
+<launch>
+  <arg name="init_vehicle_pose" />
+  <arg name="init_arm_pose" />
+  <include file="$(find srr_sim)/launch/srr.launch" >
+    <arg name="init_vehicle_pose" value="$(arg init_vehicle_pose)" />
+  </include>
+  <include file="$(find srr_sim)/launch/sra.launch" >
+    <arg name="init_arm_pose" value="$(arg init_arm_pose)" />
+    <arg name="mounted_to_world" value="0" />
+  </include>
+</launch>

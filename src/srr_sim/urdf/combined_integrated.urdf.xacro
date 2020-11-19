@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot name ="combined_integrated" xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <!-- MOUNT ARM TO VEHICLE -->
+
+  <joint name="ArmMount" type="fixed">
+    <origin rpy="0 0 0" xyz="0.12605 0 0.0695"/>
+    <parent link="Vehicle_Base_Link"/>
+    <child link="ArmDummyLink"/>
+  </joint>
+
+  <!-- ROBOTS -->
+
+  <xacro:include filename="srr_integrated.urdf"/>
+  <xacro:include filename="sra.urdf"/>
+
+</robot>

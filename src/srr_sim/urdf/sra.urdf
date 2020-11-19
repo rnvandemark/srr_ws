@@ -4,7 +4,18 @@
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot name="sra">
 
-  <link name="base_link">
+  <!-- ROBOT DUMMIES -->
+
+  <link name="ArmDummyLink"/>
+  <joint name="ArmDummyJoint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="ArmDummyLink"/>
+    <child link="ArmBaseLink"/>
+  </joint>
+
+  <!-- ROBOT LINKS -->
+
+  <link name="ArmBaseLink">
     <inertial>
       <origin
         xyz="0 0.0127 4.5102E-19"
@@ -23,7 +34,7 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://srr_sim/meshes/sra/base_link.STL" />
+        <mesh filename="package://srr_sim/meshes/sra/ArmBaseLink.STL" />
       </geometry>
       <material name="">
         <color rgba="0.79216 0.81961 0.93333 1" />
@@ -34,7 +45,7 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://srr_sim/meshes/sra/base_link.STL" />
+        <mesh filename="package://srr_sim/meshes/sra/ArmBaseLink.STL" />
       </geometry>
     </collision>
   </link>
@@ -42,7 +53,7 @@
     <origin
       xyz="0 0 0.0254"
       rpy="1.5708 0 1.4018" />
-    <parent link="base_link" />
+    <parent link="ArmBaseLink" />
     <child link="BaseToShoulderLink" />
     <axis xyz="0 1 0" />
     <limit

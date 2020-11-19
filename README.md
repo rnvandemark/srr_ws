@@ -11,5 +11,14 @@ attempt to model and simulate an extraterrestrial vehicle inspired by
 an early iteration of the SRR, complete with the vehicle’s foundation
 and the onboard serial kinematic chain used for sample collection.
 
+Running the sim for either the SRR, SRA (Sample-Return Arm), or the SRA
+mounted onto the SRR, run the following command:
+
+```
+roslaunch srr_sim main.launch model:=XXX
+```
+
+Where XXX is one of 'srr', 'sra', or 'combined' accordingly.
+
 Anticipated phases of development:
 ![Timeline block diagram](src/srr/docs/images/timeline.png)

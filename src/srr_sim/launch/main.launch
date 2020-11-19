@@ -1,0 +1,43 @@
+<launch>
+  <arg name="model" /> <!-- At the moment, this arg can have the value 'srr', 'sra', or 'combined' -->
+  <arg name="init_vehicle_pose" default="-x 0 -y 0 -z 0.5 -R 0 -P 0 -Y 0" />
+  <arg name="init_arm_pose" default="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" />
+  <arg name="init_pose" value="$(eval init_vehicle_pose if model != 'sra' else init_arm_pose)" />
+  <include file="$(find srr_sim)/launch/$(arg model).launch" >
+    <arg name="init_vehicle_pose" value="$(arg init_vehicle_pose)" if="$(eval model != 'sra')" />
+    <arg name="init_arm_pose" value="$(arg init_arm_pose)" if="$(eval model != 'srr')" />
+  </include>
+
+  <arg name="world" default="basic" />
+  <include file="$(find gazebo_ros)/launch/empty_world.launch" >
+    <arg name="world_name" value="$(find srr_sim)/world/$(arg world).world" />
+    <arg name="paused" value="false" />
+    <arg name="verbose" value="true" />
+  </include>
+
+  <param name="robot_description" textfile="$(find srr_sim)/urdf/$(arg model)_integrated.urdf" />
+
+  <node
+    name="joint_state_publisher"
+    pkg="joint_state_publisher"
+    type="joint_state_publisher" >
+    <param name="use_gui" value="false" />
+  </node>
+  <node
+    name="robot_state_publisher"
+    pkg="robot_state_publisher"
+    type="robot_state_publisher"
+    respawn="false"
+    output="screen" />
+  <node
+    name="fake_joint_calibration"
+    pkg="rostopic"
+    type="rostopic"
+    args="pub /calibrated std_msgs/Bool true" />
+  <node
+    name="spawn_arm_model"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    args="$(arg init_pose) -param robot_description -urdf -model $(arg model)"
+    output="screen" />
+</launch>
