@@ -459,6 +459,8 @@
   </link>
 
   <!-- ROBOT JOINTS -->
+  <!-- Assumed a range of motion for each chassis elevation joint to be [0, 44] degrees -->
+  <!--    "    "   "   "     "    "    "  front wheel's steering to be [-12.5, 12.5] degrees -->
 
   <joint name="FL_Joint" type="revolute">
     <origin
@@ -468,8 +470,8 @@
     <child link="Front_Left" />
     <axis xyz="0 0 1" />
     <limit
-      lower="-1.5707963"
-      upper="1.5707963"
+      lower="-0.767945"
+      upper="0.0"
       effort="125"
       velocity="0" />
   </joint>
@@ -505,8 +507,8 @@
     <child link="Front_Right" />
     <axis xyz="0 0 1" />
     <limit
-      lower="-1.5707963"
-      upper="1.5707963"
+      lower="-0.767945"
+      upper="0.0"
       effort="125"
       velocity="0" />
   </joint>
@@ -542,8 +544,8 @@
     <child link="Rear_Left" />
     <axis xyz="0 0 1" />
     <limit
-      lower="-1.5707963"
-      upper="1.5707963"
+      lower="0.0"
+      upper="0.767945"
       effort="125"
       velocity="0" />
   </joint>
@@ -574,8 +576,8 @@
     <child link="Rear_Right" />
     <axis xyz="0 0 1" />
     <limit
-      lower="-1.5707963"
-      upper="1.5707963"
+      lower="0.0"
+      upper="0.767945"
       effort="125"
       velocity="0" />
   </joint>
