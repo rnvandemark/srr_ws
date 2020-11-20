@@ -14,6 +14,45 @@
 
   <xacro:include filename="sra.urdf"/>
 
+  <!-- ROBOT JOINT TRANSMISSIONS -->
+
+  <transmission name="BaseJoint_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="BaseJoint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="BaseJoint_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="ShoulderJoint_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="ShoulderJoint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="ShoulderJoint_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="ElbowJoint_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="ElbowJoint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="ElbowJoint_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="WristJoint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="WristJoint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="WristJoint_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+
   <!-- ROS CONTROL LIBRARY -->
 
   <gazebo>

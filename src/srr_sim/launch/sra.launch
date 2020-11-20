@@ -2,6 +2,11 @@
   <arg name="mounted_to_world" default="1" />
   <arg name="arm_model_name" value="$(eval 'sra_integrated' if mounted_to_world else 'sra')" />
   <arg name="init_arm_pose" default="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" />
+  <arg name="arm_controllers" value="base_joint_controller
+                                     shoulder_joint_controller
+                                     elbow_joint_controller
+                                     wrist_joint_controller" />
+  <rosparam file="$(find srr_sim)/config/arm_controllers.yaml" command="load"/>
   <rosparam subst_value="True">
     /sra_model_name: $(arg arm_model_name)
     /$(arg arm_model_name)/init_pose: $(arg init_arm_pose)
@@ -9,6 +14,14 @@
     /$(arg arm_model_name)/joint_directions_of_rotation: BaseJoint=+1,ShoulderJoint=+1,ElbowJoint=+1,WristJoint=+1,GripperJoint=+1
   </rosparam>
 
+  <node
+    name="arm_controller_spawner"
+    pkg="controller_manager"
+    type="spawner"
+    respawn="false"
+    output="screen"
+    ns="/$(arg arm_model_name)"
+    args="$(arg arm_controllers)" />
   <node
     name="arm_joint_offsets_server"
     pkg="srr_kinematics"
