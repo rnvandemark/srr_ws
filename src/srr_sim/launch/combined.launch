@@ -1,4 +1,5 @@
 <launch>
+  <arg name="combined_model_name" value="combined_integrated" />
   <arg name="init_vehicle_pose" />
   <arg name="init_arm_pose" />
   <include file="$(find srr_sim)/launch/srr.launch" >
@@ -8,4 +9,8 @@
     <arg name="init_arm_pose" value="$(arg init_arm_pose)" />
     <arg name="mounted_to_world" value="0" />
   </include>
+
+  <rosparam subst_value="True">
+    /combined_model_name: $(arg combined_model_name)
+  </rosparam>
 </launch>
