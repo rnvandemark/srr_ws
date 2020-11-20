@@ -1,9 +1,9 @@
 <launch>
   <arg name="mounted_to_world" default="1" />
-  <arg name="arm_model_name" value="$(eval 'sra_integrated' if mounted_to_world == '1' else 'sra')" />
+  <arg name="arm_model_name" value="$(eval 'sra_integrated' if mounted_to_world else 'sra')" />
   <arg name="init_arm_pose" default="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" />
   <rosparam subst_value="True">
-    /srr/arm_model_name: $(arg arm_model_name)
+    /sra_model_name: $(arg arm_model_name)
     /$(arg arm_model_name)/init_pose: $(arg init_arm_pose)
     /$(arg arm_model_name)/joint_zero_offsets: BaseJoint=0,ShoulderJoint=0,ElbowJoint=0,WristJoint=0,GripperJoint=0
     /$(arg arm_model_name)/joint_directions_of_rotation: BaseJoint=+1,ShoulderJoint=+1,ElbowJoint=+1,WristJoint=+1,GripperJoint=+1
