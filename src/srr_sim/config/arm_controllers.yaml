@@ -1,0 +1,24 @@
+sra_integrated:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  base_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: BaseJoint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  shoulder_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: ShoulderJoint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  elbow_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: ElbowJoint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}
+
+  wrist_joint_controller:
+    type: effort_controllers/JointEffortController
+    joint: WristJoint
+    pid : {p: 10.0 , i: 0.0 , d: 0.0}

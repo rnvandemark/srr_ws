@@ -59,7 +59,7 @@
     <limit
       lower="-3.14159265"
       upper="3.14159265"
-      effort="0"
+      effort="125"
       velocity="0" />
   </joint>
   <link name="BaseToShoulderLink"> <!-- base_rev_link -->
@@ -106,7 +106,7 @@
     <limit
       lower="-3.14159265"
       upper="3.14159265"
-      effort="0"
+      effort="125"
       velocity="0" />
   </joint>
   <link name="ShoulderToElbowDummyLink"> <!-- link1 -->
@@ -195,7 +195,7 @@
     <limit
       lower="-3.14159265"
       upper="3.14159265"
-      effort="0"
+      effort="125"
       velocity="0" />
   </joint>
   <link name="ElbowToWristDummyLink"> <!-- link2 -->
@@ -284,7 +284,7 @@
     <limit
       lower="-3.14159265"
       upper="3.14159265"
-      effort="0"
+      effort="125"
       velocity="0" />
   </joint>
   <link name="WristToGripperLink"> <!-- link3 -->
