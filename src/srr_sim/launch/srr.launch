@@ -1,7 +1,8 @@
 <launch>
   <arg name="vehicle_model_name" value="srr_integrated" />
   <arg name="init_vehicle_pose" default="-x 0 -y 0 -z 2 -R 0 -P 0 -Y 0" />
-  <arg name="vehicle_controllers" value="front_left_joint_controller
+  <arg name="vehicle_controllers" value="vehicle_joint_state_controller
+                                         front_left_joint_controller
                                          front_right_joint_controller
                                          rear_left_joint_controller
                                          rear_right_joint_controller
