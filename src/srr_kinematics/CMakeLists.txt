@@ -21,7 +21,18 @@ add_executable(incorporate_joints_offsets_server
 target_link_libraries(incorporate_joints_offsets_server
   ${catkin_LIBRARIES}
 )
-install(TARGETS incorporate_joints_offsets_server
+
+add_executable(traction_controller
+  src/TractionController.cpp
+  src/TractionControlContainer.cpp
+)
+target_link_libraries(traction_controller
+  ${catkin_LIBRARIES}
+)
+
+install(TARGETS
+  incorporate_joints_offsets_server
+  traction_controller
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
