@@ -11,10 +11,20 @@ function(compile_urdf filename)
   if(DEFINED ARGV0)
     MESSAGE(STATUS "Running xacro (${ARGV0})...")
     execute_process (
-      COMMAND bash -c "pushd ${CMAKE_CURRENT_SOURCE_DIR}/urdf > /dev/null; rosrun xacro xacro -o ${ARGV0} ${ARGV0}.xacro; popd > /dev/null;"
+      COMMAND bash -c "pushd ${CMAKE_CURRENT_SOURCE_DIR}/urdf > /dev/null; \
+                       rosrun xacro xacro -o ${ARGV0} ${ARGV0}.xacro --inorder;\
+                       popd > /dev/null;"
+      ERROR_VARIABLE CMD_ERROR
     )
+    string(STRIP "${CMD_ERROR}" CMD_ERROR)
+    string(LENGTH "${CMD_ERROR}" CMD_ERROR_LENGTH)
+    if(CMD_ERROR_LENGTH GREATER 0)
+      MESSAGE(FATAL_ERROR "Error processing ${ARGV0}: ${CMD_ERROR}")
+    else()
+      MESSAGE(STATUS "Finished processing xacro (${ARGV0}).")
+    endif()
   else()
-    message(FATAL_ERROR "URDF filename and return value container not specified but are required.")
+    MESSAGE(FATAL_ERROR "URDF filename and return value container not specified but are required.")
   endif()
 endfunction(compile_urdf)
 
