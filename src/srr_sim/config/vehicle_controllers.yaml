@@ -1,5 +1,5 @@
 srr_integrated:
-  joint_state_controller:
+  vehicle_joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 50
 
