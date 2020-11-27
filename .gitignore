@@ -5,3 +5,8 @@ install/
 src/srr_sim/urdf/sra_integrated.urdf
 src/srr_sim/urdf/srr_integrated.urdf
 src/srr_sim/urdf/combined_integrated.urdf
+
+# ignore unnecessary pdflatex output
+src/srr/latex/**/*.aux
+src/srr/latex/**/*.log
+src/srr/latex/**/*.synctex.gz
