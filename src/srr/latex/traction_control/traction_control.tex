@@ -1,18 +1,31 @@
 \documentclass[11pt]{report}
 
+\usepackage[backend=bibtex]{biblatex}
+
 \usepackage{amsmath}
 \usepackage{graphicx}
 
 \title{Analysis of \em{Terrain-Adaptive Wheel Speed Control on the Curiosity Mars Rover: Algorithm and Flight Results}}
 \date{2020\\ November}
 \author{Robert Vandemark \and Diane Ngo}
+\addbibresource{references.bib}
+\nocite{*}
 
 \begin{document}
 	\renewcommand*{\thepage}{\arabic{page}}
 	\setcounter{page}{1}
-	\setcounter{chapter}{1}
 	\maketitle
 
-	\section{Introduction}
+	\tableofcontents
+	\newpage
+
+	\chapter*{Abstract}
+	\input{sections/introduction/abstract.tex}
+
+	\chapter*{Introduction}
 	\input{sections/introduction/introduction.tex}
+
+	\begin{center}
+		\printbibliography[heading=bibintoc, title={Bibliography}]
+	\end{center}
 \end{document}
