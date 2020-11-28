@@ -31,12 +31,12 @@ The benefit to this is that, assuming all the wheels' velocities are coordinated
 
 The Ackermann steering model by itself does not account for this extra distance and this caused the wheel slippage, which damaged them at an alarming rate. This is how the \ac{TCA} can be used to improve the model, so that when rough terrain is being traversed, the wheel(s) doing so can be sped up accordingly.
 
-\section{Rigid-Body Model Assumption}
+\section{Rigid-Body Model Assumption}\label{traction_control:algorithms:rigid-body}
 The rigid-body model assumption says that a body of some sturdy material can be assumed to maintain it shape, and that a force/torque that it can expect to encounter will not deform it to a degree that needs to be accounted for. This is not true in reality, but in scenarios like these, the deformation can be negligible. \\
 
 Making this assumption can be extremely beneficial when implementing an algorithm like \ac{TCA} because it heavily simplifies the math needed to represent vectors in different coordinate frames.
 
-\section{Coordinate Frame Notation}
+\section{Coordinate Frame Notation}\label{traction_control:algorithms:coord-frame-notation}
 
 TO-DO, add: \\
  1.) description of what a coordinate frame is and why they're used \\
@@ -86,3 +86,89 @@ A summary of the acronyms for the coordinate frames used in Figures~\ref{tractio
 \end{center}
 
 \section{Calculations}
+\subsection{Overview}
+For this algorithm on the \ac{CMR}, there are a number of configuration parameters (values that do not change throughout the lifetime of the system), a few inputs (values that are updated for each iteration of the control loop), and one output. The configuration inputs are related to the geometry of the vehicle, as that is obviously unchanging. The inputs are values such as the joint positions of the vehicle and kinematic values. The output are the ideal wheel speeds to maximize the rover's velocity while avoiding wheel slippage. These values are summarized in detail in Tables~\ref{traction_control:algorithms:inputs-cmr} and~\ref{traction_control:algorithms:outputs-cmr}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| >{\centering\arraybackslash}m{1.2in} | >{\centering\arraybackslash}m{4.5in} |}
+		\hline
+		\textbf{Input Value} & \textbf{Description} \\
+		\hline
+		$\left[\omega_{x}, \omega_{y}, \omega_{z}\right]^{T}$ & The 3x1 angular velocity vector around the base coordinate frame of the vehicle \\
+		\hline
+		$\left[\beta, \rho_{1}, \rho_{2}\right]^{T}$ & The 3x1 vector of joint positions describing the rotation of the bogie joint and each rocker joint \\
+		\hline
+		$\left[\dot{\beta}, \dot{\rho_{1}}, \dot{\rho_{2}}\right]^{T}$ & The 3x1 vector of angular velocities describing the rotational speed of the bogie joint and each rocker joint \\
+		\hline
+		$\vec{\Psi}$ & The 6x1 vector of joint positions describing the steering angle of each wheel \\
+		\hline
+	\end{tabular}
+	\caption{Summary of the Inputs for the Traction Control Algorithm Onboard the Curiosity Mars Rover}
+	\label{traction_control:algorithms:inputs-cmr}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| >{\centering\arraybackslash}m{1.2in} | >{\centering\arraybackslash}m{4.5in} |}
+		\hline
+		\textbf{Output Value} & \textbf{Description} \\
+		\hline
+		$\dot{\theta}$ & The 6x1 angular velocity vector describing the ideal wheel speeds to command to the \acl{CMR} \\
+		\hline
+	\end{tabular}
+	\caption{Summary of the Inputs for the Traction Control Algorithm Onboard the Curiosity Mars Rover}
+	\label{traction_control:algorithms:outputs-cmr}
+\end{table}
+
+When considering this algorithm for the \ac{SRR}, the inputs and outputs will only change because the number of suspension joints and the number of wheels differs. The inputs and outputs for an \ac{SRR} implementation are summarized in Tables~\ref{traction_control:algorithms:inputs-srr} and~\ref{traction_control:algorithms:outputs-srr}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| >{\centering\arraybackslash}m{1.2in} | >{\centering\arraybackslash}m{4.5in} |}
+		\hline
+		\textbf{Input Value} & \textbf{Description} \\
+		\hline
+		$\left[\omega_{x}, \omega_{y}, \omega_{z}\right]^{T}$ & The 3x1 angular velocity vector around the base coordinate frame of the vehicle \\
+		\hline
+		$\vec{\delta}$ & The 4x1 vector of joint positions describing the rotation of each joint corresponding to the four legs' pivot points \\
+		\hline
+		$\vec{\dot{\delta}}$ & The 4x1 vector of angular velocities describing the speed of rotation of each joint corresponding to the four legs' pivot points \\
+		\hline
+		$\vec{\Psi}$ & The 2x1 vector of joint positions describing the steering angle of each wheel \\
+		\hline
+	\end{tabular}
+	\caption{Summary of the Inputs for the Traction Control Algorithm Onboard the Curiosity Mars Rover}
+	\label{traction_control:algorithms:inputs-srr}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| >{\centering\arraybackslash}m{1.2in} | >{\centering\arraybackslash}m{4.5in} |}
+		\hline
+		\textbf{Output Value} & \textbf{Description} \\
+		\hline
+		$\dot{\theta}$ & The 4x1 angular velocity vector describing the ideal wheel speeds to command to the \acl{SRR} \\
+		\hline
+	\end{tabular}
+	\caption{Summary of the Inputs for the Traction Control Algorithm Onboard the Curiosity Mars Rover}
+	\label{traction_control:algorithms:outputs-srr}
+\end{table}
+
+\subsection{Measuring the Inputs}
+As mentioned previously, one of the advantages to this implementation for traction control is that there is relatively less input data to process. Nonetheless, there are still the few inputs described in Tables~\ref{traction_control:algorithms:inputs-cmr} and~\ref{traction_control:algorithms:inputs-srr} that must be measured. \\
+
+Each of the joints on the \ac{CMR} that appear in Table~\ref{traction_control:algorithms:inputs-cmr} have encoders that measure the current absolute position of the joint, including $\beta$, $\rho_{1,2}$, and $\Psi_{1-6}$. Some encoders are capable of measuring the current velocity of the corresponding motor as well, but the \ac{CMR} was not equipped with these. The team behind the solution in \cite{tractl} proposed instead manually computing the time derivative of the input positions to estimate each angular velocity ($\dot{\beta}$, $\dot{\rho_{1}}$, and $\dot{\rho_{2}}$). In other words, given two contiguous samples of the position of each joint, the average angular velocity over the length of time between these two samples $\Delta t$ can be calculated for some angle $\alpha$ as:
+
+\begin{equation}
+	\dot{\alpha} \approx \dot{\alpha}_{ave} = \frac{\alpha_{1} - \alpha_{0}}{\Delta t}
+\end{equation}
+
+The angular velocity vector $\dot{\omega}$ is measured with an \ac{IMU}, and more specifically with the gyroscope(s) within it. This mechanical device is a mechanism with three degrees of freedom, whose components rotate about their axes as it's turned itself. These rotations are measured as the angular velocities about those three principal axes. See Figure~\ref{traction_control:algorithms:gyro} for a 3D rendering of a gyroscope.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.35\textwidth]{sections/algorithms/images/gyroscope.png}
+	\caption{A 3D Rendering of a Gyroscope}
+	\label{traction_control:algorithms:gyro}
+\end{figure}
