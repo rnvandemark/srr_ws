@@ -36,9 +36,6 @@ The rigid-body model assumption says that a body of some sturdy material can be 
 
 Making this assumption can be extremely beneficial when implementing an algorithm like \ac{TCA} because it heavily simplifies the math needed to represent vectors in different coordinate frames.
 
-
-
-
 \section{Coordinate Frame Notation}
 
 TO-DO, add: \\
@@ -56,36 +53,36 @@ Example rotation matrix between some generic frames A and B equation:
 	\end{array}\right]
 \end{equation}
 
-The rover, like any robot, has coordinate frames to define its Denavit-Hartenburg parameters (DH) and rotation matrices.Figure~\ref{traction_control:algorithms:coordinates-side} shows these frames from the left side of the robot. A top view is also provided as Figure~\ref{traction_control:algorithms:coordinates-top}.
- \begin{figure}[H]
- 	\centering
- 	\includegraphics[width=.9\textwidth]{sections/algorithms/images/srr_side.png}
- 	\caption{Side View of the Robot Model and its Coordinate Frames
- 		\label{traction_control:algorithms:coordinates-side}
- 	\end{figure} 
+The rover, like any robot, has coordinate frames to define its Denavit-Hartenburg parameters (DH) and rotation matrices. Figure~\ref{traction_control:algorithms:coordinates-side} shows these frames from the left side of the robot. A top view is also provided as Figure~\ref{traction_control:algorithms:coordinates-top}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{sections/algorithms/images/srr_side.png}
+	\caption{Side View of the Robot Model and its Coordinate Frames}
+	\label{traction_control:algorithms:coordinates-side}
+\end{figure}
  
- \begin{figure}[H]
- 	\centering
- 	\includegraphics[width=.9\textwidth]{sections/algorithms/images/srr_top.png}
- 	\caption{Side View of the Robot Model and its Coordinate Frames
- 		\label{traction_control:algorithms:coordinates-top}
- 	\end{figure} 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\textwidth]{sections/algorithms/images/srr_top.png}
+	\caption{Side View of the Robot Model and its Coordinate Frames}
+	\label{traction_control:algorithms:coordinates-top}
+\end{figure}
  
- A table for the names of the acronyms for the coordinate frames are below.
- \begin{center}
- 	\begin{tabular}{ c c }
- 		FLL & Front Left Leg \\ 
- 		FRL & Front Right Leg \\  
- 		RLL & Rear Left Leg \\
- 		RRL & Rear Right Leg \\
- 		FLW & Front Left Wheel \\
- 		FRW & Front Right Wheel \\
- 		RLW & Rear Left Wheel \\
- 		RRW & Rear Right Wheel \\
- 		LS  & Left Steering \\
- 		RS  & Right Steering
- 		  
- 	\end{tabular}
- \end{center}
+A summary of the acronyms for the coordinate frames used in Figures~\ref{traction_control:algorithms:coordinates-side} and~\ref{traction_control:algorithms:coordinates-top} are seen below in Table~\ref{traction_control:algorithms:frame-acronyms}.
+\begin{center}\label{traction_control:algorithms:frame-acronyms}
+	\begin{tabular}{rl}
+		FLL & Front Left Leg \\
+		FRL & Front Right Leg \\
+		RLL & Rear Left Leg \\
+		RRL & Rear Right Leg \\
+		FLW & Front Left Wheel \\
+		FRW & Front Right Wheel \\
+		RLW & Rear Left Wheel \\
+		RRW & Rear Right Wheel \\
+		LS  & Left Steering \\
+		RS  & Right Steering
+	\end{tabular}
+\end{center}
 
 \section{Calculations}
