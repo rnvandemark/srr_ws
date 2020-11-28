@@ -10,3 +10,9 @@ src/srr_sim/urdf/combined_integrated.urdf
 src/srr/latex/**/*.aux
 src/srr/latex/**/*.log
 src/srr/latex/**/*.synctex.gz
+src/srr/latex/**/*-blx.bib
+src/srr/latex/**/*.bbl
+src/srr/latex/**/*.bcf
+src/srr/latex/**/*.blg
+src/srr/latex/**/*.run.xml
+src/srr/latex/**/*.toc
