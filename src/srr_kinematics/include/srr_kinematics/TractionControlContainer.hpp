@@ -10,6 +10,7 @@
 #include <string>
 #include <array>
 #include <unordered_map>
+#include <deque>
 
 namespace SRR {
 
@@ -54,6 +55,8 @@ protected:
     const AbstractLegMap<std::string> leg_pivot_joint_names;
     // Lateral dist between the vehicle origin and the center of the leg pivot for each wheel
     const LegAbstractMap<tf::Vector3> lateral_vector_origin_leg_pivot;
+    // The size of the window used to calculate the moving average
+    const std::size_t leg_pivot_positions_window_size;
 
     /*
      * Inputs that are updated on receiving messages.
@@ -73,10 +76,10 @@ protected:
     double curr_longitudinal_distance_origin_axle;
     // The angular velocity of the chassis about the origin
     tf::Vector3 curr_vehicle_angular_velocity;
-    // The current position of each leg off their pivots
-    LegAbstractMap<double> curr_leg_pivot_positions;
     // The instanenous angular velocity of the leg pivot for each wheel
     LegAbstractMap<double> curr_leg_pivot_angular_velocity;
+    // The positions for the leg pivots used to calculate the moving window average
+    LegAbstractMap<std::deque<double>> recent_leg_pivot_positions;
 
     /*
      * Methods used by publish_wheel_rates to break it up into digestible sections.
@@ -98,7 +101,8 @@ public:
         double _lateral_distance_origin_leg_pivot_left_near,
         double _lateral_distance_origin_leg_pivot_right_near,
         double _lateral_distance_origin_leg_pivot_left_far,
-        double _lateral_distance_origin_leg_pivot_right_far
+        double _lateral_distance_origin_leg_pivot_right_far,
+        int _leg_pivot_positions_window_size
     );
 
     void handle_joint_state_callback(const sensor_msgs::JointState& msg);

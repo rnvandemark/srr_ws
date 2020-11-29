@@ -69,12 +69,18 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
             curr_vehicle_angular_velocity.y() + curr_leg_pivot_angular_velocity.at(lpe),
             curr_vehicle_angular_velocity.y()
         );
-        double clp = curr_leg_pivot_positions[lpe];
-        std::cout << (lp - static_cast<int>(LegPivotEnum::LEFT_NEAR)) << ":" << clp << ", ";
+
+        double alp = 0.0;
+        for (double p : recent_leg_pivot_positions[lpe])
+        {
+            alp += p;
+        }
+        alp /= leg_pivot_positions_window_size;
+
         tf::Vector3 trans_leg_pivot_to_wheel_frame_wrt_body(
-            (leg_length * std::cos(clp)) - (wheel_connection_link_length * std::sin(clp)),
+            (leg_length * std::cos(alp)) - (wheel_connection_link_length * std::sin(alp)),
             0,
-            (leg_length * std::sin(clp)) + (wheel_connection_link_length * std::cos(clp))
+            (leg_length * std::sin(alp)) + (wheel_connection_link_length * std::cos(alp))
         );
         tf::Vector3 lin_vel_wheel_wrt_body = lin_vel + curr_vehicle_angular_velocity.cross(lateral_vector_origin_leg_pivot.at(lpe))
                                                      + ang_vel_leg_pivot_frame_wrt_body.cross(trans_leg_pivot_to_wheel_frame_wrt_body);
@@ -95,12 +101,14 @@ SRR::TractionControlContainer::TractionControlContainer(
     double _lateral_distance_origin_leg_pivot_left_near,
     double _lateral_distance_origin_leg_pivot_right_near,
     double _lateral_distance_origin_leg_pivot_left_far,
-    double _lateral_distance_origin_leg_pivot_right_far
+    double _lateral_distance_origin_leg_pivot_right_far,
+    int _leg_pivot_positions_window_size
 ) :
     wheel_radius(_wheel_radius),
     max_wheel_rate(_max_wheel_rate),
     leg_length(_leg_length),
     wheel_connection_link_length(_wheel_connection_link_length),
+    leg_pivot_positions_window_size(_leg_pivot_positions_window_size),
     leg_pivot_joint_names({
         {_leg_pivot_joint_name_left_near,  LEFT_NEAR},
         {_leg_pivot_joint_name_right_near, RIGHT_NEAR},
@@ -124,13 +132,17 @@ void SRR::TractionControlContainer::handle_joint_state_callback(const sensor_msg
         const std::string name = msg.name[i];
         if (leg_pivot_joint_names.find(name) != leg_pivot_joint_names.end())
         {
-            LegPivotEnum lp                     = leg_pivot_joint_names.at(name);
-            curr_leg_pivot_positions[lp]        = msg.position[i];
+            LegPivotEnum lp = leg_pivot_joint_names.at(name);
+            recent_leg_pivot_positions[lp].push_back(msg.position[i]);
+            while (recent_leg_pivot_positions[lp].size() > leg_pivot_positions_window_size)
+            {
+                recent_leg_pivot_positions[lp].pop_front();
+            }
             curr_leg_pivot_angular_velocity[lp] = msg.velocity[i];
         }
     }
 
-    double lpln = curr_leg_pivot_positions[LegPivotEnum::LEFT_NEAR];
+    double lpln = recent_leg_pivot_positions[LegPivotEnum::LEFT_NEAR].front();
     curr_longitudinal_distance_origin_axle = (leg_length * std::cos(lpln)) - (wheel_connection_link_length * std::sin(lpln));
 }
 
@@ -144,29 +156,30 @@ void SRR::TractionControlContainer::handle_imu_callback(const sensor_msgs::Imu& 
 
     if (std::abs(msg.angular_velocity.z) > ANG_VEL_EPS)
     {
-        std::cout << "Wz:" << msg.angular_velocity.z;
         curr_move_type = (msg.angular_velocity.z > 0) ? MoveTypeEnum::TURN_LEFT : MoveTypeEnum::TURN_RIGHT;
     }
     else
     {
-        std::cout << "Wz:0";
         curr_move_type = MoveTypeEnum::STRAIGHT;
     }
 
     if (std::abs(msg.linear_acceleration.x) > LIN_ACC_EPS)
     {
-        std::cout << ", Ax:" << msg.linear_acceleration.x;
         curr_move_direction = (msg.linear_acceleration.x > 0) ? MoveDirectionEnum::FORWARD : MoveDirectionEnum::BACKWARD;
     }
     else
     {
-        std::cout << ", Ax:0";
         curr_move_direction = MoveDirectionEnum::STATIONARY;
     }
 }
 
 bool SRR::TractionControlContainer::publish_wheel_rates(LegAbstractMap<double>& contact_angles)
 {
+    if (recent_leg_pivot_positions[LegPivotEnum::LEFT_NEAR].size() != leg_pivot_positions_window_size)
+    {
+        return false;
+    }
+
     tf::Vector3 vehicle_linear_velocity;
     if (!calculate_vehicle_linear_velocity(vehicle_linear_velocity))
     {
