@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp srr_msgs srr_utils)
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp srr_msgs srr_utils
+  CATKIN_DEPENDS roscpp srr_msgs sensor_msgs gazebo_msgs srr_utils
 )
 
 include_directories(
