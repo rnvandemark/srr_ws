@@ -3,12 +3,13 @@
 
 #include <tf/LinearMath/Vector3.h>
 
+#include <srr_msgs/TractionControlDebug.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
+#include <gazebo_msgs/ModelStates.h>
 
 #include <cstddef>
 #include <string>
-#include <array>
 #include <unordered_map>
 #include <deque>
 
@@ -43,6 +44,9 @@ protected:
     /*
      * Configuration parameters that are initialized on startup and then final.
      */
+
+    // The name of the model in Gazebo
+    const std::string model_name;
     // The radius of each wheel
     const double wheel_radius;
     // Each wheel's max angular velocity
@@ -82,14 +86,15 @@ protected:
     LegAbstractMap<std::deque<double>> recent_leg_pivot_positions;
 
     /*
-     * Methods used by publish_wheel_rates to break it up into digestible sections.
+     * Methods used by calculate_wheel_rates to break it up into digestible sections.
      */
 
-    bool calculate_vehicle_linear_velocity(tf::Vector3& lin_vel);
-    bool estimate_contact_angles(tf::Vector3 lin_vel, LegAbstractMap<double>& cont_ang);
+    bool calculate_vehicle_linear_velocity(tf::Vector3& lin_vel, srr_msgs::TractionControlDebug& msg);
+    bool estimate_contact_angles(tf::Vector3 lin_vel, LegAbstractMap<double>& cont_ang, srr_msgs::TractionControlDebug& msg);
 
 public:
     TractionControlContainer(
+        std::string _model_name,
         double _wheel_radius,
         double _max_wheel_rate,
         double _leg_length,
@@ -106,9 +111,10 @@ public:
     );
 
     void handle_joint_state_callback(const sensor_msgs::JointState& msg);
+    void handle_model_states_callback(const gazebo_msgs::ModelStates& msg);
     void handle_imu_callback(const sensor_msgs::Imu& msg);
 
-    bool publish_wheel_rates(LegAbstractMap<double>& contact_angles);
+    bool calculate_wheel_rates(LegAbstractMap<double>& contact_angles, srr_msgs::TractionControlDebug& msg);
 
 };	// class TractionControlContainer
 

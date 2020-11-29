@@ -12,6 +12,8 @@ include_directories(
 )
 
 add_message_files(DIRECTORY msg FILES
+  IndexedDoubleArr.msg
+  TractionControlDebug.msg
   VehicleWheelRates.msg
 )
 add_service_files(DIRECTORY srv FILES
