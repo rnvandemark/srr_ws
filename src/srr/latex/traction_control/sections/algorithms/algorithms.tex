@@ -172,3 +172,43 @@ The angular velocity vector $\dot{\omega}$ is measured with an \ac{IMU}, and mor
 	\caption{A 3D Rendering of a Gyroscope}
 	\label{traction_control:algorithms:gyro}
 \end{figure}
+
+\subsection{Transforming Velocities Between Coordinate Frames}
+To solve the problem at hand, the velocity of each wheel must be calculated in their own respective coordinate frames, which would be due to the linear and angular velocities of the vehicle, as well as then angular velocities of each of the joints of the links that connect the wheel to the chassis of the vehicle. An estimate for this velocity can be calculated once the angle between the wheel and the surface it is on is found, called the contact angle. Figure~\ref{traction_control:algorithms:wheel-frame} illustrates the velocity $\vec{v}$ and contact angle $\eta$ of a generic wheel A. \\
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.6\textwidth]{sections/algorithms/images/wheel_frame.png}
+	\caption{The Coordinate Frame Attached to the Wheel, Illustrating the Wheel's Velocity and Contact Angle to the Surface \cite{tractl}}
+	\label{traction_control:algorithms:wheel-frame}
+\end{figure}
+
+In general, the linear velocity of some point Q resolved in some coordinate frame H (which is attached to some rigid body) can be expressed as a function of some other frame G (which is attached to some other rigid body), as follows \cite{craig}:
+
+\begin{equation}\label{traction_control:algorithms:VQG1}
+	{}^{G}\vec{V}_{Q} = {}^{G}\vec{V}_{H_{0}} + ({}^{G}_{H}R \cdot {}^{H}\vec{V}_{Q}), \text{when } {}^{G}_{H}\dot{R} = I_{3}
+\end{equation}
+
+In other words, Equation~\ref{traction_control:algorithms:VQG1} states that when the rotational offset between frames G and H is constant, the linear velocity of point Q resolved in G is the sum of the linear velocity of the origin of H with respect to G and the linear velocity of Q with respect to H rotated to be resolved in G. However, it is not accurate to assume the orientation between two bodies will be static as time passes. The linear velocity of a point induced by a rotational offset that changes with time can be calculated as follows \cite{craig}:
+
+\begin{equation}\label{traction_control:algorithms:VQG2}
+	{}^{G}\vec{V}_{Q} = {}^{G}\vec{\omega}_{H} \times ({}^{G}_{H}R \cdot {}^{B}{Q}), \text{when } {}^{G}\vec{V}_{H_{0}} = {}^{H}\vec{V}_{Q} = \vec{0}_{3x1}
+\end{equation}
+
+Equation~\ref{traction_control:algorithms:VQG2} states that when the origins of frames G and H are coincident but the orientation between them changes as time passes, the linear velocity of Q resolved in frame H equals the cross product of the angular velocity between frames G and H with point Q resolved in frame G. \\
+
+Equations~\ref{traction_control:algorithms:VQG1} and~\ref{traction_control:algorithms:VQG2} can be combined to eliminate their prior assumptions, such that:
+
+\begin{equation}\label{traction_control:algorithms:VQG3}
+	{}^{G}\vec{V}_{Q} = {}^{G}\vec{V}_{H_{0}} + ({}^{G}_{H}R \cdot {}^{H}\vec{V}_{Q}) + ({}^{G}\vec{\omega}_{H} \times ({}^{G}_{H}R \cdot {}^{B}{Q}))
+\end{equation}
+
+Equation~\ref{traction_control:algorithms:VQG3} describes how to calculate the linear velocity of a point resolved to one frame attached to a rigid body that was originally resolved to a frame attached to another rigid body. Now consider the implications of these frames being attached to a single rigid body instead. The orientation between frames G and H cannot change, because the frames rotate as the body does, implying that rotating one rotates the other in the same manner. \\
+
+\begin{equation}\label{traction_control:algorithms:VQG4}
+	{}^{G}\vec{V}_{Q} = DummyEqn.
+\end{equation}
+
+XXXXXXX \\
+FINISH ME LATER \\
+XXXXXXX
