@@ -32,7 +32,7 @@ The benefit to this is that, assuming all the wheels' velocities are coordinated
 
 The Ackermann steering model by itself does not account for this extra distance and this caused the wheel slippage, which damaged them at an alarming rate. This is how the \ac{TCA} can be used to improve the model, so that when rough terrain is being traversed, the wheel(s) doing so can be sped up accordingly.
 
-\section{Rigid-Body Model Assumption}
+\section{Rigid-Body Model Assumption}\label{traction_control:algorithms:rigid-body}
 The rigid-body model assumption says that a body of some sturdy material can be assumed to maintain it shape, and that a force/torque that it can expect to encounter will not deform it to a degree that needs to be accounted for. This is not true in reality, but in scenarios like these, the deformation can be negligible. \\
 
 Making this assumption can be extremely beneficial when implementing an algorithm like \ac{TCA} because it heavily simplifies the math needed to represent vectors in different coordinate frames.
@@ -286,3 +286,20 @@ The angular velocity vector $\vec{\omega}$ of the \ac{CMR} was calculated using 
 	\caption{A 3D Rendering of a Gyroscope}
 	\label{traction_control:algorithms:gyro}
 \end{figure}
+
+\subsection{Transferring Velocity Between Coordinate Frames}
+This implementation for \ac{TCA} is a largely geometric solution in the sense that a majority of the calculations it performs is estimating the linear velocity of each wheel given the knowledge of the vehicle's overall linear and angular velocity and the velocity of the joints intermediate to the vehicle's body and that wheel. Therefore, it is important to understand how these types of vectors interact with one another. \\
+
+Consider some coordinate frames G and H which are attached to separate rigid-bodies as described in Section~\ref{traction_control:algorithms:rigid-body}. Now consider some point Q that is resolved in frame H. The motion of Q is trivial to resolve in H, but what if the motion of Q needs to be resolved in G? First consider the case where the frames G and H are coincident and the position of their origins do not change with time, but there is a nonzero rotational velocity of H relative to G called ${}^{G}_{H}\Omega$. Assuming the point Q has no velocity relative to H, the linear velocity induced by this rotation resolved in G can be calculated as follows \cite{craig}:
+
+\begin{equation}
+	{}^{G}V_{Q} = {}^{G}_{H}\vec{\omega} \times \left({}^{G}_{H}R \cdot {}^{H}Q\right) \text{, when } {}^{H}V_{Q} = 0_{3x1}
+\end{equation}
+
+In other words, the linear velocity of Q resolved in G is equal to the cross product of the rotational velocity of H relative to G and the position of Q resolved in G. Now, consider that there is a nonzero linear velocity of Q relative to H. This is simply rotated into the frame G, so the expression expands to the following \cite{craig}:
+
+\begin{equation}\label{traction_control:algorithms:VQG}
+	{}^{G}V_{Q} = \left({}^{G}_{H}R \cdot {}^{H}V_{Q}\right) + \left({}^{G}_{H}\vec{\omega} \times \left({}^{G}_{H}R \cdot {}^{H}Q\right)\right)
+\end{equation}
+
+In the general case, there are more considerations to take to fully formulate how linear velocities are transferred across frames \cite{craig}. However, none of them need be considered for this scenario because they are unique to the fact that G and H are assumed to be attached to separate rigid bodies. In the context of this algorithm, all frames are known to be attached to the same rigid body (the rover). Therefore, when solving for the velocity of a frame relative to another, both attached to the rover, Equation~\ref{traction_control:algorithms:VQG} will fully define that solution.
