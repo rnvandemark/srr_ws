@@ -24,7 +24,8 @@ int main(int argc, char **argv)
         0.24511,
         0.24511,
         0.27,
-        0.27
+        0.27,
+        25
     );
 
     ros::Subscriber sub_vehicle_joint_states = n.subscribe(
@@ -47,16 +48,17 @@ int main(int argc, char **argv)
 
     while (ros::ok())
     {
-        bool passed = container.publish_wheel_rates(contact_angles);
-        std::cout
-            << ", Results: {"
-            << contact_angles[SRR::TractionControlContainer::LegPivotEnum::LEFT_NEAR] << ", "
-            << contact_angles[SRR::TractionControlContainer::LegPivotEnum::RIGHT_NEAR] << ", "
-            << contact_angles[SRR::TractionControlContainer::LegPivotEnum::LEFT_FAR] << ", "
-            << contact_angles[SRR::TractionControlContainer::LegPivotEnum::RIGHT_FAR]
-            << "}"
-            << (const char*)(passed ? ", PASSED!!!" : "")
-            << std::endl;
+        if (container.publish_wheel_rates(contact_angles))
+        {
+            std::cout
+                << "Results: {"
+                << contact_angles[SRR::TractionControlContainer::LegPivotEnum::LEFT_NEAR] << ", "
+                << contact_angles[SRR::TractionControlContainer::LegPivotEnum::RIGHT_NEAR] << ", "
+                << contact_angles[SRR::TractionControlContainer::LegPivotEnum::LEFT_FAR] << ", "
+                << contact_angles[SRR::TractionControlContainer::LegPivotEnum::RIGHT_FAR]
+                << "}"
+                << std::endl;
+        }
         spin_rate.sleep();
         ros::spinOnce();
     }
