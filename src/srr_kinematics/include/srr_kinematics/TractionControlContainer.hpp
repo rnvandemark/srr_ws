@@ -84,6 +84,8 @@ protected:
     LegAbstractMap<double> curr_leg_pivot_angular_velocity;
     // The positions for the leg pivots used to calculate the moving window average
     LegAbstractMap<std::deque<double>> recent_leg_pivot_positions;
+    // The moving window average of each leg pivots' position
+    LegAbstractMap<double> leg_pivot_position_averages;
 
     /*
      * Methods used by calculate_wheel_rates to break it up into digestible sections.
