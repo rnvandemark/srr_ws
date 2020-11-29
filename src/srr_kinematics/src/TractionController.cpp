@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     );
 
     ros::Rate spin_rate(5);
-    SRR::TractionControlContainer::BogieAbstractMap<double> contact_angles;
+    SRR::TractionControlContainer::LegAbstractMap<double> contact_angles;
     ROS_INFO("Traction Controller is ready.");
 
     while (ros::ok())
@@ -50,10 +50,10 @@ int main(int argc, char **argv)
         bool passed = container.publish_wheel_rates(contact_angles);
         std::cout
             << ", Results: {"
-            << contact_angles[SRR::TractionControlContainer::BogiePivotEnum::LEFT_NEAR] << ", "
-            << contact_angles[SRR::TractionControlContainer::BogiePivotEnum::RIGHT_NEAR] << ", "
-            << contact_angles[SRR::TractionControlContainer::BogiePivotEnum::LEFT_FAR] << ", "
-            << contact_angles[SRR::TractionControlContainer::BogiePivotEnum::RIGHT_FAR]
+            << contact_angles[SRR::TractionControlContainer::LegPivotEnum::LEFT_NEAR] << ", "
+            << contact_angles[SRR::TractionControlContainer::LegPivotEnum::RIGHT_NEAR] << ", "
+            << contact_angles[SRR::TractionControlContainer::LegPivotEnum::LEFT_FAR] << ", "
+            << contact_angles[SRR::TractionControlContainer::LegPivotEnum::RIGHT_FAR]
             << "}"
             << (const char*)(passed ? ", PASSED!!!" : "")
             << std::endl;
