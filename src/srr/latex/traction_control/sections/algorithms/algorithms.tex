@@ -195,4 +195,94 @@ As seen in Figure~\ref{traction_control:algorithms:side-diagram},the diagram is 
 \end{table}
 
 
-\section{Calculations}
+\section{Algorithms}
+\subsection{Overview}
+The following subsections explains the \ac{TCA} in more detail, including its data flow, how this data is acquired, and the derivations for concepts integral to its implementation.
+
+\subsection{Inputs and Outputs}
+The \ac{TCA} operates on a number of configuration parameters, values which do not change over time. Most of these have to do with the size and shape of the vehicle (i.e., the lengths of links between joints), which obviously is staticas time passes. The algorithm also relies on inputs that are to be updated every time step (each time the algorithm calculates its outputs), which are summarized in Tables~\ref{traction_control:algorithms:inputs-cmr} and~\ref{traction_control:algorithms:inputs-srr} for an implementation onboard the \ac{CMR} and \ac{SRR}, respectively.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| >{\centering\arraybackslash} m{1.2in} | >{\centering\arraybackslash} m{4.5in} |}
+		\hline
+		\textbf{Input Value} & \textbf{Description} \\
+		\hline
+		$\vec{\omega}$ & The 3x1 angular velocity vector around the base coordinate frame of the vehicle \\
+		\hline
+		$\vec{\delta}=\left[\beta, \rho_{1}, \rho_{2}\right]^{T}$ & The 3x1 vector of joint positions describing the rotation of the bogie joint and each rocker joint \\
+		\hline
+		$\vec{\dot{\delta}}=\left[\dot{\beta}, \dot{\rho_{1}}, \dot{\rho_{2}}\right]^{T}$ & The 3x1 vector of joint velocities describing the rotational speed of the bogie joint and each rocker joint \\
+		\hline
+		$\vec{\Psi}$ & The 6x1 vector of joint positions describing the steering angle of each wheel \\
+		\hline
+	\end{tabular}
+	\caption{Summary of the Inputs for the Algorithm Onboard the Curiosity Mars Rover}
+	\label{traction_control:algorithms:inputs-cmr}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| >{\centering\arraybackslash} m{1.2in} | >{\centering\arraybackslash} m{4.5in} |}
+		\hline
+		\textbf{Input Value} & \textbf{Description} \\
+		\hline
+		$\vec{\dot{\theta}}$ & The 6x1 vector of joint speeds to be commanded to each of the vehicle's wheels \\
+		\hline
+	\end{tabular}
+	\caption{Summary of the Inputs for the Algorithm Onboard the Curiosity Mars Rover}
+	\label{traction_control:algorithms:outputs-cmr}
+\end{table}
+
+When considering the algorithm for the \ac{SRR}, the inputs and outputs will only change because the number of suspension joints and wheels differs from the \ac{CMR}. Otherwise, the idea is the same. The inputs and outputs for an \ac{SRR} implementation are summarized in Tables~\ref{traction_control:algorithms:inputs-srr} and~\ref{traction_control:algorithms:outputs-srr}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| >{\centering\arraybackslash} m{1.2in} | >{\centering\arraybackslash} m{4.5in} |}
+		\hline
+		\textbf{Input Value} & \textbf{Description} \\
+		\hline
+		$\vec{\omega}$ & The 3x1 angular velocity vector around the base coordinate frame of the vehicle \\
+		\hline
+		$\vec{\delta}$ & The 4x1 vector of joint positions describing the rotation of the joints corresponding to each of the four legs' pivot points \\
+		\hline
+		$\vec{\dot{\delta}}$ & The 4x1 vector of joint velocities describing the rotational speed of the joints corresponding to each of the four legs' pivot points \\
+		\hline
+		$\vec{\Psi}$ & The 4x1 vector of joint positions describing the steering angle of each wheel \\
+		\hline
+	\end{tabular}
+	\caption{Summary of the Inputs for the Algorithm Onboard the Curiosity Mars Rover}
+	\label{traction_control:algorithms:inputs-srr}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{| >{\centering\arraybackslash} m{1.2in} | >{\centering\arraybackslash} m{4.5in} |}
+		\hline
+		\textbf{Input Value} & \textbf{Description} \\
+		\hline
+		$\vec{\dot{\theta}}$ & The 6x1 vector of joint speeds to be commanded to each of the vehicle's wheels \\
+		\hline
+	\end{tabular}
+	\caption{Summary of the Inputs for the Algorithm Onboard the Curiosity Mars Rover}
+	\label{traction_control:algorithms:outputs-srr}
+\end{table}
+
+\subsection{Measuring the Inputs}
+
+As seen in Tables~\ref{traction_control:algorithms:inputs-cmr} and~\ref{traction_control:algorithms:inputs-srr}, the \ac{TCA} has four inputs, each of which are measured/calculated each time step. The \ac{CMR} was equipped with encoders on each joint, so because the inputs $\vec{\delta}$ and $\vec{\Psi}$ are joint position measurements, their values are gathered directly from each of the respective encoders. Absolute encoders are able to output a position relative to some coordinated "home/zero" position, which is what are utilized here. \\
+
+Some encoders are also capable of measuring the instantaneous velocity of their respective joint, but the team behind this solution for the \ac{TCA} did not have these available on the \ac{CMR} to collect the values of $\vec{\dot{\delta}}$. It was clarified that the velocities of these joints were calculated as a time derivative \cite{tractl}. This means that given the initial and final position $\alpha$ of a joint which rotated over a small length of time $\Delta t$, the velocity of the joint at its final position can be estimated as follows:
+
+\begin{equation}
+	\dot{\alpha} \approx \dot{\alpha}_{avg} = \frac{\alpha_{f} - \alpha_{i}}{\Delta t}
+\end{equation}
+
+The angular velocity vector $\vec{\omega}$ of the \ac{CMR} was calculated using an \ac{IMU}, and more specifically the digital readings off the gyroscope(s) inside of it. A gyroscope, a 3D rendering of which can be seen in Figure~\ref{traction_control:algorithms:gyro}, is a three degree of freedom mechanism which allows for the measurement of independent rotation about the three principal axes. With an \ac{IMU} mounted to the body of the vehicle, $\vec{\omega}$ is easily measured.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.5\textwidth]{sections/algorithms/images/gyroscope.png}
+	\caption{A 3D Rendering of a Gyroscope}
+	\label{traction_control:algorithms:gyro}
+\end{figure}
