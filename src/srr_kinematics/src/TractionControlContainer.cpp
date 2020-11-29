@@ -1,5 +1,7 @@
 #include "srr_kinematics/TractionControlContainer.hpp"
 
+#include <tf/LinearMath/Matrix3x3.h>
+
 #include "srr_utils/math_utils.hpp"
 
 #include <cmath>
@@ -80,20 +82,18 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
             curr_vehicle_angular_velocity.y()
         );
 
-        double alp = 0.0;
-        for (double p : recent_leg_pivot_positions[lpe])
-        {
-            alp += p;
-        }
-        alp /= leg_pivot_positions_window_size;
-
+        double alp = leg_pivot_position_averages[lpe];
         tf::Vector3 trans_leg_pivot_to_wheel_frame_wrt_body(
-            (leg_length * std::cos(alp)) - (wheel_connection_link_length * std::sin(alp)),
+            (leg_length * std::cos(alp)) - ((wheel_connection_link_length + wheel_radius) * std::sin(alp)),
             0,
-            (leg_length * std::sin(alp)) + (wheel_connection_link_length * std::cos(alp))
+            (leg_length * std::sin(alp)) + ((wheel_connection_link_length + wheel_radius) * std::cos(alp))
+        );
+        tf::Matrix3x3 rotation_origin_leg_pivot(std::cos(alp),  0, std::sin(alp),
+                                                0,              1, 0,
+                                                -std::sin(alp), 0, std::cos(alp)
         );
         tf::Vector3 lin_vel_wheel_wrt_body = lin_vel + curr_vehicle_angular_velocity.cross(lateral_vector_origin_leg_pivot.at(lpe))
-                                                     + ang_vel_leg_pivot_frame_wrt_body.cross(trans_leg_pivot_to_wheel_frame_wrt_body);
+                                                     - ang_vel_leg_pivot_frame_wrt_body.cross(rotation_origin_leg_pivot * trans_leg_pivot_to_wheel_frame_wrt_body);
         cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_body.z() / lin_vel_wheel_wrt_body.x());
 
         msg.leg_pivot_position_windows[i].index = lp;
@@ -105,9 +105,9 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
         msg.trans_leg_pivot_to_wheel[i].x = trans_leg_pivot_to_wheel_frame_wrt_body.x();
         msg.trans_leg_pivot_to_wheel[i].y = trans_leg_pivot_to_wheel_frame_wrt_body.y();
         msg.trans_leg_pivot_to_wheel[i].z = trans_leg_pivot_to_wheel_frame_wrt_body.z();
-        msg.wheel_linear_velocities[i] = lin_vel_wheel_wrt_body.x();
-        msg.wheel_linear_velocities[i] = lin_vel_wheel_wrt_body.y();
-        msg.wheel_linear_velocities[i] = lin_vel_wheel_wrt_body.z();
+        msg.wheel_linear_velocities[i].x = lin_vel_wheel_wrt_body.x();
+        msg.wheel_linear_velocities[i].y = lin_vel_wheel_wrt_body.y();
+        msg.wheel_linear_velocities[i].z = lin_vel_wheel_wrt_body.z();
         msg.wheel_contact_angles[i] = cont_ang[lpe];
     }
     return true;
@@ -164,6 +164,14 @@ void SRR::TractionControlContainer::handle_joint_state_callback(const sensor_msg
             {
                 recent_leg_pivot_positions[lp].pop_front();
             }
+
+            double avg_position = 0.0;
+            for (double pos : recent_leg_pivot_positions[lp])
+            {
+                avg_position += pos;
+            }
+            leg_pivot_position_averages[lp] = avg_position / recent_leg_pivot_positions[lp].size();
+
             curr_leg_pivot_angular_velocity[lp] = msg.velocity[i];
         }
     }

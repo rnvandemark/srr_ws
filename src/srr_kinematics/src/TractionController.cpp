@@ -4,8 +4,8 @@
 
 static const std::string NODE_NAME = "srr_kinematics_traction_control";
 
-static const int SPIN_RATE_HZ = 25;
-static const double NUM_SECONDS_IN_WINDOW = 2.0;
+static const int SPIN_RATE_HZ = 40;
+static const double NUM_SECONDS_IN_WINDOW = 1.0;
 
 int main(int argc, char **argv)
 {
@@ -23,10 +23,10 @@ int main(int argc, char **argv)
         "FR_Joint",
         "RL_Joint",
         "RR_Joint",
-        0.24511,
-        0.24511,
-        0.27,
-        0.27,
+        +0.24511,
+        -0.24511,
+        +0.27,
+        -0.27,
         static_cast<int>(SPIN_RATE_HZ * NUM_SECONDS_IN_WINDOW)
     );
 

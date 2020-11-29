@@ -10,5 +10,5 @@ srr_msgs/IndexedDoubleArr[4] leg_pivot_position_windows
 float64[4] leg_pivot_position_averages
 
 geometry_msgs/Vector3[4] trans_leg_pivot_to_wheel
-float64[4] wheel_linear_velocities
+geometry_msgs/Vector3[4] wheel_linear_velocities
 float64[4] wheel_contact_angles
