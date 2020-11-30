@@ -13,6 +13,7 @@ include_directories(
 
 add_message_files(DIRECTORY msg FILES
   IndexedDoubleArr.msg
+  RotationMatrix.msg
   TractionControlDebug.msg
   VehicleWheelRates.msg
 )

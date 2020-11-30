@@ -483,15 +483,15 @@
     <child link="Front_Left_Rev_Link" />
     <axis xyz="0 1 0" />
     <limit
-      lower="-0.218166"
-      upper="0.218166"
+      lower="-0.02"
+      upper="0.02"
       effort="125"
       velocity="0" />
   </joint>
   <joint name="FL_Wheel_Joint" type="continuous">
     <origin
       xyz="0 -0.06096 0"
-      rpy="0 0 -1.2844" />
+      rpy="0 0 0" />
     <parent link="Front_Left_Rev_Link" />
     <child link="Front_Left_Wheel" />
     <axis xyz="0 0 1" />
@@ -520,15 +520,15 @@
     <child link="Front_Right_Rev_Link" />
     <axis xyz="0 1 0" />
     <limit
-      lower="-0.218166"
-      upper="0.218166"
+      lower="-0.02"
+      upper="0.02"
       effort="125"
       velocity="0" />
   </joint>
   <joint name="FR_Wheel_Joint" type="continuous">
     <origin
       xyz="0 -0.06096 0"
-      rpy="0 0 -1.2319" />
+      rpy="0 0 0" />
     <parent link="Front_Right_Rev_Link" />
     <child link="Front_Right_Wheel" />
     <axis xyz="0 0 1" />
@@ -560,7 +560,7 @@
   <joint name="RL_Wheel_Joint" type="continuous">
     <origin
       xyz="0 -0.04445 0"
-      rpy="0 0 0.62124" />
+      rpy="0 0 0" />
     <parent link="Rear_Left_Fixed_Link" />
     <child link="Rear_Left_Wheel" />
     <axis xyz="0 0 1" />
@@ -592,7 +592,7 @@
   <joint name="RR_Wheel_Joint" type="continuous">
     <origin
       xyz="0 -0.04445 0"
-      rpy="0 0 3.0007" />
+      rpy="0 0 0" />
     <parent link="Rear_Right_Fixed_Link" />
     <child link="Rear_Right_Wheel" />
     <axis xyz="0 0 1" />

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(srr_kinematics)
 
 add_compile_options(-std=c++14)
-find_package(catkin REQUIRED COMPONENTS roscpp srr_msgs srr_utils)
+find_package(catkin REQUIRED COMPONENTS roscpp srr_msgs sensor_msgs gazebo_msgs srr_utils)
 
 catkin_package(
   INCLUDE_DIRS include
