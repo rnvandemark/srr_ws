@@ -3,6 +3,7 @@
   <arg name="init_vehicle_pose" default="-x 0 -y 0 -z 0.5 -R 0 -P 0 -Y 0" />
   <arg name="init_arm_pose" default="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0" />
   <arg name="init_pose" value="$(eval init_vehicle_pose if model != 'sra' else init_arm_pose)" />
+  <arg name="model_spawn_delay" value="0.5" />
   <include file="$(find srr_sim)/launch/$(arg model).launch" >
     <arg name="init_vehicle_pose" value="$(arg init_vehicle_pose)" if="$(eval model != 'sra')" />
     <arg name="init_arm_pose" value="$(arg init_arm_pose)" if="$(eval model != 'srr')" />
@@ -39,5 +40,6 @@
     pkg="gazebo_ros"
     type="spawn_model"
     args="$(arg init_pose) -param robot_description -urdf -model $(arg model)_integrated"
-    output="screen" />
+    output="screen"
+    launch-prefix="bash -c 'sleep $(arg model_spawn_delay); $0 $@'" />
 </launch>
