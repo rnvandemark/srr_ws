@@ -111,7 +111,7 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     // Calculate the angular velocity vector of the pivot joint wrt the body of the vehicle
     tf::Vector3 ang_vel_leg_pivot_frame_wrt_body(
         curr_vehicle_angular_velocity.x(),
-        curr_vehicle_angular_velocity.y() + curr_leg_pivot_angular_velocity.at(lpe),
+        curr_vehicle_angular_velocity.y() - curr_leg_pivot_angular_velocity.at(lpe),
         curr_vehicle_angular_velocity.z()
     );
 
@@ -143,51 +143,205 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     SRR::popROSMsg(lin_vel_wheel_wrt_wheel, msg.wheel_linear_velocities_wrt_wheel[0]);
     msg.wheel_contact_angles[0] = cont_ang[lpe];
 
-//    // WARNING: Assumes no rotation from vehicle origin to home position leg pivot joint, ensure that's correct
-//    int lp_max = static_cast<int>(LegPivotEnum::RIGHT_FAR);
-//    for (int lp = static_cast<int>(LegPivotEnum::LEFT_NEAR), i = 0; lp <= lp_max; lp++, i++)
-//    {
-//        // Get the enum for this pivot
-//        LegPivotEnum lpe = static_cast<LegPivotEnum>(lp);
-//
-//        // Calculate the angular velocity vector of the pivot joint wrt the body of the vehicle
-//        tf::Vector3 ang_vel_leg_pivot_frame_wrt_body(
-//            curr_vehicle_angular_velocity.x(),
-//            curr_vehicle_angular_velocity.y() + curr_leg_pivot_angular_velocity.at(lpe),
-//            curr_vehicle_angular_velocity.y()
-//        );
-//
-//        // Calculate the diplacement vector between the leg pivot frame and the wheel frame
-//        double alp = leg_pivot_position_averages[lpe];
-//        tf::Vector3 trans_leg_pivot_to_wheel_frame_wrt_body(
-//            (leg_length * std::cos(alp)) - ((wheel_connection_vertical_link_length + wheel_radius) * std::sin(alp)),
-//            0,
-//            -(leg_length * std::sin(alp)) - ((wheel_connection_vertical_link_length + wheel_radius) * std::cos(alp))
-//        );
-//
-//        // Calculate the rotation between the leg pivot frame and the wheel frame
-//        tf::Matrix3x3 rotationY_origin_leg_pivot(std::cos(alp),  0, std::sin(alp),
-//                                                0,              1, 0,
-//                                                -std::sin(alp), 0, std::cos(alp)
-//        );
-//        tf::Vector3 lin_vel_wheel_wrt_body = lin_vel + curr_vehicle_angular_velocity.cross(lateral_vector_origin_leg_pivot.at(lpe))
-//                                                     - ang_vel_leg_pivot_frame_wrt_body.cross(rotationY_origin_leg_pivot * trans_leg_pivot_to_wheel_frame_wrt_body);
-//        cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_body.z() / lin_vel_wheel_wrt_body.x());
-//
-//        msg.leg_pivot_position_windows[i].index = lp;
-//        msg.leg_pivot_position_windows[i].data = std::vector<double>(
-//            recent_leg_pivot_positions[lpe].begin(),
-//            recent_leg_pivot_positions[lpe].end()
-//        );
-//        msg.leg_pivot_position_averages[i] = alp;
-//        msg.trans_leg_pivot_to_wheel[i].x = trans_leg_pivot_to_wheel_frame_wrt_body.x();
-//        msg.trans_leg_pivot_to_wheel[i].y = trans_leg_pivot_to_wheel_frame_wrt_body.y();
-//        msg.trans_leg_pivot_to_wheel[i].z = trans_leg_pivot_to_wheel_frame_wrt_body.z();
-//        msg.wheel_linear_velocities[i].x = lin_vel_wheel_wrt_body.x();
-//        msg.wheel_linear_velocities[i].y = lin_vel_wheel_wrt_body.y();
-//        msg.wheel_linear_velocities[i].z = lin_vel_wheel_wrt_body.z();
-//        msg.wheel_contact_angles[i] = cont_ang[lpe];
-//    }
+    //
+    // FRONT RIGHT LEG
+    // Start reusing the variables declared above
+    //
+    lpe = LegPivotEnum::RIGHT_NEAR;
+
+    // Calculate the translation from the body to the leg pivot frame
+    trans_body_to_leg_pivot_frame = lateral_vector_origin_leg_pivot.at(lpe);
+
+    // Calculate the rotation between the body and leg pivot frame
+    alp = -leg_pivot_position_averages[lpe];
+    rotation_body_leg_pivot.setValue(std::cos(alp),  0, std::sin(alp),
+                                     0,              1, 0,
+                                     -std::sin(alp), 0, std::cos(alp)
+    );
+    // Calculate the rotation between the steering and wheel frame
+    wsp = curr_wheel_steer_direction_front_right;
+    rotation_leg_pivot_wheel.setValue(std::cos(wsp),  0, std::sin(wsp),
+                                      0,              1, 0,
+                                      -std::sin(wsp), 0, std::cos(wsp)
+    );
+    // Calculate the rotation between the body and wheel frame
+    rotation_body_wheel = rotation_body_leg_pivot * rotation_leg_pivot_wheel;
+
+    // Calculate the displacement vector between the leg pivot frame and the wheel frame resolved in the pivot and body frames
+    dist_leg_pivot_to_wheel_frame_wrt_pivot.setValue(
+        (leg_length * std::cos(alp)) - (wheel_connection_vertical_link_length * std::sin(alp)),
+        -wheel_connection_horizontal_link_length,
+        -(leg_length * std::sin(alp)) - (wheel_connection_vertical_link_length * std::cos(alp))
+    );
+    dist_leg_pivot_to_wheel_frame_wrt_body = rotation_body_leg_pivot.inverse() * dist_leg_pivot_to_wheel_frame_wrt_pivot;
+
+    // Calculate the angular velocity vector of the pivot joint wrt the body of the vehicle
+    ang_vel_leg_pivot_frame_wrt_body.setValue(
+        curr_vehicle_angular_velocity.x(),
+        curr_vehicle_angular_velocity.y() - curr_leg_pivot_angular_velocity.at(lpe),
+        curr_vehicle_angular_velocity.z()
+    );
+
+    // Calculate the linear velocity of the leg pivot frame with respect to the vehicle body
+    lin_vel_pivot_wrt_body = lin_vel + curr_vehicle_angular_velocity.cross(trans_body_to_leg_pivot_frame);
+    // Calculate the linear velocity of the wheel frame with respect to the vehicle body
+    lin_vel_wheel_wrt_body = lin_vel_pivot_wrt_body - ang_vel_leg_pivot_frame_wrt_body.cross(dist_leg_pivot_to_wheel_frame_wrt_body);
+    // Calculate the linear velocity of the wheel frame with respect to its own frame
+    lin_vel_wheel_wrt_wheel = rotation_body_wheel * lin_vel_wheel_wrt_body;
+
+    // Estimate the contact angle of the wheel given the velocity of the wheel in its own frame
+    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel.z() / lin_vel_wheel_wrt_wheel.x());
+
+    // Populate the debug/telemetry message
+    msg.leg_pivot_position_windows[1].index = 1;
+    msg.leg_pivot_position_windows[1].data = std::vector<double>(
+        recent_leg_pivot_positions[lpe].begin(),
+        recent_leg_pivot_positions[lpe].end()
+    );
+    msg.leg_pivot_position_averages[1] = alp;
+    msg.wheel_steer_positions[1] = wsp;
+    SRR::popROSMsg(rotation_body_leg_pivot, msg.body_leg_pivot_rotation[1]);
+    SRR::popROSMsg(rotation_leg_pivot_wheel, msg.leg_pivot_wheel_steer_rotation[1]);
+    SRR::popROSMsg(rotation_body_wheel, msg.body_wheel_steer_rotation[1]);
+    SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_body, msg.trans_leg_pivot_to_wheel_wrt_body[1]);
+    SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_pivot, msg.trans_leg_pivot_to_wheel_wrt_pivot[1]);
+    SRR::popROSMsg(lin_vel_pivot_wrt_body, msg.pivot_linear_velocities_wrt_body[1]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_body, msg.wheel_linear_velocities_wrt_body[1]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_wheel, msg.wheel_linear_velocities_wrt_wheel[1]);
+    msg.wheel_contact_angles[1] = cont_ang[lpe];
+
+    //
+    // BACK LEFT LEG
+    //
+    lpe = LegPivotEnum::LEFT_FAR;
+
+    // Calculate the translation from the body to the leg pivot frame
+    trans_body_to_leg_pivot_frame = lateral_vector_origin_leg_pivot.at(lpe);
+
+    // Calculate the rotation between the body and leg pivot frame
+    alp = -leg_pivot_position_averages[lpe];
+    rotation_body_leg_pivot.setValue(std::cos(alp),  0, std::sin(alp),
+                                     0,              1, 0,
+                                     -std::sin(alp), 0, std::cos(alp)
+    );
+    // Set the static rotation between the steering and wheel frame (reset wsp for telemetry)
+    wsp = 0;
+    rotation_leg_pivot_wheel.setValue(1, 0, 0,
+                                      0, 1, 0,
+                                      0, 0, 1
+    );
+    // Calculate the rotation between the body and wheel frame
+    rotation_body_wheel = rotation_body_leg_pivot * rotation_leg_pivot_wheel;
+
+    // Calculate the displacement vector between the leg pivot frame and the wheel frame resolved in the pivot and body frames
+    dist_leg_pivot_to_wheel_frame_wrt_pivot.setValue(
+        -(leg_length * std::cos(alp)) + (wheel_connection_vertical_link_length * std::sin(alp)),
+        wheel_connection_horizontal_link_length,
+        -(leg_length * std::sin(alp)) - (wheel_connection_vertical_link_length * std::cos(alp))
+    );
+    dist_leg_pivot_to_wheel_frame_wrt_body = rotation_body_leg_pivot.inverse() * dist_leg_pivot_to_wheel_frame_wrt_pivot;
+
+    // Calculate the angular velocity vector of the pivot joint wrt the body of the vehicle
+    ang_vel_leg_pivot_frame_wrt_body.setValue(
+        curr_vehicle_angular_velocity.x(),
+        curr_vehicle_angular_velocity.y() + curr_leg_pivot_angular_velocity.at(lpe),
+        curr_vehicle_angular_velocity.z()
+    );
+
+    // Calculate the linear velocity of the leg pivot frame with respect to the vehicle body
+    lin_vel_pivot_wrt_body = lin_vel + curr_vehicle_angular_velocity.cross(trans_body_to_leg_pivot_frame);
+    // Calculate the linear velocity of the wheel frame with respect to the vehicle body
+    lin_vel_wheel_wrt_body = lin_vel_pivot_wrt_body - ang_vel_leg_pivot_frame_wrt_body.cross(dist_leg_pivot_to_wheel_frame_wrt_body);
+    // Calculate the linear velocity of the wheel frame with respect to its own frame
+    lin_vel_wheel_wrt_wheel = rotation_body_wheel * lin_vel_wheel_wrt_body;
+
+    // Estimate the contact angle of the wheel given the velocity of the wheel in its own frame
+    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel.z() / lin_vel_wheel_wrt_wheel.x());
+
+    // Populate the debug/telemetry message
+    msg.leg_pivot_position_windows[2].index = 2;
+    msg.leg_pivot_position_windows[2].data = std::vector<double>(
+        recent_leg_pivot_positions[lpe].begin(),
+        recent_leg_pivot_positions[lpe].end()
+    );
+    msg.leg_pivot_position_averages[2] = alp;
+    msg.wheel_steer_positions[2] = wsp;
+    SRR::popROSMsg(rotation_body_leg_pivot, msg.body_leg_pivot_rotation[2]);
+    SRR::popROSMsg(rotation_leg_pivot_wheel, msg.leg_pivot_wheel_steer_rotation[2]);
+    SRR::popROSMsg(rotation_body_wheel, msg.body_wheel_steer_rotation[2]);
+    SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_body, msg.trans_leg_pivot_to_wheel_wrt_body[2]);
+    SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_pivot, msg.trans_leg_pivot_to_wheel_wrt_pivot[2]);
+    SRR::popROSMsg(lin_vel_pivot_wrt_body, msg.pivot_linear_velocities_wrt_body[2]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_body, msg.wheel_linear_velocities_wrt_body[2]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_wheel, msg.wheel_linear_velocities_wrt_wheel[2]);
+    msg.wheel_contact_angles[2] = cont_ang[lpe];
+
+    //
+    // BACK RIGHT LEG
+    //
+    lpe = LegPivotEnum::RIGHT_FAR;
+
+    // Calculate the translation from the body to the leg pivot frame
+    trans_body_to_leg_pivot_frame = lateral_vector_origin_leg_pivot.at(lpe);
+
+    // Calculate the rotation between the body and leg pivot frame
+    alp = -leg_pivot_position_averages[lpe];
+    rotation_body_leg_pivot.setValue(std::cos(alp),  0, std::sin(alp),
+                                     0,              1, 0,
+                                     -std::sin(alp), 0, std::cos(alp)
+    );
+    // Set the static rotation between the steering and wheel frame (reset wsp for telemetry)
+    wsp = 0;
+    rotation_leg_pivot_wheel.setValue(1, 0, 0,
+                                      0, 1, 0,
+                                      0, 0, 1
+    );
+    // Calculate the rotation between the body and wheel frame
+    rotation_body_wheel = rotation_body_leg_pivot * rotation_leg_pivot_wheel;
+
+    // Calculate the displacement vector between the leg pivot frame and the wheel frame resolved in the pivot and body frames
+    dist_leg_pivot_to_wheel_frame_wrt_pivot.setValue(
+        -(leg_length * std::cos(alp)) + (wheel_connection_vertical_link_length * std::sin(alp)),
+        -wheel_connection_horizontal_link_length,
+        -(leg_length * std::sin(alp)) - (wheel_connection_vertical_link_length * std::cos(alp))
+    );
+    dist_leg_pivot_to_wheel_frame_wrt_body = rotation_body_leg_pivot.inverse() * dist_leg_pivot_to_wheel_frame_wrt_pivot;
+
+    // Calculate the angular velocity vector of the pivot joint wrt the body of the vehicle
+    ang_vel_leg_pivot_frame_wrt_body.setValue(
+        curr_vehicle_angular_velocity.x(),
+        curr_vehicle_angular_velocity.y() + curr_leg_pivot_angular_velocity.at(lpe),
+        curr_vehicle_angular_velocity.z()
+    );
+
+    // Calculate the linear velocity of the leg pivot frame with respect to the vehicle body
+    lin_vel_pivot_wrt_body = lin_vel + curr_vehicle_angular_velocity.cross(trans_body_to_leg_pivot_frame);
+    // Calculate the linear velocity of the wheel frame with respect to the vehicle body
+    lin_vel_wheel_wrt_body = lin_vel_pivot_wrt_body - ang_vel_leg_pivot_frame_wrt_body.cross(dist_leg_pivot_to_wheel_frame_wrt_body);
+    // Calculate the linear velocity of the wheel frame with respect to its own frame
+    lin_vel_wheel_wrt_wheel = rotation_body_wheel * lin_vel_wheel_wrt_body;
+
+    // Estimate the contact angle of the wheel given the velocity of the wheel in its own frame
+    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel.z() / lin_vel_wheel_wrt_wheel.x());
+
+    // Populate the debug/telemetry message
+    msg.leg_pivot_position_windows[3].index = 3;
+    msg.leg_pivot_position_windows[3].data = std::vector<double>(
+        recent_leg_pivot_positions[lpe].begin(),
+        recent_leg_pivot_positions[lpe].end()
+    );
+    msg.leg_pivot_position_averages[3] = alp;
+    msg.wheel_steer_positions[3] = wsp;
+    SRR::popROSMsg(rotation_body_leg_pivot, msg.body_leg_pivot_rotation[3]);
+    SRR::popROSMsg(rotation_leg_pivot_wheel, msg.leg_pivot_wheel_steer_rotation[3]);
+    SRR::popROSMsg(rotation_body_wheel, msg.body_wheel_steer_rotation[3]);
+    SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_body, msg.trans_leg_pivot_to_wheel_wrt_body[3]);
+    SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_pivot, msg.trans_leg_pivot_to_wheel_wrt_pivot[3]);
+    SRR::popROSMsg(lin_vel_pivot_wrt_body, msg.pivot_linear_velocities_wrt_body[3]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_body, msg.wheel_linear_velocities_wrt_body[3]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_wheel, msg.wheel_linear_velocities_wrt_wheel[3]);
+    msg.wheel_contact_angles[3] = cont_ang[lpe];
+
     return true;
 }
 
