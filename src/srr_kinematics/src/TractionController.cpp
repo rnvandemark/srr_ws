@@ -4,7 +4,7 @@
 
 static const std::string NODE_NAME = "srr_kinematics_traction_control";
 
-static const int SPIN_RATE_HZ = 40;
+static const int SPIN_RATE_HZ = 50;
 static const double NUM_SECONDS_IN_WINDOW = 1.0;
 
 int main(int argc, char **argv)
