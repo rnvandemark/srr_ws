@@ -60,12 +60,14 @@ int main(int argc, char **argv)
     );
 
     ros::Rate spin_rate(SPIN_RATE_HZ);
+    SRR::TractionControlContainer::LegAbstractMap<tf::Vector3> linear_velocity_wheel_wrt_wheel;
     SRR::TractionControlContainer::LegAbstractMap<double> contact_angles;
+    SRR::TractionControlContainer::LegAbstractMap<double> commanded_wheel_rates;
     ROS_INFO("Traction Controller is ready.");
 
     while (ros::ok())
     {
-        if (container.calculate_wheel_rates(contact_angles, msg_debug))
+        if (container.calculate_wheel_rates(linear_velocity_wheel_wrt_wheel, contact_angles, commanded_wheel_rates, msg_debug))
         {
             pub_tractl_debug.publish(msg_debug);
         }
