@@ -27,6 +27,8 @@ int main(int argc, char **argv)
         -0.24511,
         +0.27,
         -0.27,
+        "FL_Rev_Joint",
+        "FR_Rev_Joint",
         static_cast<int>(SPIN_RATE_HZ * NUM_SECONDS_IN_WINDOW)
     );
 

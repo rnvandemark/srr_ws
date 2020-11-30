@@ -53,8 +53,10 @@ protected:
     const double max_wheel_rate;
     // Each leg's length, from its pivot to the wheel connection link
     const double leg_length;
-    // The length of the link between each wheel and the end of the leg
-    const double wheel_connection_link_length;
+    // The length of the vertical link between each wheel and the end of the leg
+    const double wheel_connection_vertical_link_length;
+    // The length of the horizontal link between each wheel and the end of the leg
+    const double wheel_connection_horizontal_link_length = 0.04445;
     // Names of the joints that allow for rotation about the leg pivot
     const AbstractLegMap<std::string> leg_pivot_joint_names;
     // Lateral dist between the vehicle origin and the center of the leg pivot for each wheel
@@ -86,6 +88,14 @@ protected:
     LegAbstractMap<std::deque<double>> recent_leg_pivot_positions;
     // The moving window average of each leg pivots' position
     LegAbstractMap<double> leg_pivot_position_averages;
+    // The name of the front left wheel
+    std::string wheel_joint_name_front_left;
+    // The name of the front right wheel
+    std::string wheel_joint_name_front_right;
+    // The steer position of the front left wheel
+    double curr_wheel_steer_direction_front_left;
+    // The steer position of the front right wheel
+    double curr_wheel_steer_direction_front_right;
 
     /*
      * Methods used by calculate_wheel_rates to break it up into digestible sections.
@@ -109,6 +119,8 @@ public:
         double _lateral_distance_origin_leg_pivot_right_near,
         double _lateral_distance_origin_leg_pivot_left_far,
         double _lateral_distance_origin_leg_pivot_right_far,
+        std::string _wheel_joint_name_front_left,
+        std::string _wheel_joint_name_front_right,
         int _leg_pivot_positions_window_size
     );
 
