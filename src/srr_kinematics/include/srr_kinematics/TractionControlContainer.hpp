@@ -96,13 +96,29 @@ protected:
     double curr_wheel_steer_direction_front_left;
     // The steer position of the front right wheel
     double curr_wheel_steer_direction_front_right;
+    // The objective value used to calculate the wheel speeds, such that at least one is at max speed
+    // This can be either the objective linear velocity of the vehicle in the +x direction (for straight
+    // driving), or the objective angular velocity about z which can be used to calculate the objective
+    // linear velocity of the vehicle in the +x direction (for turns)
+    double curr_objective_speed;
 
     /*
      * Methods used by calculate_wheel_rates to break it up into digestible sections.
      */
 
     bool calculate_vehicle_linear_velocity(tf::Vector3& lin_vel, srr_msgs::TractionControlDebug& msg);
-    bool estimate_contact_angles(tf::Vector3 lin_vel, LegAbstractMap<double>& cont_ang, srr_msgs::TractionControlDebug& msg);
+    bool estimate_contact_angles(
+        tf::Vector3 lin_vel,
+        LegAbstractMap<tf::Vector3>& lin_vel_wheel_wrt_wheel,
+        LegAbstractMap<double>& cont_ang,
+        srr_msgs::TractionControlDebug& msg
+    );
+    bool calculate_commanded_wheel_rates(
+        LegAbstractMap<tf::Vector3> lin_vel_wheel_wrt_wheel,
+        LegAbstractMap<double> cont_ang,
+        LegAbstractMap<double>& cmd_wheel_rates,
+        srr_msgs::TractionControlDebug& msg
+    );
 
 public:
     TractionControlContainer(
@@ -128,7 +144,12 @@ public:
     void handle_model_states_callback(const gazebo_msgs::ModelStates& msg);
     void handle_imu_callback(const sensor_msgs::Imu& msg);
 
-    bool calculate_wheel_rates(LegAbstractMap<double>& contact_angles, srr_msgs::TractionControlDebug& msg);
+    bool calculate_wheel_rates(
+        LegAbstractMap<tf::Vector3>& linear_velocity_wheel_wrt_wheel,
+        LegAbstractMap<double>& contact_angles,
+        LegAbstractMap<double>& commanded_wheel_rates,
+        srr_msgs::TractionControlDebug& msg
+    );
 
 };	// class TractionControlContainer
 

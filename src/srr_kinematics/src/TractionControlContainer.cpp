@@ -69,7 +69,12 @@ bool SRR::TractionControlContainer::calculate_vehicle_linear_velocity(tf::Vector
     return rv;
 }
 
-bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel, LegAbstractMap<double>& cont_ang, srr_msgs::TractionControlDebug& msg)
+bool SRR::TractionControlContainer::estimate_contact_angles(
+    tf::Vector3 lin_vel,
+    LegAbstractMap<tf::Vector3>& lin_vel_wheel_wrt_wheel,
+    LegAbstractMap<double>& cont_ang,
+    srr_msgs::TractionControlDebug& msg
+)
 {
     //
     // This routine was too messy to try and make into a loop, so each leg is broken out and calculated separately
@@ -120,10 +125,10 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     // Calculate the linear velocity of the wheel frame with respect to the vehicle body
     tf::Vector3 lin_vel_wheel_wrt_body = lin_vel_pivot_wrt_body - ang_vel_leg_pivot_frame_wrt_body.cross(dist_leg_pivot_to_wheel_frame_wrt_body);
     // Calculate the linear velocity of the wheel frame with respect to its own frame
-    tf::Vector3 lin_vel_wheel_wrt_wheel = rotation_body_wheel * lin_vel_wheel_wrt_body;
+    lin_vel_wheel_wrt_wheel[lpe] = rotation_body_wheel * lin_vel_wheel_wrt_body;
 
     // Estimate the contact angle of the wheel given the velocity of the wheel in its own frame
-    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel.z() / lin_vel_wheel_wrt_wheel.x());
+    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel[lpe].z() / lin_vel_wheel_wrt_wheel[lpe].x());
 
     // Populate the debug/telemetry message
     msg.leg_pivot_position_windows[0].index = 0;
@@ -140,7 +145,7 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_pivot, msg.trans_leg_pivot_to_wheel_wrt_pivot[0]);
     SRR::popROSMsg(lin_vel_pivot_wrt_body, msg.pivot_linear_velocities_wrt_body[0]);
     SRR::popROSMsg(lin_vel_wheel_wrt_body, msg.wheel_linear_velocities_wrt_body[0]);
-    SRR::popROSMsg(lin_vel_wheel_wrt_wheel, msg.wheel_linear_velocities_wrt_wheel[0]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_wheel[lpe], msg.wheel_linear_velocities_wrt_wheel[0]);
     msg.wheel_contact_angles[0] = cont_ang[lpe];
 
     //
@@ -187,10 +192,10 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     // Calculate the linear velocity of the wheel frame with respect to the vehicle body
     lin_vel_wheel_wrt_body = lin_vel_pivot_wrt_body - ang_vel_leg_pivot_frame_wrt_body.cross(dist_leg_pivot_to_wheel_frame_wrt_body);
     // Calculate the linear velocity of the wheel frame with respect to its own frame
-    lin_vel_wheel_wrt_wheel = rotation_body_wheel * lin_vel_wheel_wrt_body;
+    lin_vel_wheel_wrt_wheel[lpe] = rotation_body_wheel * lin_vel_wheel_wrt_body;
 
     // Estimate the contact angle of the wheel given the velocity of the wheel in its own frame
-    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel.z() / lin_vel_wheel_wrt_wheel.x());
+    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel[lpe].z() / lin_vel_wheel_wrt_wheel[lpe].x());
 
     // Populate the debug/telemetry message
     msg.leg_pivot_position_windows[1].index = 1;
@@ -207,7 +212,7 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_pivot, msg.trans_leg_pivot_to_wheel_wrt_pivot[1]);
     SRR::popROSMsg(lin_vel_pivot_wrt_body, msg.pivot_linear_velocities_wrt_body[1]);
     SRR::popROSMsg(lin_vel_wheel_wrt_body, msg.wheel_linear_velocities_wrt_body[1]);
-    SRR::popROSMsg(lin_vel_wheel_wrt_wheel, msg.wheel_linear_velocities_wrt_wheel[1]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_wheel[lpe], msg.wheel_linear_velocities_wrt_wheel[1]);
     msg.wheel_contact_angles[1] = cont_ang[lpe];
 
     //
@@ -253,10 +258,10 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     // Calculate the linear velocity of the wheel frame with respect to the vehicle body
     lin_vel_wheel_wrt_body = lin_vel_pivot_wrt_body - ang_vel_leg_pivot_frame_wrt_body.cross(dist_leg_pivot_to_wheel_frame_wrt_body);
     // Calculate the linear velocity of the wheel frame with respect to its own frame
-    lin_vel_wheel_wrt_wheel = rotation_body_wheel * lin_vel_wheel_wrt_body;
+    lin_vel_wheel_wrt_wheel[lpe] = rotation_body_wheel * lin_vel_wheel_wrt_body;
 
     // Estimate the contact angle of the wheel given the velocity of the wheel in its own frame
-    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel.z() / lin_vel_wheel_wrt_wheel.x());
+    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel[lpe].z() / lin_vel_wheel_wrt_wheel[lpe].x());
 
     // Populate the debug/telemetry message
     msg.leg_pivot_position_windows[2].index = 2;
@@ -273,7 +278,7 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_pivot, msg.trans_leg_pivot_to_wheel_wrt_pivot[2]);
     SRR::popROSMsg(lin_vel_pivot_wrt_body, msg.pivot_linear_velocities_wrt_body[2]);
     SRR::popROSMsg(lin_vel_wheel_wrt_body, msg.wheel_linear_velocities_wrt_body[2]);
-    SRR::popROSMsg(lin_vel_wheel_wrt_wheel, msg.wheel_linear_velocities_wrt_wheel[2]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_wheel[lpe], msg.wheel_linear_velocities_wrt_wheel[2]);
     msg.wheel_contact_angles[2] = cont_ang[lpe];
 
     //
@@ -319,10 +324,10 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     // Calculate the linear velocity of the wheel frame with respect to the vehicle body
     lin_vel_wheel_wrt_body = lin_vel_pivot_wrt_body - ang_vel_leg_pivot_frame_wrt_body.cross(dist_leg_pivot_to_wheel_frame_wrt_body);
     // Calculate the linear velocity of the wheel frame with respect to its own frame
-    lin_vel_wheel_wrt_wheel = rotation_body_wheel * lin_vel_wheel_wrt_body;
+    lin_vel_wheel_wrt_wheel[lpe] = rotation_body_wheel * lin_vel_wheel_wrt_body;
 
     // Estimate the contact angle of the wheel given the velocity of the wheel in its own frame
-    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel.z() / lin_vel_wheel_wrt_wheel.x());
+    cont_ang[lpe] = -std::atan(lin_vel_wheel_wrt_wheel[lpe].z() / lin_vel_wheel_wrt_wheel[lpe].x());
 
     // Populate the debug/telemetry message
     msg.leg_pivot_position_windows[3].index = 3;
@@ -339,9 +344,35 @@ bool SRR::TractionControlContainer::estimate_contact_angles(tf::Vector3 lin_vel,
     SRR::popROSMsg(dist_leg_pivot_to_wheel_frame_wrt_pivot, msg.trans_leg_pivot_to_wheel_wrt_pivot[3]);
     SRR::popROSMsg(lin_vel_pivot_wrt_body, msg.pivot_linear_velocities_wrt_body[3]);
     SRR::popROSMsg(lin_vel_wheel_wrt_body, msg.wheel_linear_velocities_wrt_body[3]);
-    SRR::popROSMsg(lin_vel_wheel_wrt_wheel, msg.wheel_linear_velocities_wrt_wheel[3]);
+    SRR::popROSMsg(lin_vel_wheel_wrt_wheel[lpe], msg.wheel_linear_velocities_wrt_wheel[3]);
     msg.wheel_contact_angles[3] = cont_ang[lpe];
 
+    return true;
+}
+
+bool SRR::TractionControlContainer::calculate_commanded_wheel_rates(
+    LegAbstractMap<tf::Vector3> lin_vel_wheel_wrt_wheel,
+    LegAbstractMap<double> cont_ang,
+    LegAbstractMap<double>& cmd_wheel_rates,
+    srr_msgs::TractionControlDebug& msg)
+{
+    //
+    // CALCULATE THE LINEAR VELOCITIES OF THE WHEEL IN THE CONTACT FRAME
+    //
+    LegAbstractMap<tf::Vector3> lin_vel_wheel_wrt_contact;
+    for (int lp = static_cast<int>(LegPivotEnum::LEFT_NEAR), i = 0; lp <= static_cast<int>(LegPivotEnum::RIGHT_FAR); lp++, i++)
+    {
+        LegPivotEnum lpe = static_cast<LegPivotEnum>(lp);
+        // Calculate the rotation between a wheel and its contact frame
+        double ca = cont_ang[lpe];
+        tf::Matrix3x3 rotation_wheel_contact(std::cos(ca),  0, std::sin(ca),
+                                             0,             1, 0,
+                                             -std::sin(ca), 0, std::cos(ca)
+        );
+        // Calculate the linear velocity of the wheel frame with respect to its respective contact frame
+        lin_vel_wheel_wrt_contact[lpe] = rotation_wheel_contact * lin_vel_wheel_wrt_wheel[lpe];
+        SRR::popROSMsg(lin_vel_wheel_wrt_contact[lpe], msg.wheel_linear_velocities_wrt_contact[i]);
+    }
     return true;
 }
 
@@ -462,7 +493,12 @@ void SRR::TractionControlContainer::handle_imu_callback(const sensor_msgs::Imu& 
     );
 }
 
-bool SRR::TractionControlContainer::calculate_wheel_rates(LegAbstractMap<double>& contact_angles, srr_msgs::TractionControlDebug& msg)
+bool SRR::TractionControlContainer::calculate_wheel_rates(
+    LegAbstractMap<tf::Vector3>& linear_velocity_wheel_wrt_wheel,
+    LegAbstractMap<double>& contact_angles,
+    LegAbstractMap<double>& commanded_wheel_rates,
+    srr_msgs::TractionControlDebug& msg
+)
 {
     bool rv = false;
     tf::Vector3 vehicle_linear_velocity;
@@ -475,7 +511,11 @@ bool SRR::TractionControlContainer::calculate_wheel_rates(LegAbstractMap<double>
     {
         goto END;
     }
-    if (!estimate_contact_angles(vehicle_linear_velocity, contact_angles, msg))
+    if (!estimate_contact_angles(vehicle_linear_velocity, linear_velocity_wheel_wrt_wheel, contact_angles, msg))
+    {
+        goto END;
+    }
+    if (!calculate_commanded_wheel_rates(linear_velocity_wheel_wrt_wheel, contact_angles, commanded_wheel_rates, msg))
     {
         goto END;
     }
