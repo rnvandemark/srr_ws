@@ -7,6 +7,8 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <gazebo_msgs/ModelStates.h>
+#include <std_msgs/Empty.h>
+#include <geometry_msgs/Vector3.h>
 
 #include <cstddef>
 #include <string>
@@ -17,7 +19,7 @@ namespace SRR {
 
 class TractionControlContainer {
 public:
-    enum MoveDirectionEnum {BACKWARD = -1, FORWARD = 1, STATIONARY};
+    enum MoveDirectionEnum {BACKWARD = -1, FORWARD = 1};
     enum MoveTypeEnum {STRAIGHT = 4, TURN_LEFT, TURN_RIGHT};
     enum LegPivotEnum {LEFT_NEAR = 8, RIGHT_NEAR, LEFT_FAR, RIGHT_FAR};
     struct LegPivotEnumHash
@@ -96,6 +98,8 @@ protected:
     double curr_wheel_steer_direction_front_left;
     // The steer position of the front right wheel
     double curr_wheel_steer_direction_front_right;
+    // Whether or not the objective linear velocity is set
+    bool curr_objective_vehicle_linear_velocity_set;
     // The objective vehicle linear velocity used to calculate the wheel speeds
     tf::Vector3 curr_objective_vehicle_linear_velocity;
 
@@ -138,6 +142,8 @@ public:
     void handle_joint_state_callback(const sensor_msgs::JointState& msg);
     void handle_model_states_callback(const gazebo_msgs::ModelStates& msg);
     void handle_imu_callback(const sensor_msgs::Imu& msg);
+    void handle_unset_velocity_command_callback(const std_msgs::Empty& msg);
+    void handle_velocity_command_callback(const geometry_msgs::Vector3& msg);
 
     bool calculate_wheel_rates(srr_msgs::TractionControlDebug& msg);
 

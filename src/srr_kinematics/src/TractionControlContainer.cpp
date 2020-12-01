@@ -11,58 +11,53 @@ bool SRR::TractionControlContainer::calculate_vehicle_linear_velocity(tf::Vector
     bool rv = false;
     double x_dot = 0.0;
 
-    if (curr_move_direction != MoveDirectionEnum::STATIONARY)
+    switch (curr_move_type)
     {
-        switch (curr_move_type)
+        case MoveTypeEnum::STRAIGHT:
         {
-            case MoveTypeEnum::STRAIGHT:
-            {
-                x_dot = static_cast<int>(curr_move_direction)
-                         * wheel_radius
-                         * max_wheel_rate;
-                rv = true;
-                break;
-            }
-            case MoveTypeEnum::TURN_LEFT:
-            case MoveTypeEnum::TURN_RIGHT:
-            {
-                LegPivotEnum lpYof;
-                LegPivotEnum lpYor;
-                if (curr_move_type == MoveTypeEnum::TURN_LEFT)
-                {
-                    lpYof = LegPivotEnum::RIGHT_NEAR;
-                    lpYor = LegPivotEnum::RIGHT_FAR;
-                }
-                else
-                {
-                    lpYof = LegPivotEnum::LEFT_NEAR;
-                    lpYor = LegPivotEnum::LEFT_FAR;
-                }
-                double Xfo  = curr_longitudinal_distance_origin_axle;
-                double Xro  = -curr_longitudinal_distance_origin_axle;
-                double dYof = lateral_vector_origin_leg_pivot.at(lpYof).y() + curr_dist_between_ICC_origin;
-                double dYor = lateral_vector_origin_leg_pivot.at(lpYor).y() + curr_dist_between_ICC_origin;
-                double turn_radius_front = std::sqrt((Xfo * Xfo) + (dYof * dYof));
-                double turn_radius_rear  = std::sqrt((Xro * Xro) + (dYor * dYor));
-                x_dot = static_cast<int>(curr_move_direction)
-                         * wheel_radius
-                         * max_wheel_rate
-                         * (curr_dist_between_ICC_origin / std::max(turn_radius_front, turn_radius_rear));
-                rv = true;
-                break;
-            }
-            default:
-                break;
+            x_dot = static_cast<int>(curr_move_direction)
+                     * wheel_radius
+                     * max_wheel_rate;
+            rv = true;
+            break;
         }
+        case MoveTypeEnum::TURN_LEFT:
+        case MoveTypeEnum::TURN_RIGHT:
+        {
+            LegPivotEnum lpYof;
+            LegPivotEnum lpYor;
+            if (curr_move_type == MoveTypeEnum::TURN_LEFT)
+            {
+                lpYof = LegPivotEnum::RIGHT_NEAR;
+                lpYor = LegPivotEnum::RIGHT_FAR;
+            }
+            else
+            {
+                lpYof = LegPivotEnum::LEFT_NEAR;
+                lpYor = LegPivotEnum::LEFT_FAR;
+            }
+            double Xfo  = curr_longitudinal_distance_origin_axle;
+            double Xro  = -curr_longitudinal_distance_origin_axle;
+            double dYof = lateral_vector_origin_leg_pivot.at(lpYof).y() + curr_dist_between_ICC_origin;
+            double dYor = lateral_vector_origin_leg_pivot.at(lpYor).y() + curr_dist_between_ICC_origin;
+            double turn_radius_front = std::sqrt((Xfo * Xfo) + (dYof * dYof));
+            double turn_radius_rear  = std::sqrt((Xro * Xro) + (dYor * dYor));
+            x_dot = static_cast<int>(curr_move_direction)
+                     * wheel_radius
+                     * max_wheel_rate
+                     * (curr_dist_between_ICC_origin / std::max(turn_radius_front, turn_radius_rear));
+            rv = true;
+            break;
+        }
+        default:
+            break;
     }
 
     lin_vel.setValue(x_dot, 0, 0);
 
     msg.move_direction = curr_move_direction;
     msg.move_type = curr_move_type;
-    msg.vehicle_linear_velocity.x = lin_vel.x();
-    msg.vehicle_linear_velocity.y = lin_vel.y();
-    msg.vehicle_linear_velocity.z = lin_vel.z();
+    SRR::popROSMsg(lin_vel, msg.vehicle_linear_velocity);
 
     return rv;
 }
@@ -626,6 +621,7 @@ SRR::TractionControlContainer::TractionControlContainer(
     leg_pivot_positions_window_size(_leg_pivot_positions_window_size),
     wheel_joint_name_front_left(_wheel_joint_name_front_left),
     wheel_joint_name_front_right(_wheel_joint_name_front_right),
+    curr_objective_vehicle_linear_velocity_set(false),
     leg_pivot_joint_names({
         {_leg_pivot_joint_name_left_near,  LEFT_NEAR},
         {_leg_pivot_joint_name_right_near, RIGHT_NEAR},
@@ -679,6 +675,20 @@ void SRR::TractionControlContainer::handle_joint_state_callback(const sensor_msg
     curr_longitudinal_distance_origin_axle = (leg_length * std::cos(lpln)) - (wheel_connection_vertical_link_length * std::sin(lpln));
 }
 
+void SRR::TractionControlContainer::handle_unset_velocity_command_callback(const std_msgs::Empty& msg)
+{
+    (void)msg;
+    curr_objective_vehicle_linear_velocity.setValue(0, 0, 0);
+    curr_objective_vehicle_linear_velocity_set = false;
+}
+
+void SRR::TractionControlContainer::handle_velocity_command_callback(const geometry_msgs::Vector3& msg)
+{
+    SRR::extractROSMsg(msg, curr_objective_vehicle_linear_velocity);
+    curr_objective_vehicle_linear_velocity.setY(0);
+    curr_objective_vehicle_linear_velocity_set = true;
+}
+
 void SRR::TractionControlContainer::handle_model_states_callback(const gazebo_msgs::ModelStates& msg)
 {
     for (std::size_t i = 0; i < msg.name.size(); i++)
@@ -694,15 +704,11 @@ void SRR::TractionControlContainer::handle_model_states_callback(const gazebo_ms
                 curr_move_type = MoveTypeEnum::STRAIGHT;
             }
 
-            if (SRR::mag(msg.twist[i].linear.x, msg.twist[i].linear.y, msg.twist[i].linear.z) > LIN_ACC_EPS)
-            {
-                //curr_move_direction = (msg.linear_acceleration.x > 0) ? MoveDirectionEnum::FORWARD : MoveDirectionEnum::BACKWARD;
-                curr_move_direction = MoveDirectionEnum::FORWARD;
-            }
-            else
-            {
-                curr_move_direction = MoveDirectionEnum::STATIONARY;
-            }
+//            if (SRR::mag(msg.twist[i].linear.x, msg.twist[i].linear.y, msg.twist[i].linear.z) > LIN_ACC_EPS)
+//            {
+//                //curr_move_direction = (msg.linear_acceleration.x > 0) ? MoveDirectionEnum::FORWARD : MoveDirectionEnum::BACKWARD;
+//            }
+            curr_move_direction = MoveDirectionEnum::FORWARD;
             break;
         }
     }
@@ -724,6 +730,10 @@ bool SRR::TractionControlContainer::calculate_wheel_rates(srr_msgs::TractionCont
     SRR::TractionControlContainer::LegAbstractMap<double> contact_angles;
     SRR::TractionControlContainer::LegAbstractMap<double> commanded_wheel_rates;
 
+    if (!curr_objective_vehicle_linear_velocity_set)
+    {
+        goto END;
+    }
     if (recent_leg_pivot_positions[LegPivotEnum::LEFT_NEAR].size() != leg_pivot_positions_window_size)
     {
         goto END;

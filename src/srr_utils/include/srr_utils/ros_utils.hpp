@@ -16,6 +16,11 @@ void popROSMsg(tf::Vector3 in, geometry_msgs::Vector3& out)
     out.z = in.z();
 }
 
+void extractROSMsg(geometry_msgs::Vector3 in, tf::Vector3& out)
+{
+    out.setValue(in.x, in.y, in.z);
+}
+
 void popROSMsg(tf::Matrix3x3 in, srr_msgs::RotationMatrix& out)
 {
     out.r1[0] = in[0].x();
