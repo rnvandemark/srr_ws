@@ -19,5 +19,7 @@ geometry_msgs/Vector3[4] trans_leg_pivot_to_wheel_wrt_pivot
 geometry_msgs/Vector3[4] pivot_linear_velocities_wrt_body
 geometry_msgs/Vector3[4] wheel_linear_velocities_wrt_body
 geometry_msgs/Vector3[4] wheel_linear_velocities_wrt_wheel
-geometry_msgs/Vector3[4] wheel_linear_velocities_wrt_contact
 float64[4] wheel_contact_angles
+
+geometry_msgs/Vector3[4] objective_wheel_linear_velocities_wrt_contact
+float64[4] wheel_commanded_rates
