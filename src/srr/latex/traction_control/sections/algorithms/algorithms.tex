@@ -381,7 +381,7 @@ Once the linear velocities of the six wheels resolved to the rover's body frame,
 	\eta_{i} = -\arctan\left(\frac{{}^{w_{i}}V^{z}_{A_{i}}}{{}^{w_{i}}V^{x}_{A_{i}}}\right)
 \end{equation}
 
-\subsection{Solving for Commanded Wheel Rates}
+\subsection{Solving for Commanded Wheel Rates}\label{traction_control:algorithms:solving-wheel-rates}
 In the general case, the objective is to find the wheel rates given some desired velocity of the rover. When calculating the contact angle frames for each wheel, it was proven that the linear velocity of the rover can be resolved in the wheel frames, while accounting for velocities induced by angular velocities from joint motions. That calculation was performed for the current estimated linear velocity of the vehicle, but now the same routine can be done to calculate the linear velocities of the wheels that would achieve this objective linear velocity of the rover body. In other words, Equations~\ref{traction_control:algorithms:velocity-body}-\ref{traction_control:algorithms:velocity-bogie-wheel} (and those required for the other wheels, left out in the interest of brevity) can be reused other than the fact that the initial velocity in Equation~\ref{traction_control:algorithms:velocity-body} will no longer be $\left[\dot{x}_0 \;\; 0 \;\; 0\right]^{T}$ but this objective velocity. \\
 
 By itself, calculating this linear velocity of the wheels is not beneficial, but it can be built onto to calculate the angular velocity of the wheel required to generate its desired linear velocity, thereby solving the problem. To do this, the linear velocity of the wheel with respect to the rover's body frame must be transformed to the linear velocity of the contact angle frame, as seen in Equation~\ref{traction_control:algorithms:trans-vel-to-contact-angle}.
@@ -430,3 +430,16 @@ Because the angular velocity experienced by the wheel may be nonzero, then the c
 \end{equation}
 
 Where $\dot{\lambda}$ is the angular velocity induced onto the $i^th$ wheel. The actual values for these can be found in \cite{tractl}.
+
+\subsection{Maximizing Commanded Wheel Rates}
+As mentioned in Section~\ref{traction_control:algorithms:contact-angle-section}, one of the existing design considerations that the team behind the \ac{TCA} solution had to account for was that at least one wheel on the rover must be at its peak velocity while moving. The solution is to rearrange Equation~\ref{traction_control:algorithms:theta-dot} to solve for $\dot{\theta}_{i}$. As stated when deriving this equation, the linear velocity of the wheel acts only in the x-axis of the contact wheel frame. Therefore, it can be assumed that the y and z components of the velocity can be treated as zero:
+
+\begin{equation}\label{traction_control:algorithms:lin_vel_y}
+	{}^{\eta_{i}}V^{y}_{A_{i}} = 0
+\end{equation}
+
+\begin{equation}\label{traction_control:algorithms:lin_vel_z}
+	{}^{\eta_{i}}V^{z}_{A_{i}} = 0
+\end{equation}
+
+This formulation results in multiple pages of equations, see \cite{tractl} for them in full.
