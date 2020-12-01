@@ -53,6 +53,20 @@ int main(int argc, char **argv)
         &container
     );
 
+    ros::Subscriber sub_unset_vehicle_velocity_command = n.subscribe(
+        "/srr_integrated/tractl_unset_velocity_command",
+        1,
+        &SRR::TractionControlContainer::handle_unset_velocity_command_callback,
+        &container
+    );
+
+    ros::Subscriber sub_vehicle_velocity_command = n.subscribe(
+        "/srr_integrated/tractl_velocity_command",
+        1,
+        &SRR::TractionControlContainer::handle_velocity_command_callback,
+        &container
+    );
+
     srr_msgs::TractionControlDebug msg_debug;
     ros::Publisher pub_tractl_debug = n.advertise<srr_msgs::TractionControlDebug>(
         "/srr_integrated/tractl_debug",
