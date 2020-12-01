@@ -3,15 +3,29 @@ project(srr_msgs)
 
 find_package(catkin REQUIRED COMPONENTS
   message_generation
+  sensor_msgs
 )
 
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
+)
+
+add_message_files(DIRECTORY msg FILES
+  IndexedDoubleArr.msg
+  RotationMatrix.msg
+  TractionControlDebug.msg
+  VehicleWheelRates.msg
+)
 add_service_files(DIRECTORY srv FILES
   CalculatePositionWithOffsets.srv
 )
-generate_messages()
+generate_messages(
+  DEPENDENCIES
+  sensor_msgs
+)
 
-catkin_package()
-
-include_directories(
-  ${catkin_INCLUDE_DIRS}
+catkin_package(
+  CATKIN_DEPENDS
+  sensor_msgs
 )
