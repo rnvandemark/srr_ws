@@ -170,6 +170,15 @@ As seen in Figure~\ref{traction_control:discussion:side-diagram},the diagram is 
 \end{center}
 \end{table}
 
+To compare the geometries of the \ac{SRR} with the \ac{CMR}, see Figure~\ref{traction_control:discussion:cmr-skeleton}, which gives a high-level top view of the kinematic skeleton of the \ac{CMR}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{sections/discussion/images/cmr_skeleton.png}	
+	\caption{Overview of Significant Points and Frames of the \acl{CMR}}	
+	\label{traction_control:discussion:cmr-skeleton}
+\end{figure}
+
 \subsection{Transferring Velocity Between Coordinate Frames}\label{traction_control:discussion:transferring-velocity}
 This implementation for \ac{TCA} is a largely geometric solution in the sense that a majority of the calculations it performs is estimating the linear velocity of each wheel given the knowledge of the vehicle's overall linear and angular velocity and the velocity of the joints intermediate to the vehicle's body and that wheel. Therefore, it is important to understand how these types of vectors interact with one another. \\
 
@@ -243,7 +252,7 @@ When considering the algorithm for the \ac{SRR}, the inputs and outputs will onl
 		$\vec{\Psi}$ & The 4x1 vector of joint positions describing the steering angle of each wheel \\
 		\hline
 	\end{tabular}
-	\caption{Summary of the Inputs for the Algorithm Onboard the Curiosity Mars Rover}
+	\caption{Summary of the Inputs for the Algorithm Onboard the Sample-Return Rover}
 	\label{traction_control:discussion:inputs-srr}
 \end{table}
 
@@ -256,7 +265,7 @@ When considering the algorithm for the \ac{SRR}, the inputs and outputs will onl
 		$\vec{\dot{\theta}}$ & The 6x1 vector of joint speeds to be commanded to each of the vehicle's wheels \\
 		\hline
 	\end{tabular}
-	\caption{Summary of the Inputs for the Algorithm Onboard the Curiosity Mars Rover}
+	\caption{Summary of the Inputs for the Algorithm Onboard the Sample-Return Rover}
 	\label{traction_control:discussion:outputs-srr}
 \end{table}
 
@@ -291,10 +300,7 @@ As mentioned in Section~\ref{traction_control:discussion:ackermann-steering-sect
 	\label{traction_control:discussion:contact-angle}
 \end{figure}
 
-XXXXXXXXXXXXXXXXXX
-ADD FIGURE REF HERE
-XXXXXXXXXXXXXXXXXX \\
-Figure~\ref{traction_control:discussion:contact-angle} uses the vector $\vec{v}$ to denote the linear velocity of the wheel A, which is calculated using the concept of velocity transformation introduced in Section~\ref{traction_control:discussion:transferring-velocity}. The geometry of the \ac{CMR} is symmetrical across the body's x-axis (front to back), but asymmetrical across its width (side to side), as can be seen in Figure~\ref{}. This implies that while the theory of velocity transformation applies to both, the specific calculations to accomplish this for one wheel is slightly different than some others. For example, the calculation of a wheel linked to the rocker joint can be seen in Equation~\ref{traction_control:discussion:velocity-rocker-wheel}, while the calculation for one of the wheels linked to one of the bogie pivot joints can be seen in Equation~\ref{traction_control:discussion:velocity-bogie-wheel} \cite{tractl}. Essentially, the velocity is transferred an additional time because there is another joint intermediate to the bogie wheels that cannot be ignored. \\
+Figure~\ref{traction_control:discussion:contact-angle} uses the vector $\vec{v}$ to denote the linear velocity of the wheel A, which is calculated using the concept of velocity transformation introduced in Section~\ref{traction_control:discussion:transferring-velocity}. The geometry of the \ac{CMR} is symmetrical across the body's x-axis (front to back), but asymmetrical across its width (side to side), as can be seen in Figure~\ref{traction_control:discussion:cmr-skeleton}. This implies that while the theory of velocity transformation applies to both, the specific calculations to accomplish this for one wheel is slightly different than some others. For example, the calculation of a wheel linked to the rocker joint can be seen in Equation~\ref{traction_control:discussion:velocity-rocker-wheel}, while the calculation for one of the wheels linked to one of the bogie pivot joints can be seen in Equation~\ref{traction_control:discussion:velocity-bogie-wheel} \cite{tractl}. Essentially, the velocity is transferred an additional time because there is another joint intermediate to the bogie wheels that cannot be ignored. \\
 
 \begin{equation}\label{traction_control:discussion:velocity-body}
 	{}^{bd}V_{D} = \left[\begin{array}{c}
