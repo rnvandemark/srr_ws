@@ -1,6 +1,21 @@
-The Mars Rover is a Sample Return Rover designed by the JPL NASA Laboratory. It consists of a chassis with a central revolute joint on both the left and right sides of the robot. The central revolute joint is connected to two links (on each side),  for the front and rear wheels. Each respective link is connected to another link downward that is connected to a wheel. The front links are revolute so that the robot can turn left and right. Note that the original paper is based off of the Curiosity Rover, which has six wheels. The focus on this paper will be on the Sample Return Rover, which has four wheels. 
+The \ac{TCA} implementation for the \ac{CMR} is one that heavily utilizes geometry and a rigid-body model assumption, while also placing an emphasis on relying on minimal assumptions/data about the environment and avoiding computationally complex calculations on input data from sensors, cameras, etc. There were various reasons as to why some of these assumptions/choices were made and why the agreed upon implementation was deemed the best choice for the given scenario \cite{tractl}, which is expanded on later in the document. Figure~\ref{traction_control:algorithms:scarecrow} shows a testbed version of the \ac{CMR}.
 
-Primitive designs of this robot had a large amount of damage to the rover’s wheels. This wheel damage reduced the longevity of the Mars Rover mission by a great amount. NASA had to counteract this damage through researching the cause of the wheel damage. The rover did not properly avoid terrain obstacles nor did it deal with traction loss. The goal for this project is to recreate the traction control algorithm and simulate the results. 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.9\textwidth]{sections/introduction/images/scarecrow_testbed.png}
+	\caption{The Scarecrow Testbed Rover, a Rover Kinematically Similar to the \acl{CMR} \cite{tractl}}
+	\label{traction_control:algorithms:scarecrow}
+\end{figure}
 
-The algorithm for the traction control is a velocity-based algorithm. One wheel on the rover will be rotating much faster than the others. The traction control system then applies a brake to that wheel to reduce its slip and then reducing wheel slip.
-NEED TO FIX !
+It is important to note that the need for this \ac{TCA} was not discovered until after the flight system was actively engaging in its mission on the Martian surface, while ground control was observing telemetry of its use. Therefore, it was impossible to make any physical modifications to the \ac{CMR}, only software could be remotely flashed to it. \\
+
+However, there are still ramifications to having this additional routine run on the \ac{CMR}. The limited computational resources available to do so must be considered carefully, so as to not interfere with existing processes being ran, and the implementation chosen has to have enough resources to perform the task it needs to as well. The team responsible for solving the problem at hand clarified some of these issues and how it restricted their choices for strategies to solve the problem. For example, the rover ``does not include force or torque sensors on the mobility subsystem, nor can it measure slip with high enough frequency to be able to react to it.'' \cite{tractl} Some of the characteristics and assumptions of the \ac{CMR} and its \ac{TCA} implementation are discussed in Section~\ref{traction_control:algorithms:prereqs}. \\
+
+This algorithm was chosen to study because of the advantages it has over other possible implementations, some of which were considered by the team that came up with this original \ac{TCA} solution. Aspects of the \ac{SRR} were being modeled for another course, so consideration was taken in applying the concepts of this solution and attempting to utilize them on this kinematically different vehicle, an image of which can be seen in Figure~\ref{traction_control:algorithms:srr}. A 3D rendering of a model similar to the \ac{SRR} was generated, as well as a simulation suite that's able to interact with it, including an implementation of the algorithm. At the time of finishing this report, the simulation suite is still in its early stages and has limited functionality.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=.9\textwidth]{sections/introduction/images/srr.png}
+	\caption{The \acl{SRR} \cite{srr}}
+	\label{traction_control:algorithms:srr}
+\end{figure}
