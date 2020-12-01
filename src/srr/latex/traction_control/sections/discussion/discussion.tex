@@ -1,3 +1,4 @@
+\acresetall
 \section{Prerequisite Knowledge}\label{traction_control:discussion:prereqs}
 \subsection{Ackermann Steering Model}\label{traction_control:discussion:ackermann-steering-section}
 Modeling vehicles using the Ackermann steering model is a common practice, including for the \ac{CMR}. Even thought it adds slightly more complex geometric modeling, the mechanical steering system can be implemented relatively easily, and there are benefits to doing so. \\
@@ -186,6 +187,7 @@ In other words, the linear velocity of Q resolved in G is equal to the cross pro
 
 In the general case, there are more considerations to take to fully formulate how linear velocities are transferred across frames \cite{craig}. However, none of them need be considered for this scenario because they are unique to the fact that G and H are assumed to be attached to separate rigid bodies. In the context of this algorithm, all frames are known to be attached to the same rigid body (the rover). Therefore, when solving for the velocity of a frame relative to another, both attached to the rover, Equation~\ref{traction_control:discussion:VQG} will fully define that solution.
 
+\acresetall
 \section{Overview}
 The following subsections explains the \ac{TCA} in more detail, including its data flow, how this data is acquired, and the derivations for concepts integral to its implementation.
 
@@ -277,6 +279,7 @@ The angular velocity vector $\vec{\omega}$ of the \ac{CMR} was calculated using 
 	\label{traction_control:discussion:gyro}
 \end{figure}
 
+\acresetall
 \section{Calculations}
 \subsection{Contact Angle Frame}\label{traction_control:discussion:contact-angle-section}
 As mentioned in Section~\ref{traction_control:discussion:ackermann-steering-section}, basic Ackermann Steering is typically used to model a vehicle assumed to be traversing a planar surface, or at least a terrain whose inconsistencies are negligible. The \ac{TCA} acknowledges that is not the case here by defining this contact angle frame relative to each wheel's frame, an illustration of which can be seen in Figure~\ref{traction_control:discussion:contact-angle}.
@@ -405,7 +408,7 @@ Because the angular velocity experienced by the wheel may be nonzero, then the c
 
 Where $\dot{\lambda}$ is the angular velocity induced onto the $i^th$ wheel. The actual values for these can be found in \cite{tractl}.
 
-\subsection{Maximizing Commanded Wheel Rates}
+\subsection{Maximizing Commanded Wheel Rates}\label{traction_control:discussion:max-wheel-rates}
 As mentioned in Section~\ref{traction_control:discussion:contact-angle-section}, one of the existing design considerations that the team behind the \ac{TCA} solution had to account for was that at least one wheel on the rover must be at its peak velocity while moving. The solution is to rearrange Equation~\ref{traction_control:discussion:theta-dot} to solve for $\dot{\theta}_{i}$. As stated when deriving this equation, the linear velocity of the wheel acts only in the x-axis of the contact wheel frame. Therefore, it can be assumed that the y and z components of the velocity can be treated as zero:
 
 \begin{equation}\label{traction_control:discussion:lin_vel_y}
@@ -417,3 +420,62 @@ As mentioned in Section~\ref{traction_control:discussion:contact-angle-section},
 \end{equation}
 
 This formulation results in multiple pages of equations, see \cite{tractl} for them in full.
+
+\acresetall
+\section{Simulation}
+\subsection{Development Technologies}\label{traction_control:discussion:dev-tech-section}
+A 3D rendering of the \ac{SRR} was developed in SolidWorks, which was then exported to be compatible with Gazebo, a powerful robot 3D simulation software. ROS Kinetic was used to communicate data across different components of the simulation, and some open source contributions from the ROS community were used to enable functionality such as joint controllers, hardware simulation, etc. \\
+
+In actuality, the model produced does not exactly represent the \ac{SRR} as seen in Figure~\ref{traction_control:introduction:srr}. It proved difficult to model the wheels as the \ac{SRR} did, so instead the model seen in Figure~\ref{traction_control:discussion:srr-gazebo} was created in its place with the alteration to each leg like the one seen in Figure~\ref{traction_control:discussion:srr-gazebo-link}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.8\textwidth]{sections/discussion/images/srr_gazebo.png}
+	\caption{The 3D Rendering of the \acl{SRR}}
+	\label{traction_control:discussion:srr-gazebo}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.8\textwidth]{sections/discussion/images/srr_gazebo_link.png}
+	\caption{The Close-Up of the Kinematically Different Leg for the 3D Rendering of the \acl{SRR}}
+	\label{traction_control:discussion:srr-gazebo-link}
+\end{figure}
+
+The implementation of the \ac{TCA} can be found in the \textit{srr\textunderscore kinematics} package. The files in this package containing the object that implements the algorithm are \newline \textit{include/srr\textunderscore kinematics/TractionControlContainer.hpp} and \textit{src/TractionControlContainer.cpp}, while the ROS node lives in \textit{src/TractionController.cpp}. \\
+
+This model has simulated versions of joint encoders and an \ac{IMU} from the Gazebo ROS Control and Gazebo ROS IMU libraries, respectively. With the first plugin, a joint state controller is able to regularly publish updates to the current joint positions so the traction controller node can update its control loop. Furthermore, this plugin is able to update current joint velocity. Important to note here is that this is a different approach to acquiring the joint velocities than the original \ac{TCA} solution had implemented (a manually computed time derivative), but the result is intended to be the same. The second plugin allows a simulated \ac{IMU} to be attached to a body at any location with any orientation. For the purposes of this simulation, it was attached to the rover's inertial frame, which reflects the original implementation. \\
+
+The Gazebo ROS control plugin also allows for controllers on the individual joints. The traction control node owns ROS publishers that publish to the joint velocity controllers' topics, such that the calculated wheel rates $\vec{\dot{\theta}}$ are piped directly to the joint controllers. \\
+
+Overall, not all functionality is able to be simulated for a couple of reasons. The first and foremost is that in the interest of time, the final step taken in Section~\ref{traction_control:discussion:max-wheel-rates} was not taken, as that implementation would have taken too much time, not to mention that it would have to be rederived due to the fact that this model is different than the one that those equations were originally meant for. This algorithm operating in a turn also has undefined behavior because the software behind simulating proper Ackermann Steering and the controllers for it were not implemented as of yet. Finally, there are mechanical issues with the model at the moment where the legs resting on their pivots cause friction at the pivots themselves and at the wheels' rotors. In other words, it's sometimes difficult to drive the vehicle straight and with the chassis flat because the weight of the links grinds against other links.
+
+\subsection{Example Plotting}
+The wheels of the robot are labeled 0-3, in the order of Front Left, Front Right, Back Left, and Back Right. In the code, the wheels are sometimes identified as the leg pivot that they are a child to. \\
+
+As a sanity test, Figure~\ref{traction_control:discussion:static-contact-angles} illustrates that when the vehicle is stationary and when the angles of the leg pivots are not changing, the contact angle stays the same. The noise seen here (and for the other plots) are due to small amounts of intentionally generated Gaussian noise in the simulated encoders and simulated \ac{IMU}. Some of this is also probably due to some floating-point arithmetic error, though plot points that are below a certain threshold are ignored to avoid just this. \\
+
+Figure~\ref{traction_control:discussion:rising-falling-contact-angles} shows the contact angles of each wheel over time as the four leg pivot joints are raised and lowered (approximately) simultaneously. These results make sense because they become more positive or negative as the wheels approach being directly underneath the chassis (and the sign difference is only due to the difference in frames relative to the origin for front and back wheel pairs. An interesting phenomenon to note are the gradual declines seen at about time t = [40.5, 41.5] and [45.5, 46.5]. This implementation of the \ac{TCA} uses a windowed average for the leg pivot joint positions just as the original implementation for the \ac{CMR} does, so these gradual declines are due to those averages being lowered as time passes. This is reinforced by the fact that the length of these windows both last about one second according to the graph, and the constant defined in the traction control ROS node as is specifies that the windowed average should contain 1.0 second's worth of samples. \\
+
+Lastly, Figure~\ref{traction_control:discussion:moving-wheel-commanded-rates} shows how the commanded wheel rates change as events similar to those seen in Figure~\ref{traction_control:discussion:rising-falling-contact-angles} occur. A difference in which direction is considered positive rotation for this simulated vehicle causes the joint velocities appear to be negative when they are actually considered an "increase". Each downward spike occurs when the contact angles are increased, then the contact angles being lowered allows for the spike to be zeroed out.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{sections/discussion/images/static_contact_angles.png}
+	\caption{Static Contact Angles are Maintained While Vehicle is Stationary, at the Position Seen in Figure~\ref{traction_control:discussion:srr-gazebo}}
+	\label{traction_control:discussion:static-contact-angles}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{sections/discussion/images/rising_falling_contact_angles.png}
+	\caption{Contact Angles In/Decrease as Vehicle Raises Off of / Lowers Down to the Ground}
+	\label{traction_control:discussion:rising-falling-contact-angles}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{sections/discussion/images/wheel_commanded_rates.png}
+	\caption{Commanded Wheel Rates Drop and Rise as the Contact Angle Changes}
+	\label{traction_control:discussion:moving-wheel-commanded-rates}
+\end{figure}
