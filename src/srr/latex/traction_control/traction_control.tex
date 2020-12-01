@@ -1,13 +1,30 @@
 \documentclass[11pt]{report}
 
+\usepackage[pagestyles]{titlesec}
 \usepackage[backend=bibtex]{biblatex}
+\usepackage[margin=1in]{geometry}
 
+\usepackage[printonlyused]{acronym} 		
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{float}
+\usepackage{array}
+
+\titleformat{\chapter}[display]{\normalfont\bfseries}{}{0pt}{\Huge}
+\newpagestyle{mystyle}
+{\sethead[\thepage][][\chaptertitle]{}{}{\thepage}}
+\pagestyle{mystyle}
 
 \title{Analysis of \em{Terrain-Adaptive Wheel Speed Control on the Curiosity Mars Rover: Algorithm and Flight Results}}
 \date{2020\\ November}
 \author{Robert Vandemark \and Diane Ngo}
+
+\acrodef{CMR}[CMR]{\emph{Curiosity Mars Rover}}
+\acrodef{TCA}[TCA]{\emph{Traction Control Algorithm}}
+\acrodef{ICC}[ICC]{\emph{Instantaneous Center of Curvature}}
+\acrodef{SRR}[SRR]{\emph{Sample-Return Rover}}
+\acrodef{IMU}[IMU]{\emph{Inertial Measurement Unit}}
+
 \addbibresource{references.bib}
 \nocite{*}
 
@@ -19,11 +36,14 @@
 	\tableofcontents
 	\newpage
 
-	\chapter*{Abstract}
+	\chapter{Abstract}
 	\input{sections/introduction/abstract.tex}
 
-	\chapter*{Introduction}
+	\chapter{Introduction}
 	\input{sections/introduction/introduction.tex}
+	
+	\chapter{Algorithms}
+	\input{sections/algorithms/algorithms.tex}
 
 	\begin{center}
 		\printbibliography[heading=bibintoc, title={Bibliography}]
