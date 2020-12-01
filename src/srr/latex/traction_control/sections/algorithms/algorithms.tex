@@ -16,7 +16,7 @@ However, there are still ramifications to having this additional routine run on 
 
 Some of the characteristics and assumptions of the \ac{CMR} and its \ac{TCA} implementation are discussed in the following sections.
 
-\section{Ackermann Steering Model}
+\section{Ackermann Steering Model}\label{traction_control:algorithms:ackermann-steering-section}
 Modeling vehicles using the Ackermann steering model is a common practice, including for the \ac{CMR}. Even thought it adds slightly more complex geometric modeling, the mechanical steering system can be implemented relatively easily, and there are benefits to doing so. \\
 
 Figure~\ref{traction_control:algorithms:ackermann-steering} illustrates a basic vehicle that is modeled using Ackermann steering, where the left image has the wheels positioned such that the vehicle will move straight, while the right image would cause the vehicle to turn counter-clockwise. Important to note is that when in a turning position, the front wheels are not turned to the same angle as one another, because of the nonzero distance between them. They are positioned such that the direction that both wheels are pointing are normal to a common center point called the \ac{ICC}, so that when the vehicle turns, the left and right wheels follow two different circular arcs, but both of their centers are at the \ac{ICC}.
@@ -287,7 +287,7 @@ The angular velocity vector $\vec{\omega}$ of the \ac{CMR} was calculated using 
 	\label{traction_control:algorithms:gyro}
 \end{figure}
 
-\subsection{Transferring Velocity Between Coordinate Frames}
+\subsection{Transferring Velocity Between Coordinate Frames}\label{traction_control:algorithms:transferring-velocity}
 This implementation for \ac{TCA} is a largely geometric solution in the sense that a majority of the calculations it performs is estimating the linear velocity of each wheel given the knowledge of the vehicle's overall linear and angular velocity and the velocity of the joints intermediate to the vehicle's body and that wheel. Therefore, it is important to understand how these types of vectors interact with one another. \\
 
 Consider some coordinate frames G and H which are attached to separate rigid-bodies as described in Section~\ref{traction_control:algorithms:rigid-body}. Now consider some point Q that is resolved in frame H. The motion of Q is trivial to resolve in H, but what if the motion of Q needs to be resolved in G? First consider the case where the frames G and H are coincident and the position of their origins do not change with time, but there is a nonzero rotational velocity of H relative to G called ${}^{G}_{H}\Omega$. Assuming the point Q has no velocity relative to H, the linear velocity induced by this rotation resolved in G can be calculated as follows \cite{craig}:
@@ -303,3 +303,80 @@ In other words, the linear velocity of Q resolved in G is equal to the cross pro
 \end{equation}
 
 In the general case, there are more considerations to take to fully formulate how linear velocities are transferred across frames \cite{craig}. However, none of them need be considered for this scenario because they are unique to the fact that G and H are assumed to be attached to separate rigid bodies. In the context of this algorithm, all frames are known to be attached to the same rigid body (the rover). Therefore, when solving for the velocity of a frame relative to another, both attached to the rover, Equation~\ref{traction_control:algorithms:VQG} will fully define that solution.
+
+\subsection{Contact Angle Frame}
+As mentioned in Section~\ref{traction_control:algorithms:ackermann-steering-section}, basic Ackermann Steering is typically used to model a vehicle assumed to be traversing a planar surface, or at least a terrain whose inconsistencies are negligible. The \ac{TCA} acknowledges that is not the case here by defining this contact angle frame relative to each wheel's frame, an illustration of which can be seen in Figure~\ref{traction_control:algorithms:contact-angle}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.8\textwidth]{sections/algorithms/images/contact_angle.png}
+	\caption{The Contact Angle $\eta$ Defines the Contact Wheel Frame for Some Wheel A \cite{tractl}}
+	\label{traction_control:algorithms:contact-angle}
+\end{figure}
+
+XXXXXXXXXXXXXXXXXX
+ADD FIGURE REF HERE
+XXXXXXXXXXXXXXXXXX \\
+Figure~\ref{traction_control:algorithms:contact-angle} uses the vector $\vec{v}$ to denote the linear velocity of the wheel A, which is calculated using the concept of velocity transformation introduced in Section~\ref{traction_control:algorithms:transferring-velocity}. The geometry of the \ac{CMR} is symmetrical across the body's x-axis (front to back), but asymmetrical across its width (side to side), as can be seen in Figure~\ref{}. This implies that while the theory of velocity transformation applies to both, the specific calculations to accomplish this for one wheel is slightly different than some others. For example, the calculation of a wheel linked to the rocker joint can be seen in Equation~\ref{traction_control:algorithms:velocity-rocker-wheel}, while the calculation for one of the wheels linked to one of the bogie pivot joints can be seen in Equation~\ref{traction_control:algorithms:velocity-bogie-wheel} \cite{tractl}. Essentially, the velocity is transferred an additional time because there is another joint intermediate to the bogie wheels that cannot be ignored. \\
+
+\begin{equation}\label{traction_control:algorithms:velocity-body}
+	{}^{bd}V_{D} = \left[\begin{array}{c}
+		\dot{x}_0 \\
+		0 \\
+		0
+	\end{array}\right] + \left(\left[\begin{array}{c}
+		\omega_{x} \\
+		\omega_{y} \\
+		\omega_{z}
+	\end{array}\right] \times \left[\begin{array}{c}
+	x_{od} \\
+	0 \\
+	z_{od}
+	\end{array}\right]\right)
+\end{equation}
+
+\begin{equation}\label{traction_control:algorithms:velocity-rocker-wheel}
+	{}^{bd}V_{A_{1}} = {}^{bd}V_{D} - \left[\begin{array}{c}
+		\omega_{x} \\
+		\omega_{y} + \dot{\beta} \\
+		\omega_{z}
+	\end{array}\right] \times \left({}^{bd}_{rk1}R \cdot \left[\begin{array}{c}
+		-l_{fd} cos(\kappa_{1}) \\
+		-Y_{of} \\
+		-l_{fd} sin(\kappa_{1})
+	\end{array}\right]\right)
+\end{equation}
+
+\begin{equation}\label{traction_control:algorithms:velocity-bogie}
+	{}^{bd}V_{B_{1}} = {}^{bd}V_{D} - \left[\begin{array}{c}
+		\omega_{x} \\
+		\omega_{y} + \dot{\beta} \\
+		\omega_{z}
+	\end{array}\right] \times \left({}^{bd}_{rk1}R \cdot \left[\begin{array}{c}
+		l_{db} cos(\kappa_{2}) \\
+		0 \\
+		-l_{fd} sin(\kappa_{2})
+	\end{array}\right]\right)
+\end{equation}
+
+\begin{equation}\label{traction_control:algorithms:velocity-bogie-wheel}
+	{}^{bd}V_{A_{3}} = {}^{bd}V_{B_{1}} - \left[\begin{array}{c}
+		\omega_{x} \\
+		\omega_{y} + \dot{\beta} + \dot{\rho}_{1} \\
+		\omega_{z}
+	\end{array}\right] \times \left({}^{bd}_{rk1}R \cdot {}^{rk1}_{bg1}R \cdot \left[\begin{array}{c}
+		-l_{bm} cos(\kappa_{3}) \\
+		Y_{om} \\
+		-l_{bm} sin(\kappa_{3})
+	\end{array}\right]\right)
+\end{equation}
+
+See \cite{tractl} for a more detailed explanation as to the meaning of each variable in Equations~\ref{traction_control:algorithms:velocity-body}-\ref{traction_control:algorithms:velocity-bogie-wheel}. With an understanding of those variables, it can be seen that these variables follow the general form of Equation~\ref{traction_control:algorithms:VQG}. \\
+
+For those calculations to be performed, the linear velocity of the rover's body must be estimated. One of the existing requirements for the \ac{CMR} is that at least one of its wheels must be operating at its peak speed at all times (other than when it is stationary). This requirement along with the assumption that the rover is moving in the rover body's x-axis (forward or backward) means that its linear velocity can be assumed to be completely in its x-axis. This is where the initial linear velocity value $\left[\dot{x}_0 \;\; 0 \;\; 0\right]^{T}$ comes from in Equation~\ref{traction_control:algorithms:velocity-body}. \\
+
+Once the linear velocities of the six wheels resolved to the rover's body frame, ${}^{bd}V_{A_{1-6}}$, are calculated, the contact angle $\eta_{i}$ can be solved for the $i^{th}$ wheel. The $i^{th}$ contact angle frame is defined as coincident with the $i^{th}$ wheel frame (their origins are the same) with a rotation of $\eta_{i}$ about the same axis that wheel rotates about, $Y_{w_{i}}$. It can be seen in Figure~\ref{traction_control:algorithms:contact-angle} that the linear velocity of the wheel is perpendicular to this contact angle frame, so the calculation for finding $\eta_{i}$ is straightforward:
+
+\begin{equation}
+	\eta_{i} = -\arctan\left(\frac{{}^{w_{i}}V^{z}_{A_{i}}}{{}^{w_{i}}V^{x}_{A_{i}}}\right)
+\end{equation}
