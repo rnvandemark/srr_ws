@@ -1,0 +1,48 @@
+\documentclass[a4paper, 12pt]{report}
+\usepackage[pagestyles]{titlesec}
+\usepackage[backend=bibtex]{biblatex}
+
+\usepackage[printonlyused]{acronym}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{array}
+\usepackage[margin=1in]{geometry}
+
+\title{Mars Sample-Return Rover \\
+\large ENPM 662 Final Project}
+\date{December 2020}
+\author{Robert Vandemark \and Diane Ngo}
+
+\addbibresource{references.bib}
+\nocite{*}
+
+\acrodef{CMR}[CMR]{\emph{Curiosity Mars Rover}}
+\acrodef{SRR}[SRR]{\emph{Sample-Return Rover}}
+
+\titleformat{\chapter}[block]{\Huge\bfseries}{\thechapter}{1em}{\Huge\bfseries}
+
+\titlespacing{\chapter}{0pt}{0pt}{10pt}
+\renewcommand{\baselinestretch}{1.15}
+
+\begin{document}
+	
+	\setcounter{page}{1}
+	\maketitle
+	
+	\tableofcontents
+	\newpage
+	
+	\chapter{Abstract}
+	\input{sections/abstract/abstract.tex}
+	
+	\chapter{Introduction}
+	\input{sections/introduction/introduction.tex}
+	
+	\chapter{Robot Design}
+	\input{sections/robot-design/robot_design.tex}
+	
+	\begin{center}
+		\printbibliography[heading=bibintoc, title={Bibliography}]
+	\end{center}
+\end{document}
