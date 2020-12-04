@@ -6,6 +6,8 @@
                                          front_right_joint_controller
                                          rear_left_joint_controller
                                          rear_right_joint_controller
+                                         front_left_steer_joint_controller
+                                         front_right_steer_joint_controller
                                          front_left_wheel_joint_controller
                                          front_right_wheel_joint_controller
                                          rear_left_wheel_joint_controller
