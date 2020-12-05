@@ -1,0 +1,7 @@
+# Must stay as -1 and 1, for vehicle teleop and rosparam values to work
+int8 NEGATIVE=-1
+int8 POSITIVE=1
+
+string[] joint_names
+---
+int8[] joint_directions
