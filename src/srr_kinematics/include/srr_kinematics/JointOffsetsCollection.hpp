@@ -2,6 +2,7 @@
 #define __SRR_JOINT_OFFSETS_COLLECTION_HPP__
 
 #include "srr_msgs/CalculatePositionWithOffsets.h"
+#include "srr_msgs/GetDirectionOfRotation.h"
 
 #include <string>
 #include <unordered_map>
@@ -10,7 +11,10 @@ namespace SRR {
 
 class JointOffsetsCollection {
 public:
-    enum JointDirectionEnum {NEGATIVE = -1, POSITIVE = +1};
+    enum JointDirectionEnum {
+        NEGATIVE = srr_msgs::GetDirectionOfRotation::Request::NEGATIVE,
+        POSITIVE = srr_msgs::GetDirectionOfRotation::Request::POSITIVE
+    };
 
 private:
     std::unordered_map<std::string, double>             joint_name_offset_map;
@@ -19,8 +23,11 @@ private:
 public:
     JointOffsetsCollection(std::string list_joint_name_and_offset, std::string list_joint_name_and_direction);
 
-    bool handle_callback(srr_msgs::CalculatePositionWithOffsets::Request&  req,
-                         srr_msgs::CalculatePositionWithOffsets::Response& res);
+    bool handle_calculate_position_callback(srr_msgs::CalculatePositionWithOffsets::Request&  req,
+                                            srr_msgs::CalculatePositionWithOffsets::Response& res);
+
+    bool handle_direction_of_rotation_callback(srr_msgs::GetDirectionOfRotation::Request&  req,
+                                               srr_msgs::GetDirectionOfRotation::Response& res);
 };	// class JointOffsetsCollection
 
 }	// namespace SRR

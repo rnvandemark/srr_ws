@@ -19,6 +19,7 @@ add_message_files(DIRECTORY msg FILES
 )
 add_service_files(DIRECTORY srv FILES
   CalculatePositionWithOffsets.srv
+  GetDirectionOfRotation.srv
 )
 generate_messages(
   DEPENDENCIES

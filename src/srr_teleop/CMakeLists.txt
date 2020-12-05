@@ -8,7 +8,9 @@ find_package(catkin REQUIRED COMPONENTS
   srr_msgs
 )
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS rospy srr_msgs
+)
 
 # install all files in folders to their own shared folder
 foreach(pkg_dir scripts)

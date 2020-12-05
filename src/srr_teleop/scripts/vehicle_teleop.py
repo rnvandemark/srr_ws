@@ -2,12 +2,32 @@
 
 import rospy
 from std_msgs.msg import Float64
+from srr_msgs.srv import GetDirectionOfRotation
 
+from enum import Enum
 from threading import Lock
 from pynput import keyboard
 from signal import signal, SIGTERM
 from time import sleep
 from curses import initscr, cbreak, noecho, endwin
+
+# L=Left, R=Right, F=Front, B=Back/Rear, W=Wheels, C=Chassis, S=Steer
+class SRRJoints(Enum):
+    FLW = 1
+    FRW = 2
+    BLW = 3
+    BRW = 4
+    FLS = 5
+    FRS = 6
+    FLC = 7
+    FRC = 8
+    BLC = 9
+    BRC = 10
+
+class CntrlType(Enum):
+    POS = 1
+    EFF = 2
+    VEL = 3
 
 HELP_MSG = """
 ---------------------------
@@ -17,30 +37,70 @@ Press ESCAPE to quit
 ---------------------------
 """
 
-INC_SPEED   = 1.0
-INC_ROT     = 1.0
-MAG_WHEELS  = 125
-MAG_CHASSIS = 300.0
+INC_SPEED = 1.0
+INC_ROT   = 1.0
+
+MAG_WHEELS  = 12.5
+MAG_CHASSIS = 0.1
+MAG_STEER   = 100.0
 
 PREVIOUS_SIGTERM_CALLBACK = None
 THREAD_LOCK = None
 SHUTDOWN_REQUESTED = False
 ACTIVE_KEYS = None
 NODE_SLEEP_S = 0.05
+NOISE_THRESHOLD = 0.001
 
-BINDINGS_MOVE = {
-# L=Left, R=Right, F=Front, B=Back/Rear, W=Wheels, C=Chassis
-#         LW  RW  FLC FRC BLC BRC
-    'w': (-1, -1,  0,  0,  0,  0),
-    's': (+1, +1,  0,  0,  0,  0),
-    'a': (+1, -1,  0,  0,  0,  0),
-    'd': (-1, +1,  0,  0,  0,  0),
-    'o': ( 0,  0, +1, +1, +1, +1),
-    'p': ( 0,  0, -1, -1, -1, -1),
-    'i': ( 0,  0, -1, -1, +1, +1),
-    'k': ( 0,  0, +1, +1, -1, -1),
-    'j': ( 0,  0, -1, +1, -1, +1),
-    'l': ( 0,  0, +1, -1, +1, -1)
+def create_joint_dict(v0, v1, v2, v3, v4, v5, v6, v7, v8, v9):
+    return {
+        SRRJoints.FLW: v0,
+        SRRJoints.FRW: v1,
+        SRRJoints.BLW: v2,
+        SRRJoints.BRW: v3,
+        SRRJoints.FLS: v4,
+        SRRJoints.FRS: v5,
+        SRRJoints.FLC: v6,
+        SRRJoints.FRC: v7,
+        SRRJoints.BLC: v8,
+        SRRJoints.BRC: v9
+    }
+
+def create_joint_dict_mag(m, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9):
+    return create_joint_dict(
+        m * v0, m * v1, m * v2, m * v3, m * v4,
+        m * v5, m * v6, m * v7, m * v8, m * v9
+    )
+
+SRR_JOINT_NAMES = {
+    "FL_Wheel_Joint": SRRJoints.FLW,
+    "FR_Wheel_Joint": SRRJoints.FRW,
+    "RL_Wheel_Joint": SRRJoints.BLW,
+    "RR_Wheel_Joint": SRRJoints.BRW,
+    "FL_Rev_Joint":   SRRJoints.FLS,
+    "FR_Rev_Joint":   SRRJoints.FRS,
+    "FL_Joint":       SRRJoints.FLC,
+    "FR_Joint":       SRRJoints.FRC,
+    "RL_Joint":       SRRJoints.BLC,
+    "RR_Joint":       SRRJoints.BRC
+}
+
+CONTROLLER_TYPES = create_joint_dict(
+    CntrlType.VEL, CntrlType.VEL, CntrlType.VEL, CntrlType.VEL,
+    CntrlType.POS, CntrlType.POS,
+    CntrlType.POS, CntrlType.POS, CntrlType.POS, CntrlType.POS
+)
+
+BINDINGS_MOVE = {                          #FLW FRW BLW BRW FLS FRS FLC FRC BLC BRC
+    'w': create_joint_dict_mag(MAG_WHEELS,  +1, +1, +1, +1,  0,  0,  0,  0,  0,  0),
+    's': create_joint_dict_mag(MAG_WHEELS,  -1, -1, -1, -1,  0,  0,  0,  0,  0,  0),
+    'a': create_joint_dict_mag(MAG_STEER,    0,  0,  0,  0, +1, +1,  0,  0,  0,  0),
+    'd': create_joint_dict_mag(MAG_STEER,    0,  0,  0,  0, -1, -1,  0,  0,  0,  0),
+    'o': create_joint_dict_mag(MAG_CHASSIS,  0,  0,  0,  0,  0,  0, +1, +1, +1, +1),
+    'p': create_joint_dict_mag(MAG_CHASSIS,  0,  0,  0,  0,  0,  0, -1, -1, -1, -1),
+    'i': create_joint_dict_mag(MAG_CHASSIS,  0,  0,  0,  0,  0,  0, -1, -1, +1, +1),
+    'k': create_joint_dict_mag(MAG_CHASSIS,  0,  0,  0,  0,  0,  0, +1, +1, -1, -1),
+    'j': create_joint_dict_mag(MAG_CHASSIS,  0,  0,  0,  0,  0,  0, -1, +1, -1, +1),
+    'l': create_joint_dict_mag(MAG_CHASSIS,  0,  0,  0,  0,  0,  0, +1, -1, +1, -1)
 }
 
 BINDINGS_SPEED = {
@@ -88,23 +148,32 @@ def update_commanded_joint_efforts():
 
     rospy.init_node("srr_vehicle_teleop")
 
-    pub_front_left_wheel    = create_pub("front_left_wheel")
-    pub_front_right_wheel   = create_pub("front_right_wheel")
-    pub_rear_left_wheel     = create_pub("rear_left_wheel")
-    pub_rear_right_wheel    = create_pub("rear_right_wheel")
-    pub_front_left_chassis  = create_pub("front_left")
-    pub_front_right_chassis = create_pub("front_right")
-    pub_rear_left_chassis   = create_pub("rear_left")
-    pub_rear_right_chassis  = create_pub("rear_right")
+    srv_dir_rotation = rospy.ServiceProxy("/srr_integrated/get_direction_of_rotation", GetDirectionOfRotation)
 
-    speed_left_wheels         = 0
-    speed_right_wheels        = 0
-    speed_front_left_chassis  = 0
-    speed_front_right_chassis = 0
-    speed_rear_left_chassis   = 0
-    speed_rear_right_chassis  = 0
+    joint_pubs = create_joint_dict(
+        create_pub("front_left_wheel"),
+        create_pub("front_right_wheel"),
+        create_pub("rear_left_wheel"),
+        create_pub("rear_right_wheel"),
+        create_pub("front_left_steer"),
+        create_pub("front_right_steer"),
+        create_pub("front_left"),
+        create_pub("front_right"),
+        create_pub("rear_left"),
+        create_pub("rear_right")
+    )
+
+    joint_vals = create_joint_dict(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     try:
+        wheel_joint_names = ["FL_Wheel_Joint", "FR_Wheel_Joint", "RL_Wheel_Joint", "RR_Wheel_Joint"]
+        srv_response = srv_dir_rotation(joint_names=wheel_joint_names)
+        wheel_directions = srv_response.joint_directions
+        for ch in ['w', 's']:
+            for i in range(len(wheel_joint_names)):
+                wjn = SRR_JOINT_NAMES[wheel_joint_names[i]]
+                BINDINGS_MOVE[ch][wjn] = BINDINGS_MOVE[ch][wjn] * wheel_directions[i]
+
         shutdown_requested = False
         while not shutdown_requested:
             THREAD_LOCK.acquire()
@@ -113,23 +182,24 @@ def update_commanded_joint_efforts():
                 forced_stop = False
                 for key, event_effect in ACTIVE_KEYS.items():
                     if key == keyboard.Key.space:
-                        speed_left_wheels         = 0
-                        speed_right_wheels        = 0
-                        speed_front_left_chassis  = 0
-                        speed_front_right_chassis = 0
-                        speed_rear_left_chassis   = 0
-                        speed_rear_right_chassis  = 0
+                        for j in SRRJoints:
+                            joint_vals[j] = 0
                         forced_stop = True
                         break
                     elif type(key) is keyboard.KeyCode:
                         ch = key.char
                         if ch in BINDINGS_MOVE.keys():
-                            speed_left_wheels         = speed_left_wheels         + (BINDINGS_MOVE[ch][0] * event_effect * MAG_WHEELS)
-                            speed_right_wheels        = speed_right_wheels        + (BINDINGS_MOVE[ch][1] * event_effect * MAG_WHEELS)
-                            speed_front_left_chassis  = speed_front_left_chassis  + (BINDINGS_MOVE[ch][2] * event_effect * MAG_CHASSIS)
-                            speed_front_right_chassis = speed_front_right_chassis + (BINDINGS_MOVE[ch][3] * event_effect * MAG_CHASSIS)
-                            speed_rear_left_chassis   = speed_rear_left_chassis   + (BINDINGS_MOVE[ch][4] * event_effect * MAG_CHASSIS)
-                            speed_rear_right_chassis  = speed_rear_right_chassis  + (BINDINGS_MOVE[ch][5] * event_effect * MAG_CHASSIS)
+                            for j in SRRJoints:
+                                move = BINDINGS_MOVE[ch][j]
+                                cntrl = CONTROLLER_TYPES[j]
+                                if cntrl == CntrlType.POS:
+                                    joint_vals[j] = joint_vals[j] + move
+                                elif cntrl == CntrlType.EFF:
+                                    pass
+                                elif cntrl == CntrlType.VEL:
+                                    joint_vals[j] = joint_vals[j] + (move * event_effect)
+                                    if abs(joint_vals[j]) < NOISE_THRESHOLD:
+                                        joint_vals[j] = 0
 
                     if event_effect == 1:
                         ACTIVE_KEYS[key] = 0
@@ -141,14 +211,8 @@ def update_commanded_joint_efforts():
             finally:
                 THREAD_LOCK.release()
 
-            pub_front_left_wheel.publish(speed_left_wheels)
-            pub_front_right_wheel.publish(speed_right_wheels)
-            pub_rear_left_wheel.publish(speed_left_wheels)
-            pub_rear_right_wheel.publish(speed_right_wheels)
-            pub_front_left_chassis.publish(speed_front_left_chassis)
-            pub_front_right_chassis.publish(speed_front_right_chassis)
-            pub_rear_left_chassis.publish(speed_rear_left_chassis)
-            pub_rear_right_chassis.publish(speed_rear_right_chassis)
+            for j in SRRJoints:
+                joint_pubs[j].publish(joint_vals[j])
 
             sleep(NODE_SLEEP_S)
 

@@ -33,8 +33,8 @@ SRR::JointOffsetsCollection::JointOffsetsCollection(std::string list_joint_name_
     assert(joint_name_offset_map.size() == joint_name_direction_map.size());
 }
 
-bool SRR::JointOffsetsCollection::handle_callback(srr_msgs::CalculatePositionWithOffsets::Request&  req,
-                                                  srr_msgs::CalculatePositionWithOffsets::Response& res)
+bool SRR::JointOffsetsCollection::handle_calculate_position_callback(srr_msgs::CalculatePositionWithOffsets::Request&  req,
+                                                                     srr_msgs::CalculatePositionWithOffsets::Response& res)
 {
     if (req.joint_names.size() != req.goal_positions.size())
     {
@@ -61,6 +61,35 @@ bool SRR::JointOffsetsCollection::handle_callback(srr_msgs::CalculatePositionWit
                     break;
                 case JointDirectionEnum::POSITIVE:
                     res.joint_positions[i] = goal_position - joint_offset;
+                    break;
+                default:
+                    return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool SRR::JointOffsetsCollection::handle_direction_of_rotation_callback(srr_msgs::GetDirectionOfRotation::Request&  req,
+                                                                        srr_msgs::GetDirectionOfRotation::Response& res)
+{
+    res.joint_directions.resize(req.joint_names.size());
+    for (size_t i = 0; i < req.joint_names.size(); i++)
+    {
+        std::string joint_name = req.joint_names[i];
+        if (joint_name_direction_map.find(joint_name) == joint_name_direction_map.end())
+        {
+            return false;
+        }
+        else
+        {
+            JointDirectionEnum joint_direction = joint_name_direction_map[joint_name];
+            switch (joint_direction)
+            {
+                case JointDirectionEnum::NEGATIVE:
+                case JointDirectionEnum::POSITIVE:
+                    res.joint_directions[i] = static_cast<int>(joint_direction);
                     break;
                 default:
                     return false;

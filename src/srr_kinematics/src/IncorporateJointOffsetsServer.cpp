@@ -24,7 +24,13 @@ int main(int argc, char **argv)
 
     ros::ServiceServer srv_calc_joint_position = n.advertiseService(
         std::string("/") + rosparam_namespace + "/calculate_position_with_offsets",
-        &SRR::JointOffsetsCollection::handle_callback,
+        &SRR::JointOffsetsCollection::handle_calculate_position_callback,
+        &collection
+    );
+
+    ros::ServiceServer srv_get_joint_direction = n.advertiseService(
+        std::string("/") + rosparam_namespace + "/get_direction_of_rotation",
+        &SRR::JointOffsetsCollection::handle_direction_of_rotation_callback,
         &collection
     );
 

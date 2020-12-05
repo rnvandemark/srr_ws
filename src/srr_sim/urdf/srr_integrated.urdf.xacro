@@ -13,6 +13,15 @@
       <mechanicalReduction>50</mechanicalReduction>
     </actuator>
   </transmission>
+  <transmission name="FL_Rev_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FL_Rev_Joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FL_Rev_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
   <transmission name="FL_Wheel_Transmitter">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="FL_Wheel_Joint">
@@ -28,6 +37,15 @@
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
     <actuator name="FR_Wheel_Motor">
+      <mechanicalReduction>50</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="FR_Rev_Transmitter">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="FR_Rev_Joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="FR_Rev_Motor">
       <mechanicalReduction>50</mechanicalReduction>
     </actuator>
   </transmission>
