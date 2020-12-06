@@ -15,7 +15,7 @@ SRR::VehicleVelKinContainer::VehicleVelKinContainer(double _theta_i, double _leg
 {
 }
 
-#define ADD(v) #v ": " << v << ", "
+#define DBP(v) #v ": " << v << ", "
 bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelKin::Request&  req,
                                                   srr_msgs::CalculateVehicleVelKin::Response& res)
 {
@@ -37,7 +37,7 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
     double h = (leg_length * (std::cos(tfr) + std::cos(tba))) - (conn_length * (std::sin(tfr) + std::sin(tba)));
     double R = h / std::tan(theta_i);
     double theta_o = std::atan2(h, R + d);
-    std::cout << ADD(tfr) << ADD(h) << ADD(R) << ADD(theta_o) << std::endl;
+    std::cout << DBP(tfr) << DBP(h) << DBP(R) << DBP(theta_o) << std::endl;
 
     // Declare the init and final 2D pose (x, y, and theta) and allocate space for calculated results
     geometry_msgs::Pose2D p2di = *iter, p2df;
@@ -45,23 +45,45 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
     {
         p2df = *iter;
         double xi = p2di.x, yi = p2di.y, ti = p2di.theta, xf = p2df.x, yf = p2df.y, tf = p2df.theta;
-        std::cout << ADD(xi) << ADD(yi) << ADD(ti) << ADD(xf) << ADD(yf) << ADD(tf) << std::endl;
+        std::cout << DBP(xi) << DBP(yi) << DBP(ti) << DBP(xf) << DBP(yf) << DBP(tf) << std::endl;
 
         // Solve for angle sigma, the amount of initial arc the robot should make, such that:
-        //   sigma = acos((xf/R) - cos(tf) + (1 / sqrt((R^2 / l^2) + 1)) + cos(ti)) - ti
-        //     l^2 = (e-a)^2 + (f-b)^2
+        //   sigma = acos(((xf-xi-l2cos(beta))/R) + cos(ti) - cos(tf)) - ti
+        //    beta = gamma-alpha
+        //   gamma = atan((f-b)/(e-a))
+        //   alpha = atan(R/l1)
+        //    l1^2 = (e-a)^2 + (f-b)^2
+        //    l2^2 = l1^2 + r^2
         //       a = xi - (R * cos(ti))
         //       b = yi - (R * sin(ti))
         //       e = xf - (R * cos(tf))
         //       f = yf - (R * sin(tf))
-        double e_a   = xf - (R * cos(tf)) - (xi - (R * cos(ti)));
-        double f_b   = yf - (R * sin(tf)) - (yi - (R * sin(ti)));
-        double l2    = (e_a * e_a) + (f_b * f_b);
-        double sigma = std::acos((xf / R) - std::cos(tf) + (1 / std::sqrt(((R * R) / l2) + 1)) + std::cos(ti)) - ti;
 
-        // Solve for angle delta, rotation to take at the end to finish with the objective orientation
+        double e = xf - (R * cos(tf));
+        double a = xi - (R * cos(ti));
+        double f = yf - (R * sin(tf));
+        double b = yi - (R * sin(ti));
+        std::cout << DBP(e) << DBP(a) << DBP(f) << DBP(b) << std::endl;
+
+        double e_a = e - a;
+        double f_b = f - b;
+        double l12 = (e_a * e_a) + (f_b * f_b);
+        double l1  = std::sqrt(l12);
+        double l22 = l12 + (R * R);
+        double l2  = std::sqrt(l22);
+        std::cout << DBP(e_a) << DBP(f_b) << DBP(l12) << DBP(l1) << DBP(l22) << DBP(l2) << std::endl;
+
+        double gamma = std::atan(f_b / e_a);
+        double alpha = std::atan(R / l1);
+        double beta  = gamma - alpha;
+        std::cout << DBP(gamma) << DBP(alpha) << DBP(beta) << std::endl;
+
+        // Finally, calculate sigma
+        // Then solve for angle delta, rotation to take at the end to finish with the objective orientation
+        double sxpos = ((xf - xi - (l2 * std::cos(beta))) / R) + std::cos(ti) - std::cos(tf);
+        double sigma = std::acos(sxpos) - ti;
         double delta = tf - ti - sigma;
-        std::cout << ADD(e_a) << ADD(f_b) << ADD(l2) << ADD(sigma) << ADD(delta) << std::endl;
+        std::cout << DBP(sxpos) << DBP(sigma) << DBP(delta) << std::endl;
 
         // Now that sigma and delta are known, calculate the angular velocities of the wheels
         // Given the outer's wheel's desired velocity, calculate the elapsed time, use that to find the inner wheel velocity
@@ -69,7 +91,7 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
         double f_dt = f_arc_o / (Rw * req.omega_dot_max);
         double f_arc_i = R * sigma;
         double f_omega_dot_i = f_arc_i / (Rw * f_dt);
-        std::cout << ADD(f_arc_o) << ADD(f_dt) << ADD(f_arc_i) << ADD(f_omega_dot_i) << std::endl;
+        std::cout << DBP(f_arc_o) << DBP(f_dt) << DBP(f_arc_i) << DBP(f_omega_dot_i) << std::endl;
 
         // Now calculate the time elapsed for the straight portion
         // The distance to travel from (g,h) to (c,d) is the same as (a,b) to (e,f), so reuse l^2
@@ -104,4 +126,4 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
     res.return_code = srr_msgs::CalculateVehicleVelKin::Request::SUCCESS;
     return true;
 }
-#undef ADD
+#undef DBP
