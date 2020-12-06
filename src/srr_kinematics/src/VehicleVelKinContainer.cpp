@@ -50,9 +50,9 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
         // Solve for angle sigma, the amount of initial arc the robot should make, such that:
         //   sigma = acos(((xf-xi-l2cos(beta))/R) + cos(ti) - cos(tf)) - ti
         //    beta = gamma-alpha
-        //   gamma = atan((f-b)/(e-a))
-        //   alpha = atan(R/l1)
-        //    l1^2 = (e-a)^2 + (f-b)^2
+        //   gamma = atan2(f-b, a-e)
+        //   alpha = -atan(R/l1)
+        //    l1^2 = (a-e)^2 + (f-b)^2
         //    l2^2 = l1^2 + r^2
         //       a = xi - (R * cos(ti))
         //       b = yi - (R * sin(ti))
@@ -65,22 +65,22 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
         double b = yi - (R * sin(ti));
         std::cout << DBP(e) << DBP(a) << DBP(f) << DBP(b) << std::endl;
 
-        double e_a = e - a;
+        double a_e = a - e;
         double f_b = f - b;
-        double l12 = (e_a * e_a) + (f_b * f_b);
+        double l12 = (a_e * a_e) + (f_b * f_b);
         double l1  = std::sqrt(l12);
         double l22 = l12 + (R * R);
         double l2  = std::sqrt(l22);
-        std::cout << DBP(e_a) << DBP(f_b) << DBP(l12) << DBP(l1) << DBP(l22) << DBP(l2) << std::endl;
+        std::cout << DBP(a_e) << DBP(f_b) << DBP(l12) << DBP(l1) << DBP(l22) << DBP(l2) << std::endl;
 
-        double gamma = std::atan(f_b / e_a);
-        double alpha = std::atan(R / l1);
+        double gamma = std::atan2(f_b, a_e);
+        double alpha = -std::atan(R / l1);
         double beta  = gamma - alpha;
         std::cout << DBP(gamma) << DBP(alpha) << DBP(beta) << std::endl;
 
         // Finally, calculate sigma
         // Then solve for angle delta, rotation to take at the end to finish with the objective orientation
-        double sxpos = ((xf - xi - (l2 * std::cos(beta))) / R) + std::cos(ti) - std::cos(tf);
+        double sxpos = ((xf - xi + (l2 * std::cos(beta))) / R) + std::cos(ti) - std::cos(tf);
         double sigma = std::acos(sxpos) - ti;
         double delta = tf - ti - sigma;
         std::cout << DBP(sxpos) << DBP(sigma) << DBP(delta) << std::endl;
