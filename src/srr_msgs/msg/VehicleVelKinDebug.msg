@@ -1,1 +1,11 @@
+srr_msgs/VehiclePath path
 srr_msgs/VehicleVelKinSolution solution
+float64 tfr
+float64 tba
+float64 h
+float64 R
+float64 theta_i
+float64 theta_o
+float64[] sigma
+float64[] delta
+float64[] m_l

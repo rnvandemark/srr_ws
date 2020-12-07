@@ -6,8 +6,18 @@
 
 #include <vector>
 #include <cmath>
+#include <cstdint>
 
-SRR::VehicleVelKinContainer::VehicleVelKinContainer(double _theta_i, double _leg_length, double _conn_length, double _d, double _Rw):
+SRR::VehicleVelKinContainer::VehicleVelKinContainer(
+    ros::Publisher& _pub_debug,
+    double _theta_i,
+    double _leg_length,
+    double _conn_length,
+    double _d,
+    double _Rw
+):
+    pub_debug(_pub_debug),
+    msg_debug(),
     theta_i(_theta_i),
     leg_length(_leg_length),
     conn_length(_conn_length),
@@ -17,11 +27,15 @@ SRR::VehicleVelKinContainer::VehicleVelKinContainer(double _theta_i, double _leg
 }
 
 #define DBP(v) #v ": " << v << ", "
+#define MSGSET(v) msg_debug.v = v
+#define MSGPUSH(v) msg_debug.v.push_back(v)
 bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelKin::Request&  req,
                                                   srr_msgs::CalculateVehicleVelKin::Response& res)
 {
-    // Mark return value as undefined in case an error occurs
-    res.solution.return_code = srr_msgs::VehicleVelKinSolution::UNDEFINED;
+    msg_debug.path = req.path;
+
+    uint8_t rc = srr_msgs::VehicleVelKinSolution::UNDEFINED;
+    bool rv    = false;
 
     std::vector<geometry_msgs::Pose2D> waypoints      = req.path.waypoints;
     std::vector<geometry_msgs::Pose2D>::iterator iter = waypoints.begin();
@@ -29,15 +43,16 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
     // The initial/current waypoint is required, check that it was provided
     if (iter == waypoints.end())
     {
-        res.solution.return_code = srr_msgs::VehicleVelKinSolution::FAILURE_NO_INIT_POSITION_GIVEN;
-        return false;
+        rc = srr_msgs::VehicleVelKinSolution::FAILURE_NO_INIT_POSITION_GIVEN;
     }
-
+    else
+    {
     // Given the inclination of the chassis, calculate the longitudinal length between the wheels
     double tfr = req.theta_front, tba = req.theta_back;
     double h = (leg_length * (std::cos(tfr) + std::cos(tba))) - (conn_length * (std::sin(tfr) + std::sin(tba)));
     double R = h / std::tan(theta_i);
     double theta_o = std::atan2(h, R + d);
+    MSGSET(tfr); MSGSET(tba); MSGSET(h); MSGSET(R); MSGSET(theta_i); MSGSET(theta_o);
     std::cout << DBP(tfr) << DBP(h) << DBP(R) << DBP(theta_o) << std::endl;
 
     // Declare the init and final 2D pose (x, y, and theta) and allocate space for calculated results
@@ -84,6 +99,7 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
         double sxpos = ((xf - xi + (l2 * std::cos(beta))) / R) + std::cos(ti) - std::cos(tf);
         double sigma = std::acos(sxpos) - ti;
         double delta = tf - ti - sigma;
+        MSGPUSH(sigma); MSGPUSH(delta);
         std::cout << DBP(sxpos) << DBP(sigma) << DBP(delta) << std::endl;
 
         // Now that sigma and delta are known, calculate the angular velocities of the wheels
@@ -96,7 +112,9 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
 
         // Now calculate the time elapsed for the straight portion
         // The distance to travel from (g,h) to (c,d) is the same as (a,b) to (e,f), so reuse l^2
-        double m_dt = std::sqrt(l2) / (Rw * req.omega_dot_max);
+        double m_l  = std::sqrt(l2);
+        double m_dt = m_l / (Rw * req.omega_dot_max);
+        MSGPUSH(m_l);
 
         // Now repeat for the final arc
         double s_arc_o = (R + d) * delta;
@@ -124,7 +142,15 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
         p2df = p2di;
     }
 
-    res.solution.return_code = srr_msgs::VehicleVelKinSolution::SUCCESS;
-    return true;
+    rc = srr_msgs::VehicleVelKinSolution::SUCCESS;
+    rv = true;
+    }
+
+    res.solution.return_code = rc;
+    msg_debug.solution = res.solution;
+    pub_debug.publish(msg_debug);
+    return rv;
 }
 #undef DBP
+#undef MSGSET
+#undef MSGPUSH

@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 
 #include "srr_kinematics/VehicleVelKinContainer.hpp"
+#include "srr_msgs/VehicleVelKinDebug.h"
 
 #include <iostream>
 #include <string>
@@ -31,7 +32,13 @@ int main(int argc, char **argv)
         return 2;
     }
 
+    ros::Publisher pub_vehicle_vel_kin_debug = n.advertise<srr_msgs::VehicleVelKinDebug>(
+        pref+"/vehicle_vel_kin_debug",
+        10
+    );
+
     SRR::VehicleVelKinContainer container(
+        pub_vehicle_vel_kin_debug,
         theta_i,
         leg_length,
         conn_length,
