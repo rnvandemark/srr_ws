@@ -1,13 +1,7 @@
-uint8 UNDEFINED=0
-uint8 SUCCESS=1
-uint8 FAILURE_NO_INIT_POSITION_GIVEN=2
-uint8 FAILURE_IMPOSSIBLE_PATH_REQUESTED=3
-
 # Assumes the front and back angles are the same for the left and right sides
 float64 theta_front
 float64 theta_back
 float64 omega_dot_max
 srr_msgs/VehiclePath path
 ---
-uint8 return_code
-srr_msgs/VehicleVelKinSegment[] segments
+srr_msgs/VehicleVelKinSolution solution

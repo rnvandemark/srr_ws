@@ -20,6 +20,8 @@ add_message_files(DIRECTORY msg FILES
   VehicleWheelRates.msg
   VehicleVelKinSegment.msg
   VehiclePath.msg
+  VehicleVelKinSolution.msg
+  VehicleVelKinDebug.msg
 )
 add_service_files(DIRECTORY srv FILES
   CalculatePositionWithOffsets.srv

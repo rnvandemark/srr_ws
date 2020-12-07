@@ -2,6 +2,7 @@
 
 #include "geometry_msgs/Pose2D.h"
 #include "srr_msgs/VehicleVelKinSegment.h"
+#include "srr_msgs/VehicleVelKinSolution.h"
 
 #include <vector>
 #include <cmath>
@@ -20,7 +21,7 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
                                                   srr_msgs::CalculateVehicleVelKin::Response& res)
 {
     // Mark return value as undefined in case an error occurs
-    res.return_code = srr_msgs::CalculateVehicleVelKin::Request::UNDEFINED;
+    res.solution.return_code = srr_msgs::VehicleVelKinSolution::UNDEFINED;
 
     std::vector<geometry_msgs::Pose2D> waypoints      = req.path.waypoints;
     std::vector<geometry_msgs::Pose2D>::iterator iter = waypoints.begin();
@@ -28,7 +29,7 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
     // The initial/current waypoint is required, check that it was provided
     if (iter == waypoints.end())
     {
-        res.return_code = srr_msgs::CalculateVehicleVelKin::Request::FAILURE_NO_INIT_POSITION_GIVEN;
+        res.solution.return_code = srr_msgs::VehicleVelKinSolution::FAILURE_NO_INIT_POSITION_GIVEN;
         return false;
     }
 
@@ -118,12 +119,12 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
         segment.st_rw_angular_velocity = req.omega_dot_max;
         segment.st_duration = s_dt;
 
-        res.segments.push_back(segment);
+        res.solution.segments.push_back(segment);
 
         p2df = p2di;
     }
 
-    res.return_code = srr_msgs::CalculateVehicleVelKin::Request::SUCCESS;
+    res.solution.return_code = srr_msgs::VehicleVelKinSolution::SUCCESS;
     return true;
 }
 #undef DBP
