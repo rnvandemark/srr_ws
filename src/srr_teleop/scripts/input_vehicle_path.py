@@ -9,6 +9,7 @@ from vehicle_vel_kin_caller import VehicleVelKinCaller
 NODE_NAME = "srr_vehicle_test_vehicle_vel_kin"
 CLI_CALC_VEHICLE_VEL_KIN = "/srr_integrated/calc_vehicle_vel_kin"
 SUB_VEHICLE_VEL_KIN_DEBUG = "/srr_integrated/vehicle_vel_kin_debug"
+PUB_VEHICLE_PROGRAM = "/srr_integrated/program"
 
 def main():
     parser = ArgumentParser()
@@ -58,8 +59,8 @@ def main():
             theta=rads(float(p2d_parts[2]))
         ))
 
-    caller = VehicleVelKinCaller(NODE_NAME, CLI_CALC_VEHICLE_VEL_KIN, SUB_VEHICLE_VEL_KIN_DEBUG)
-    response, msg_debug = caller.call(rads(args.tf), rads(args.tb), rads(args.odot), waypoints, wait_s=0.25);
+    caller = VehicleVelKinCaller(NODE_NAME, CLI_CALC_VEHICLE_VEL_KIN, SUB_VEHICLE_VEL_KIN_DEBUG, pub_program_topic=PUB_VEHICLE_PROGRAM)
+    response, msg_debug = caller.call(rads(args.tf), rads(args.tb), rads(args.odot), waypoints, waiti_s=0.25, waitf_s=0.25);
 
     print "CALCULATION RESPONSE:"
     print "  {0}".format(str(response).replace("\n", "\n  "))

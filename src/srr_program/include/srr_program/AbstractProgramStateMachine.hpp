@@ -76,6 +76,7 @@ public:
 
     void handle_program_callback(const ProgramMsgType& msg)
     {
+        ROS_INFO("Received new program.");
         if (verify(msg))
         {
             program = msg;
