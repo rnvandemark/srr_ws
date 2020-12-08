@@ -126,15 +126,15 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
             srr_msgs::VehicleVelKinSegment segment;
             segment.ft_lw_direction = theta_i;
             segment.ft_rw_direction = theta_o;
-            segment.ft_lw_angular_velocity = f_omega_dot_i;
-            segment.ft_rw_angular_velocity = req.omega_dot_max;
+            segment.ft_lw_angular_velocity = -f_omega_dot_i;
+            segment.ft_rw_angular_velocity = -req.omega_dot_max;
             segment.ft_duration = f_dt;
-            segment.m_w_angular_velocities = req.omega_dot_max;
+            segment.m_w_angular_velocities = -req.omega_dot_max;
             segment.m_duration = m_dt;
             segment.st_lw_direction = theta_i;
             segment.st_rw_direction = theta_o;
-            segment.st_lw_angular_velocity = s_omega_dot_i;
-            segment.st_rw_angular_velocity = req.omega_dot_max;
+            segment.st_lw_angular_velocity = -s_omega_dot_i;
+            segment.st_rw_angular_velocity = -req.omega_dot_max;
             segment.st_duration = s_dt;
 
             res.solution.segments.push_back(segment);
