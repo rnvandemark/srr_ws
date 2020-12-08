@@ -104,9 +104,9 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
 
             // Now that sigma and delta are known, calculate the angular velocities of the wheels
             // Given the outer's wheel's desired velocity, calculate the elapsed time, use that to find the inner wheel velocity
-            double f_arc_o = (R + d) * sigma;
+            double f_arc_o = std::abs((R + d) * sigma);
             double f_dt = f_arc_o / (Rw * req.omega_dot_max);
-            double f_arc_i = R * sigma;
+            double f_arc_i = std::abs(R * sigma);
             double f_omega_dot_i = f_arc_i / (Rw * f_dt);
             std::cout << DBP(f_arc_o) << DBP(f_dt) << DBP(f_arc_i) << DBP(f_omega_dot_i) << std::endl;
 
@@ -117,9 +117,9 @@ bool SRR::VehicleVelKinContainer::handle_callback(srr_msgs::CalculateVehicleVelK
             MSGPUSH(m_l);
 
             // Now repeat for the final arc
-            double s_arc_o = (R + d) * delta;
+            double s_arc_o = std::abs((R + d) * delta);
             double s_dt = s_arc_o / (Rw * req.omega_dot_max);
-            double s_arc_i = R * delta;
+            double s_arc_i = std::abs(R * delta);
             double s_omega_dot_i = s_arc_i / (Rw * s_dt);
 
             // Populate message
