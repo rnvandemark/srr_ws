@@ -44,4 +44,12 @@
     type="incorporate_joints_offsets_server"
     args="$(arg vehicle_model_name)"
     output="screen" />
+  <node
+    name="calculate_vehicle_vel_kin_server"
+    pkg="srr_kinematics"
+    type="calculate_vehicle_vel_kin_server" />
+  <node
+    name="vehicle_program_state_machine"
+    pkg="srr_program"
+    type="psm_vehicle" />
 </launch>
