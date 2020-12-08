@@ -52,67 +52,67 @@ protected:
         bool rv = false;
         if (state == PSM_V_t::PSMState::ACTIVE)
         {
-        if ((curr_duration < 0) || (curr_secs >= curr_start + curr_duration))
-        {
-            curr_start = curr_secs;
-            srr_msgs::VehicleVelKinSegment seg = program.segments[curr_segment];
-            switch(curr_move)
+            if ((curr_duration < 0) || (curr_secs >= curr_start + curr_duration))
             {
-                case VehicleMove::NOT_STARTED:
-                    curr_move = VehicleMove::FIRST_TURN;
-                    curr_duration = seg.ft_duration;
-                    publish_controller_values(
-                        seg.ft_lw_direction,
-                        seg.ft_rw_direction,
-                        seg.ft_lw_angular_velocity,
-                        seg.ft_rw_angular_velocity,
-                        seg.ft_lw_angular_velocity,
-                        seg.ft_rw_angular_velocity
-                    );
-                    break;
-                case VehicleMove::FIRST_TURN:
-                    curr_move = VehicleMove::LINEAR_MOVE;
-                    curr_duration = seg.m_duration;
-                    publish_controller_values(
-                        0,
-                        0,
-                        seg.m_w_angular_velocities,
-                        seg.m_w_angular_velocities,
-                        seg.m_w_angular_velocities,
-                        seg.m_w_angular_velocities
-                    );
-                    break;
-                case VehicleMove::LINEAR_MOVE:
-                    curr_move = VehicleMove::SECOND_TURN;
-                    curr_duration = seg.st_duration;
-                    publish_controller_values(
-                        seg.st_lw_direction,
-                        seg.st_rw_direction,
-                        seg.st_lw_angular_velocity,
-                        seg.st_rw_angular_velocity,
-                        seg.st_lw_angular_velocity,
-                        seg.st_rw_angular_velocity
-                    );
-                    break;
-                case VehicleMove::SECOND_TURN:
-                    if (++curr_segment >= program.segments.size())
-                    {
-                        curr_move = VehicleMove::NONE;
-                        publish_controller_values(0, 0, 0, 0, 0, 0);
-                        ROS_INFO("Done program.");
+                curr_start = curr_secs;
+                srr_msgs::VehicleVelKinSegment seg = program.segments[curr_segment];
+                switch(curr_move)
+                {
+                    case VehicleMove::NOT_STARTED:
+                        curr_move = VehicleMove::FIRST_TURN;
+                        curr_duration = seg.ft_duration;
+                        publish_controller_values(
+                            seg.ft_lw_direction,
+                            seg.ft_rw_direction,
+                            seg.ft_lw_angular_velocity,
+                            seg.ft_rw_angular_velocity,
+                            seg.ft_lw_angular_velocity,
+                            seg.ft_rw_angular_velocity
+                        );
+                        break;
+                    case VehicleMove::FIRST_TURN:
+                        curr_move = VehicleMove::LINEAR_MOVE;
+                        curr_duration = seg.m_duration;
+                        publish_controller_values(
+                            0,
+                            0,
+                            seg.m_w_angular_velocities,
+                            seg.m_w_angular_velocities,
+                            seg.m_w_angular_velocities,
+                            seg.m_w_angular_velocities
+                        );
+                        break;
+                    case VehicleMove::LINEAR_MOVE:
+                        curr_move = VehicleMove::SECOND_TURN;
+                        curr_duration = seg.st_duration;
+                        publish_controller_values(
+                            seg.st_lw_direction,
+                            seg.st_rw_direction,
+                            seg.st_lw_angular_velocity,
+                            seg.st_rw_angular_velocity,
+                            seg.st_lw_angular_velocity,
+                            seg.st_rw_angular_velocity
+                        );
+                        break;
+                    case VehicleMove::SECOND_TURN:
+                        if (++curr_segment >= program.segments.size())
+                        {
+                            curr_move = VehicleMove::NONE;
+                            publish_controller_values(0, 0, 0, 0, 0, 0);
+                            ROS_INFO("Done program.");
+                            rv = true;
+                        }
+                        else
+                        {
+                            curr_move = VehicleMove::NOT_STARTED;
+                            curr_duration = -1;
+                        }
+                        break;
+                    default:
                         rv = true;
-                    }
-                    else
-                    {
-                        curr_move = VehicleMove::NOT_STARTED;
-                        curr_duration = -1;
-                    }
-                    break;
-                default:
-                    rv = true;
-                    break;
+                        break;
+                }
             }
-        }
         }
         return rv;
     }
