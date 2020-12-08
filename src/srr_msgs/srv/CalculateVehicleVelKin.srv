@@ -1,0 +1,7 @@
+# Assumes the front and back angles are the same for the left and right sides
+float64 theta_front
+float64 theta_back
+float64 omega_dot_max
+srr_msgs/VehiclePath path
+---
+srr_msgs/VehicleVelKinSolution solution

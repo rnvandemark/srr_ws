@@ -18,6 +18,11 @@
     /$(arg vehicle_model_name)/init_pose: $(arg init_vehicle_pose)
     /$(arg vehicle_model_name)/joint_zero_offsets: FL_Joint=0,FR_Joint=0,RL_Joint=0,RR_Joint=0,FL_Rev_Joint=0,FR_Rev_Joint=0,FL_Wheel_Joint=0,FR_Wheel_Joint=0,RL_Wheel_Joint=0,RR_Wheel_Joint=0
     /$(arg vehicle_model_name)/joint_directions_of_rotation: FL_Joint=-1,FR_Joint=-1,RL_Joint=+1,RR_Joint=+1,FL_Rev_Joint=+1,FR_Rev_Joint=+1,FL_Wheel_Joint=-1,FR_Wheel_Joint=-1,RL_Wheel_Joint=-1,RR_Wheel_Joint=-1
+    /$(arg vehicle_model_name)/velocity_kinematics/theta_i: 0.2617994
+    /$(arg vehicle_model_name)/velocity_kinematics/leg_length: 0.21844
+    /$(arg vehicle_model_name)/velocity_kinematics/conn_length: 0.04445
+    /$(arg vehicle_model_name)/velocity_kinematics/d: 0.24511
+    /$(arg vehicle_model_name)/velocity_kinematics/Rw: 0.0943864
   </rosparam>
 
   <node
@@ -39,4 +44,12 @@
     type="incorporate_joints_offsets_server"
     args="$(arg vehicle_model_name)"
     output="screen" />
+  <node
+    name="calculate_vehicle_vel_kin_server"
+    pkg="srr_kinematics"
+    type="calculate_vehicle_vel_kin_server" />
+  <node
+    name="vehicle_program_state_machine"
+    pkg="srr_program"
+    type="psm_vehicle" />
 </launch>

@@ -30,9 +30,18 @@ target_link_libraries(traction_controller
   ${catkin_LIBRARIES}
 )
 
+add_executable(calculate_vehicle_vel_kin_server
+  src/VehicleVelKinContainer.cpp
+  src/VehicleVelKinCalculator.cpp
+)
+target_link_libraries(calculate_vehicle_vel_kin_server
+  ${catkin_LIBRARIES}
+)
+
 install(TARGETS
   incorporate_joints_offsets_server
   traction_controller
+  calculate_vehicle_vel_kin_server
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
