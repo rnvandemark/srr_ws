@@ -1,22 +1,14 @@
 #!/usr/bin/env python
-import rospy
 from argparse import ArgumentParser
 from math import radians as rads
-from time import sleep
 
-from srr_msgs.srv import CalculateVehicleVelKin
-from srr_msgs.msg import VehiclePath, VehicleVelKinDebug
 from geometry_msgs.msg import Pose2D
+
+from vehicle_vel_kin_caller import VehicleVelKinCaller
 
 NODE_NAME = "srr_vehicle_test_vehicle_vel_kin"
 CLI_CALC_VEHICLE_VEL_KIN = "/srr_integrated/calc_vehicle_vel_kin"
 SUB_VEHICLE_VEL_KIN_DEBUG = "/srr_integrated/vehicle_vel_kin_debug"
-
-MSG_DEBUG = None
-def debug_callback(msg):
-    global MSG_DEBUG
-    MSG_DEBUG = msg
-    rospy.signal_shutdown("Done program.")
 
 def main():
     parser = ArgumentParser()
@@ -66,32 +58,14 @@ def main():
             theta=rads(float(p2d_parts[2]))
         ))
 
-    rospy.init_node(NODE_NAME, disable_signals=True)
-
-    cli_calc_vehicle_vel_kin = rospy.ServiceProxy(CLI_CALC_VEHICLE_VEL_KIN, CalculateVehicleVelKin)
-    sub_calc_vehicle_vel_kin_debug = rospy.Subscriber(
-        SUB_VEHICLE_VEL_KIN_DEBUG,
-        VehicleVelKinDebug,
-        debug_callback,
-        queue_size=1
-    )
-
-    sleep(0.25)
-    response = cli_calc_vehicle_vel_kin(
-        theta_front=rads(args.tf),
-        theta_back=rads(args.tb),
-        omega_dot_max=rads(args.odot),
-        path=VehiclePath(waypoints=waypoints)
-    )
-
-    rospy.spin();
-    sleep(0.25)
+    caller = VehicleVelKinCaller(NODE_NAME, CLI_CALC_VEHICLE_VEL_KIN, SUB_VEHICLE_VEL_KIN_DEBUG)
+    response, msg_debug = caller.call(rads(args.tf), rads(args.tb), rads(args.odot), waypoints, wait_s=0.25);
 
     print "CALCULATION RESPONSE:"
-    print response
+    print "  {0}".format(str(response).replace("\n", "\n  "))
     print
     print "DEBUG MESSAGE:"
-    print MSG_DEBUG
+    print "  {0}".format(str(msg_debug).replace("\n", "\n  "))
 
 if __name__ == "__main__":
     main()
