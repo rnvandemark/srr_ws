@@ -4,6 +4,7 @@
 #include <std_msgs/Float64.h>
 #include <srr_program/AbstractProgramStateMachine.hpp>
 #include <srr_msgs/VehicleVelKinSolution.h>
+#include <srr_msgs/VehicleVelKinSegment.h>
 
 namespace SRR {
 
@@ -49,27 +50,56 @@ protected:
     virtual bool cycle(double curr_secs)
     {
         bool rv = false;
+        if (state == PSM_V_t::PSMState::ACTIVE)
+        {
         if ((curr_duration < 0) || (curr_secs >= curr_start + curr_duration))
         {
             curr_start = curr_secs;
+            srr_msgs::VehicleVelKinSegment seg = program.segments[curr_segment];
             switch(curr_move)
             {
                 case VehicleMove::NOT_STARTED:
                     curr_move = VehicleMove::FIRST_TURN;
-                    curr_duration = program.segments[curr_segment].ft_duration;
+                    curr_duration = seg.ft_duration;
+                    publish_controller_values(
+                        seg.ft_lw_direction,
+                        seg.ft_rw_direction,
+                        seg.ft_lw_angular_velocity,
+                        seg.ft_rw_angular_velocity,
+                        seg.ft_lw_angular_velocity,
+                        seg.ft_rw_angular_velocity
+                    );
                     break;
                 case VehicleMove::FIRST_TURN:
                     curr_move = VehicleMove::LINEAR_MOVE;
-                    curr_duration = program.segments[curr_segment].m_duration;
+                    curr_duration = seg.m_duration;
+                    publish_controller_values(
+                        0,
+                        0,
+                        seg.m_w_angular_velocities,
+                        seg.m_w_angular_velocities,
+                        seg.m_w_angular_velocities,
+                        seg.m_w_angular_velocities
+                    );
                     break;
                 case VehicleMove::LINEAR_MOVE:
                     curr_move = VehicleMove::SECOND_TURN;
-                    curr_duration = program.segments[curr_segment].st_duration;
+                    curr_duration = seg.st_duration;
+                    publish_controller_values(
+                        seg.st_lw_direction,
+                        seg.st_rw_direction,
+                        seg.st_lw_angular_velocity,
+                        seg.st_rw_angular_velocity,
+                        seg.st_lw_angular_velocity,
+                        seg.st_rw_angular_velocity
+                    );
                     break;
                 case VehicleMove::SECOND_TURN:
                     if (++curr_segment >= program.segments.size())
                     {
                         curr_move = VehicleMove::NONE;
+                        publish_controller_values(0, 0, 0, 0, 0, 0);
+                        ROS_INFO("Done program.");
                         rv = true;
                     }
                     else
@@ -83,6 +113,7 @@ protected:
                     break;
             }
         }
+        }
         return rv;
     }
 
@@ -93,6 +124,20 @@ protected:
             std::string("/srr_integrated/") + joint_name + "_joint_controller/command",
             queue_depth
         );
+    }
+
+    // Utility function to publish values to each steer and wheel joint controller
+    void publish_controller_values(double wsl, double wsr, double wrfl, double wrfr, double wrbl, double wrbr)
+    {
+        std_msgs::Float64 msg;
+#define POPULATE_AND_PUBLISH(p, v) msg.data = v; p.publish(msg)
+        POPULATE_AND_PUBLISH(pub_wheel_steer_left,           wsl);
+        POPULATE_AND_PUBLISH(pub_wheel_steer_right,          wsr);
+        POPULATE_AND_PUBLISH(pub_wheel_rotation_front_left,  wrfl);
+        POPULATE_AND_PUBLISH(pub_wheel_rotation_front_right, wrfr);
+        POPULATE_AND_PUBLISH(pub_wheel_rotation_back_left,   wrbl);
+        POPULATE_AND_PUBLISH(pub_wheel_rotation_back_right,  wrbr);
+#undef POPULATE_AND_PUBLISH
     }
 
 public:
