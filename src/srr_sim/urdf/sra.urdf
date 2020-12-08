@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com)
      Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot name="sra">
@@ -18,16 +18,16 @@
   <link name="ArmBaseLink">
     <inertial>
       <origin
-        xyz="0 0.0127 4.5102E-19"
+        xyz="-3.2661E-19 -7.7765E-19 0.0127"
         rpy="0 0 0" />
       <mass value="0.08044" />
       <inertia
         ixx="2.4597E-05"
-        ixy="-6.268E-38"
-        ixz="0"
-        iyy="4.0544E-05"
-        iyz="0"
-        izz="2.4597E-05" />
+        ixy="5.9791E-38"
+        ixz="-9.7646E-22"
+        iyy="2.4597E-05"
+        iyz="-9.765E-22"
+        izz="4.0544E-05" />
     </inertial>
     <visual>
       <origin
@@ -49,32 +49,32 @@
       </geometry>
     </collision>
   </link>
-  <joint name="BaseJoint" type="revolute"> <!-- rev_joint1 -->
+  <joint name="BaseJoint" type="revolute">
     <origin
-      xyz="0 0 0.0254"
-      rpy="1.5708 0 1.4018" />
+      xyz="0 0 0.073354"
+      rpy="0 0 0" />
     <parent link="ArmBaseLink" />
     <child link="BaseToShoulderLink" />
-    <axis xyz="0 1 0" />
+    <axis xyz="0 0 1" />
     <limit
       lower="-3.14159265"
       upper="3.14159265"
       effort="125"
       velocity="0" />
   </joint>
-  <link name="BaseToShoulderLink"> <!-- base_rev_link -->
+  <link name="BaseToShoulderLink">
     <inertial>
       <origin
-        xyz="-2.92661162667607E-17 0.013697641221977 9.45375589091657E-17"
+        xyz="-1.0922E-16 5.4252E-18 -0.029816"
         rpy="0 0 0" />
-      <mass value="0.0540161279717926" />
+      <mass value="0.06206" />
       <inertia
-        ixx="2.90475786565652E-05"
-        ixy="-5.89115315950834E-21"
-        ixz="-3.59989002583078E-21"
-        iyy="2.8681014009555E-05"
-        iyz="2.99557283317081E-21"
-        izz="2.29779164641968E-05" />
+        ixx="3.1832E-05"
+        ixy="4.0883E-21"
+        ixz="-4.1377E-21"
+        iyy="2.314E-05"
+        iyz="-5.8062E-21"
+        izz="3.1465E-05" />
     </inertial>
     <visual>
       <origin
@@ -84,7 +84,7 @@
         <mesh filename="package://srr_sim/meshes/sra/BaseToShoulderLink.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        <color rgba="0.79216 0.81961 0.93333 1" />
       </material>
     </visual>
     <collision>
@@ -96,10 +96,10 @@
       </geometry>
     </collision>
   </link>
-  <joint name="ShoulderJoint" type="revolute"> <!-- link_joint1 -->
+  <joint name="ShoulderJoint" type="revolute">
     <origin
-      xyz="0 0.05 0"
-      rpy="0 0 -0.35492" />
+      xyz="0 0 0"
+      rpy="-1.5708 0 0" />
     <parent link="BaseToShoulderLink" />
     <child link="ShoulderToElbowDummyLink" />
     <axis xyz="0 0 1" />
@@ -109,19 +109,19 @@
       effort="125"
       velocity="0" />
   </joint>
-  <link name="ShoulderToElbowDummyLink"> <!-- link1 -->
+  <link name="ShoulderToElbowDummyLink">
     <inertial>
       <origin
-        xyz="0.0534557495118669 0.0514473910632604 -1.16144608446203E-07"
+        xyz="9.5178E-09 -0.077956 1.1951E-07"
         rpy="0 0 0" />
-      <mass value="0.214557043401322" />
+      <mass value="0.20651" />
       <inertia
-        ixx="0.0003839937136465"
-        ixy="-0.000341660300404952"
-        ixz="2.05559672158717E-10"
-        iyy="0.000375988028453804"
-        iyz="1.9308845878262E-10"
-        izz="0.000714072868957156" />
+        ixx="0.00071889"
+        ixy="5.7664E-11"
+        ixz="-1.047E-11"
+        iyy="3.5523E-05"
+        iyz="2.7172E-10"
+        izz="0.00071391" />
     </inertial>
     <visual>
       <origin
@@ -131,7 +131,7 @@
         <mesh filename="package://srr_sim/meshes/sra/ShoulderToElbowDummyLink.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        <color rgba="0.79216 0.81961 0.93333 1" />
       </material>
     </visual>
     <collision>
@@ -143,27 +143,27 @@
       </geometry>
     </collision>
   </link>
-  <joint name="ElbowDummyJoint" type="fixed"> <!-- rev_joint2 -->
+  <joint name="ElbowDummyJoint" type="fixed">
     <origin
-      xyz="0.12391 0.12273 0"
-      rpy="3.1416 1.5699 2.3621" />
+      xyz="0 -0.19622 0"
+      rpy="-1.5699 0 -1.5708" />
     <parent link="ShoulderToElbowDummyLink" />
     <child link="ElbowDummyToElbowLink" />
     <axis xyz="0 0 0" />
   </joint>
-  <link name="ElbowDummyToElbowLink"> <!-- elbow_link -->
+  <link name="ElbowDummyToElbowLink">
     <inertial>
       <origin
-        xyz="0 0.0163233914746476 0.0132455209357924"
+        xyz="-0.0046316 -1.6291E-19 0.013246"
         rpy="0 0 0" />
-      <mass value="0.0573187162898318" />
+      <mass value="0.057319" />
       <inertia
-        ixx="2.58798993980099E-05"
-        ixy="-4.2351647362715E-22"
-        ixz="1.27054942088145E-21"
-        iyy="3.20171573487793E-05"
-        iyz="-4.34269587164865E-06"
-        izz="1.8287385699815E-05" />
+        ixx="3.2017E-05"
+        ixy="-2.0077E-21"
+        ixz="-4.3427E-06"
+        iyy="2.588E-05"
+        iyz="7.1435E-21"
+        izz="1.8287E-05" />
     </inertial>
     <visual>
       <origin
@@ -173,7 +173,7 @@
         <mesh filename="package://srr_sim/meshes/sra/ElbowDummyToElbowLink.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        <color rgba="0.79216 0.81961 0.93333 1" />
       </material>
     </visual>
     <collision>
@@ -185,10 +185,10 @@
       </geometry>
     </collision>
   </link>
-  <joint name="ElbowJoint" type="revolute"> <!-- link_joint2 -->
+  <joint name="ElbowJoint" type="revolute">
     <origin
-      xyz="0 0.020955 0.044653"
-      rpy="-1.5708 -0.78332 1.5708" />
+      xyz="0 0.000127 0.044653"
+      rpy="1.5708 0 0" />
     <parent link="ElbowDummyToElbowLink" />
     <child link="ElbowToWristDummyLink" />
     <axis xyz="0 0 1" />
@@ -198,19 +198,19 @@
       effort="125"
       velocity="0" />
   </joint>
-  <link name="ElbowToWristDummyLink"> <!-- link2 -->
+  <link name="ElbowToWristDummyLink">
     <inertial>
       <origin
-        xyz="0.0858177624956566 -1.25158604868947E-08 -4.63290909594183E-08"
+        xyz="0.0859457002041171 -4.76514517150362E-08 -6.07913708871384E-09"
         rpy="0 0 0" />
-      <mass value="0.254788454624903" />
+      <mass value="0.254411955196347" />
       <inertia
-        ixx="4.84762406785471E-05"
-        ixy="5.75227524879708E-10"
-        ixz="3.16093488433986E-10"
-        iyy="0.00114592865199362"
-        iyz="8.28821942853867E-11"
-        izz="0.00114257889880737" />
+        ixx="4.82915370297559E-05"
+        ixy="-4.11218298859846E-10"
+        ixz="-2.66009415786698E-10"
+        iyy="0.00114293173407415"
+        iyz="1.00207802188044E-09"
+        izz="0.00113966996171655" />
     </inertial>
     <visual>
       <origin
@@ -232,27 +232,27 @@
       </geometry>
     </collision>
   </link>
-  <joint name="WristDummyJoint" type="fixed"> <!-- rev_joint3 -->
+  <joint name="WristDummyJoint" type="fixed">
     <origin
-      xyz="0.20384 0 0"
-      rpy="1.5708 -1.537 -1.5708" />
+      xyz="0.2267 0 0"
+      rpy="0.033844 0 0.00012806" />
     <parent link="ElbowToWristDummyLink" />
     <child link="WristDummyToWristLink" />
     <axis xyz="0 0 0" />
   </joint>
-  <link name="WristDummyToWristLink"> <!-- wrist_link -->
+  <link name="WristDummyToWristLink">
     <inertial>
       <origin
-        xyz="4.16333634234434E-17 0 -0.0124948683739999"
+        xyz="-0.010365 1.3281E-06 -4.0549E-17"
         rpy="0 0 0" />
-      <mass value="0.0181588599237565" />
+      <mass value="0.018159" />
       <inertia
-        ixx="6.59648184082338E-06"
-        ixy="-3.01755487459344E-21"
-        ixz="1.81053292475607E-20"
-        iyy="9.2898791354798E-06"
-        iyz="4.87043944671223E-21"
-        izz="8.77766253503143E-06" />
+        ixx="8.7777E-06"
+        ixy="6.5632E-11"
+        ixz="3.7739E-21"
+        iyy="9.2899E-06"
+        iyz="-1.2441E-21"
+        izz="6.5965E-06" />
     </inertial>
     <visual>
       <origin
@@ -262,7 +262,7 @@
         <mesh filename="package://srr_sim/meshes/sra/WristDummyToWristLink.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        <color rgba="0.79216 0.81961 0.93333 1" />
       </material>
     </visual>
     <collision>
@@ -274,10 +274,10 @@
       </geometry>
     </collision>
   </link>
-  <joint name="WristJoint" type="revolute"> <!-- link_joint3 -->
+  <joint name="WristJoint" type="revolute">
     <origin
-      xyz="0 0 -0.02286"
-      rpy="-1.5708 -0.36389 1.5708" />
+      xyz="0 0 0"
+      rpy="0 0 -1.5708" />
     <parent link="WristDummyToWristLink" />
     <child link="WristToGripperLink" />
     <axis xyz="0 0 1" />
@@ -287,19 +287,19 @@
       effort="125"
       velocity="0" />
   </joint>
-  <link name="WristToGripperLink"> <!-- link3 -->
+  <link name="WristToGripperLink">
     <inertial>
       <origin
-        xyz="-0.0019136 -1.2991E-05 5.9674E-16"
+        xyz="6.93889390390723E-18 0.00187028459715766 -1.51788304147971E-18"
         rpy="0 0 0" />
-      <mass value="0.064171" />
+      <mass value="0.0640611944357688" />
       <inertia
-        ixx="1.5169E-05"
-        ixy="-3.7058E-22"
-        ixz="-2.7859E-21"
-        iyy="1.7646E-05"
-        iyz="1.9058E-21"
-        izz="1.754E-05" />
+        ixx="1.76418435994478E-05"
+        ixy="4.81026205714899E-21"
+        ixz="-7.94093388050907E-22"
+        iyy="1.51643333221916E-05"
+        iyz="2.3152009863535E-21"
+        izz="1.75401124672356E-05" />
     </inertial>
     <visual>
       <origin
@@ -309,7 +309,7 @@
         <mesh filename="package://srr_sim/meshes/sra/WristToGripperLink.STL" />
       </geometry>
       <material name="">
-        <color rgba="0.79216 0.81961 0.93333 1" />
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -321,39 +321,34 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GripperJoint" type="revolute"> <!-- end_eff_joint -->
+  <joint name="GripperJoint" type="fixed">
     <origin
-      xyz="-0.027305 -0.00762 0"
-      rpy="0 0 0.65153" />
+      xyz="0 0.0254 0.009525"
+      rpy="-1.5708 0 0" />
     <parent link="WristToGripperLink" />
-    <child link="Gripper" />
-    <axis xyz="0 0 1" />
-    <limit
-      lower="-3.14159265"
-      upper="3.14159265"
-      effort="0"
-      velocity="0" />
+    <child link="GripperToFinger" />
+    <axis xyz="0 0 0" />
   </joint>
-  <link name="Gripper"> <!-- end_eff_link -->
+  <link name="GripperToFinger">
     <inertial>
       <origin
-        xyz="-0.0092671 0.018678 2.9143E-16"
+        xyz="6.9389E-18 0.009525 -0.02353"
         rpy="0 0 0" />
-      <mass value="0.00069229" />
+      <mass value="0.064061" />
       <inertia
-        ixx="1.0465E-07"
-        ixy="4.0941E-08"
-        ixz="2.3326E-22"
-        iyy="1.1251E-07"
-        iyz="5.8564E-22"
-        izz="8.9928E-08" />
+        ixx="1.7642E-05"
+        ixy="7.9409E-22"
+        ixz="1.2031E-21"
+        iyy="1.754E-05"
+        iyz="-3.0217E-21"
+        izz="1.5164E-05" />
     </inertial>
     <visual>
       <origin
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://srr_sim/meshes/sra/Gripper.STL" />
+        <mesh filename="package://srr_sim/meshes/sra/GripperToFinger.STL" />
       </geometry>
       <material name="">
         <color rgba="0.79216 0.81961 0.93333 1" />
@@ -364,7 +359,101 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://srr_sim/meshes/sra/Gripper.STL" />
+        <mesh filename="package://srr_sim/meshes/sra/GripperToFinger.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LFingerJoint" type="revolute">
+    <origin
+      xyz="-0.00762 0.009525 0.001905"
+      rpy="1.5708 0.88304 0" />
+    <parent link="GripperToFinger" />
+    <child link="LeftFinger" />
+    <axis xyz="0 0 1" />
+    <limit
+      lower="-3.14159265"
+      upper="3.14159265"
+      effort="125"
+      velocity="0" />
+  </joint>
+  <link name="LeftFinger">
+    <inertial>
+      <origin
+        xyz="-0.0186190688837656 0.00741270089060464 -1.89084858881472E-16"
+        rpy="0 0 0" />
+      <mass value="0.000346143112791696" />
+      <inertia
+        ixx="4.72102551979473E-08"
+        ixy="1.9979772763792E-08"
+        ixz="2.17548501101446E-22"
+        iyy="6.13681088501549E-08"
+        iyz="-5.15333521620536E-22"
+        izz="4.49638260468465E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://srr_sim/meshes/sra/LeftFinger.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://srr_sim/meshes/sra/LeftFinger.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="RFingerJoint" type="revolute">
+    <origin
+      xyz="0.00762 0.009525 0.001905"
+      rpy="1.5708 0.98268 -3.14159265" />
+    <parent link="GripperToFinger" />
+    <child link="RightFinger" />
+    <axis xyz="0 0 1" />
+    <limit
+      lower="-3.14159265"
+      upper="3.14159265"
+      effort="125"
+      velocity="0" />
+  </joint>
+  <link name="RightFinger">
+    <inertial>
+      <origin
+        xyz="-0.018619 0.0074127 -1.5613E-17"
+        rpy="0 0 0" />
+      <mass value="0.00034614" />
+      <inertia
+        ixx="4.721E-08"
+        ixy="1.998E-08"
+        ixz="-3.4431E-23"
+        iyy="6.1368E-08"
+        iyz="-4.2807E-23"
+        izz="4.4964E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://srr_sim/meshes/sra/RightFinger.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://srr_sim/meshes/sra/RightFinger.STL" />
       </geometry>
     </collision>
   </link>

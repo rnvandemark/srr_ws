@@ -2,12 +2,27 @@
 
 import rospy
 from std_msgs.msg import Float64
+#from srr_msgs.srv import GetDirectionOfRotation
 
+from enum import Enum
 from threading import Lock
 from pynput import keyboard
 from signal import signal, SIGTERM
 from time import sleep
 from curses import initscr, cbreak, noecho, endwin
+
+class SRAJoints(Enum):
+    BASE = 1
+    SHOULDER = 2
+    ELBOW = 3
+    WRIST = 4
+    FINGER_L = 5
+    FINGER_R = 6
+
+class CntrlType(Enum):
+    POS = 1
+    EFF = 2
+    VEL = 3
 
 HELP_MSG = """
 ---------------------------
@@ -17,24 +32,59 @@ Press ESCAPE to quit
 ---------------------------
 """
 
-MAG_JOINT = 12.5
+INC_SPEED = 1.0
+INC_ROT   = 1.0
+
+MAG_ARM          = 12.5
+POS_FINGER_OPEN  = 0
+POS_FINGER_CLOSE = 0
 
 PREVIOUS_SIGTERM_CALLBACK = None
 THREAD_LOCK = None
 SHUTDOWN_REQUESTED = False
 ACTIVE_KEYS = None
 NODE_SLEEP_S = 0.05
+NOISE_THRESHOLD = 0.001
+
+def create_joint_dict(v0, v1, v2, v3, v4, v5):
+    return {
+        SRAJoints.BASE: v0,
+        SRAJoints.SHOULDER: v1,
+        SRAJoints.ELBOW: v2,
+        SRAJoints.WRIST: v3,
+        SRAJoints.FINGER_L: v4,
+        SRAJoints.FINGER_R: v5
+    }
+
+def create_joint_dict_mag(m, v0, v1, v2, v3, v4, v5):
+    return create_joint_dict(m * v0, m * v1, m * v2, m * v3, m * v4, m * v5)
+
+SRR_JOINT_NAMES = {
+    "BaseJoint":     SRAJoints.BASE,
+    "ShoulderJoint": SRAJoints.SHOULDER,
+    "ElbowJoint":    SRAJoints.ELBOW,
+    "WristJoint":    SRAJoints.WRIST,
+    "LFingerJoint":  SRAJoints.FINGER_L,
+    "RFingerJoint":  SRAJoints.FINGER_R
+}
+
+CONTROLLER_TYPES = create_joint_dict(
+    CntrlType.VEL, CntrlType.VEL, CntrlType.VEL, CntrlType.VEL,
+    CntrlType.POS, CntrlType.POS
+)
 
 BINDINGS_MOVE = {
 # Sets the direction of movement for the Base, Shoulder, Elbow, and Wrist joints
-    'q': (+1,  0,   0,   0),
-    'a': (-1,  0,   0,   0),
-    'w': ( 0, +1,   0,   0),
-    's': ( 0, -1,   0,   0),
-    'e': ( 0,  0,  +1,   0),
-    'd': ( 0,  0,  -1,   0),
-    'r': ( 0,  0,   0,  +1),
-    'f': ( 0,  0,   0,  -1)
+    'q': create_joint_dict_mag(MAG_ARM, +1,  0,  0,  0,  0,  0),
+    'a': create_joint_dict_mag(MAG_ARM, -1,  0,  0,  0,  0,  0),
+    'w': create_joint_dict_mag(MAG_ARM,  0, +1,  0,  0,  0,  0),
+    's': create_joint_dict_mag(MAG_ARM,  0, -1,  0,  0,  0,  0),
+    'e': create_joint_dict_mag(MAG_ARM,  0,  0, +1,  0,  0,  0),
+    'd': create_joint_dict_mag(MAG_ARM,  0,  0, -1,  0,  0,  0),
+    'r': create_joint_dict_mag(MAG_ARM,  0,  0,  0, +1,  0,  0),
+    'f': create_joint_dict_mag(MAG_ARM,  0,  0,  0, -1,  0,  0),
+    't': create_joint_dict_mag(MAG_ARM,  0,  0,  0,  0,  0,  0),
+    'g': create_joint_dict_mag(MAG_ARM,  0,  0,  0,  0,  0,  0)
 }
 
 BINDINGS_SPEED = {
@@ -82,17 +132,29 @@ def update_commanded_joint_efforts():
 
     rospy.init_node("sra_arm_teleop")
 
-    pub_base     = create_pub("base")
-    pub_shoulder = create_pub("shoulder")
-    pub_elbow    = create_pub("elbow")
-    pub_wrist    = create_pub("wrist")
+    #srv_dir_rotation = rospy.ServiceProxy("/sra_integrated/get_direction_of_rotation", GetDirectionOfRotation)
 
-    speed_base     = 0
-    speed_shoulder = 0
-    speed_elbow    = 0
-    speed_wrist    = 0
+    joint_pubs = create_joint_dict(
+        create_pub("base"),
+        create_pub("shoulder"),
+        create_pub("elbow"),
+        create_pub("wrist"),
+        create_pub("finger_left"),
+        create_pub("finger_right")
+    )
+
+    joint_vals = create_joint_dict(0, 0, 0, 0, 0, 0)
 
     try:
+        #joint_names = list(SRR_JOINT_NAMES.keys())
+        #print joint_names
+        #srv_response = srv_dir_rotation(joint_names=joint_names)
+        #joint_directions = srv_response.joint_directions
+        #for ch in BINDINGS_MOVE:
+        #    for i in range(len(joint_names)):
+        #        wjn = SRR_JOINT_NAMES[joint_names[i]]
+        #        BINDINGS_MOVE[ch][wjn] = BINDINGS_MOVE[ch][wjn] * joint_directions[i]
+
         shutdown_requested = False
         while not shutdown_requested:
             THREAD_LOCK.acquire()
@@ -101,19 +163,24 @@ def update_commanded_joint_efforts():
                 forced_stop = False
                 for key, event_effect in ACTIVE_KEYS.items():
                     if key == keyboard.Key.space:
-                        speed_base     = 0
-                        speed_shoulder = 0
-                        speed_elbow    = 0
-                        speed_wrist    = 0
-                        forced_stop    = True
+                        for j in SRAJoints:
+                            joint_vals[j] = 0
+                        forced_stop = True
                         break
                     elif type(key) is keyboard.KeyCode:
                         ch = key.char
                         if ch in BINDINGS_MOVE.keys():
-                            speed_base     = speed_base     + (BINDINGS_MOVE[ch][0] * event_effect * MAG_JOINT)
-                            speed_shoulder = speed_shoulder + (BINDINGS_MOVE[ch][1] * event_effect * MAG_JOINT)
-                            speed_elbow    = speed_elbow    + (BINDINGS_MOVE[ch][2] * event_effect * MAG_JOINT)
-                            speed_wrist    = speed_wrist    + (BINDINGS_MOVE[ch][3] * event_effect * MAG_JOINT)
+                            for j in SRAJoints:
+                                move = BINDINGS_MOVE[ch][j]
+                                cntrl = CONTROLLER_TYPES[j]
+                                if cntrl == CntrlType.POS:
+                                    joint_vals[j] = joint_vals[j] + move
+                                elif cntrl == CntrlType.EFF:
+                                    pass
+                                elif cntrl == CntrlType.VEL:
+                                    joint_vals[j] = joint_vals[j] + (move * event_effect)
+                                    if abs(joint_vals[j]) < NOISE_THRESHOLD:
+                                        joint_vals[j] = 0
 
                     if event_effect == 1:
                         ACTIVE_KEYS[key] = 0
@@ -125,10 +192,8 @@ def update_commanded_joint_efforts():
             finally:
                 THREAD_LOCK.release()
 
-            pub_base.publish(speed_base)
-            pub_shoulder.publish(speed_shoulder)
-            pub_elbow.publish(speed_elbow)
-            pub_wrist.publish(speed_wrist)
+            for j in SRAJoints:
+                joint_pubs[j].publish(joint_vals[j])
 
             sleep(NODE_SLEEP_S)
 
