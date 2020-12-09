@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     double d1, d2, a2, d3, d4, d5;
-    std::string pref = "/srr_integrated/dh_param";
+    std::string pref = "/sra_integrated/dh_param";
     if (!n.getParam(pref+"/d1", d1) || !n.getParam(pref+"/d2", d2) || !n.getParam(pref+"/a2", a2)
         || !n.getParam(pref+"/d3", d3) || !n.getParam(pref+"/d4", d4) || !n.getParam(pref+"/d5", d5))
     {
@@ -31,13 +31,13 @@ int main(int argc, char **argv)
 	;
 
     ros::ServiceServer srv_calc_arm_fwd_kin = n.advertiseService(
-        "srr_integrated/calc_arm_fwd_kin",
+        "sra_integrated/calc_arm_fwd_kin",
         &SRR::ArmKinContainer::handle_fwd_kin_callback,
         &container
     );
 
     ros::ServiceServer srv_calc_arm_inv_kin = n.advertiseService(
-        "srr_integrated/calc_arm_inv_kin",
+        "sra_integrated/calc_arm_inv_kin",
         &SRR::ArmKinContainer::handle_inv_kin_callback,
         &container
     );

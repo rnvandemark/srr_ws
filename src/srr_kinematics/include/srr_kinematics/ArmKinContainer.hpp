@@ -13,14 +13,18 @@ class ArmKinContainer {
 protected:
     std::unordered_map<std::string, double> dh;
 
+    const double leniency;
+
     double s(double rad);
 
     double c(double rad);
 
     double at2(double y, double x);
 
+    void mm(double min, double max, double& minFixed, double& maxFixed);
+
 public:
-    ArmKinContainer();
+    ArmKinContainer(double _leniency=0.000001);
 
     ArmKinContainer& add_param(std::string param, double value);
 

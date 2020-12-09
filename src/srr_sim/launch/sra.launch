@@ -13,6 +13,12 @@
     /$(arg arm_model_name)/init_pose: $(arg init_arm_pose)
     /$(arg arm_model_name)/joint_zero_offsets: BaseJoint=0,ShoulderJoint=0,ElbowJoint=0,WristJoint=0,LFingerJoint=0,RFingerJoint=0
     /$(arg arm_model_name)/joint_directions_of_rotation: BaseJoint=+1,ShoulderJoint=+1,ElbowJoint=+1,WristJoint=+1,LFingerJoint=+1,RFingerJoint=+1
+    /$(arg arm_model_name)/dh_param/d1: 0.073660
+    /$(arg arm_model_name)/dh_param/d2: 0.196342
+    /$(arg arm_model_name)/dh_param/a2: 0.044704
+    /$(arg arm_model_name)/dh_param/d3: 0.226822
+    /$(arg arm_model_name)/dh_param/d4: 0.025400
+    /$(arg arm_model_name)/dh_param/d5: 0.035814
   </rosparam>
 
   <node
