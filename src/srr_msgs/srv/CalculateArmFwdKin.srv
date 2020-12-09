@@ -1,0 +1,3 @@
+srr_msgs/ArmJointPose joint_pose
+---
+srr_msgs/ArmCartesianPose solution

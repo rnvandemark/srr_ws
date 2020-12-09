@@ -22,11 +22,15 @@ add_message_files(DIRECTORY msg FILES
   VehiclePath.msg
   VehicleVelKinSolution.msg
   VehicleVelKinDebug.msg
+  ArmJointPose.msg
+  ArmCartesianPose.msg
 )
 add_service_files(DIRECTORY srv FILES
   CalculatePositionWithOffsets.srv
   GetDirectionOfRotation.srv
   CalculateVehicleVelKin.srv
+  CalculateArmFwdKin.srv
+  CalculateArmInvKin.srv
 )
 generate_messages(
   DEPENDENCIES

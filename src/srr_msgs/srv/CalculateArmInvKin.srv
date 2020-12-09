@@ -1,0 +1,3 @@
+srr_msgs/ArmCartesianPose cart_pose
+---
+srr_msgs/ArmJointPose[] solution

@@ -38,10 +38,19 @@ target_link_libraries(calculate_vehicle_vel_kin_server
   ${catkin_LIBRARIES}
 )
 
+add_executable(calculate_arm_kin_server
+  src/ArmKinContainer.cpp
+  src/ArmKinCalculator.cpp
+)
+target_link_libraries(calculate_arm_kin_server
+  ${catkin_LIBRARIES}
+)
+
 install(TARGETS
   incorporate_joints_offsets_server
   traction_controller
   calculate_vehicle_vel_kin_server
+  calculate_arm_kin_server
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
