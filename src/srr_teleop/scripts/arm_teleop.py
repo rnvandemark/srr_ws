@@ -35,7 +35,7 @@ Press ESCAPE to quit
 INC_SPEED = 1.0
 INC_ROT   = 1.0
 
-MAG_ARM          = 12.5
+MAG_ARM          = 0.017453293 # ~1 degree, with NODE_SLEEP_S this is ~20 deg/sec
 POS_FINGER_OPEN  = 0
 POS_FINGER_CLOSE = 0
 
@@ -69,7 +69,7 @@ SRR_JOINT_NAMES = {
 }
 
 CONTROLLER_TYPES = create_joint_dict(
-    CntrlType.VEL, CntrlType.VEL, CntrlType.VEL, CntrlType.VEL,
+    CntrlType.POS, CntrlType.POS, CntrlType.POS, CntrlType.POS,
     CntrlType.POS, CntrlType.POS
 )
 
