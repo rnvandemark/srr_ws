@@ -1,0 +1,14 @@
+# The positions of the legs and peak wheel speed while the vehicle is moving
+float64 theta_front
+float64 theta_back
+float64 omega_dot_max
+# Minimum of one point (the initial position of the vehicle), the rest are intermediate poses for the vehicle
+srr_msgs/VehiclePath path_to_pick
+# The pose of the sample to be picked
+# (x,y) is the position of the sample in the world, theta is the orientation of the vehicle for it to pick from
+geometry_msgs/Pose2D pick_point
+# The desired gamma when picking the sample
+float64 gamma
+---
+srr_msgs/VehicleVelKinSolution solution_vehicle
+srr_msgs/ArmJointPose solution_arm
