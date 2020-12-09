@@ -13,5 +13,19 @@ With the challenges of unknown terrain and inability to remote control the robot
 \end{figure}
 
 
-\section{Motivation}
-Space robotics is a big area of interest. Not only has there been the Sample-Return Rover, but there is also the CubeSat, BioSentinel, and many others. The Sample-Return Rover is a great choice for this project as the information gained from the class will be used on the rover.
+\chapter{Motivation}
+Space robotics is a big area of interest. Not only has there been the Sample-Return Rover, but there is also the CubeSat, BioSentinel, and many others. The Sample-Return Rover is a great choice for this project as the information gained from the class will be used on the rover. There are many possible usages for space robotics. They can serve the purpose of exploring unknown territory, surveillance of the Earth, or maintenance on existing robots/satellites.  \\
+
+Each different type of robot will deal with their own challenges, whether it is dealing with low or zero gravity, extreme temperature changes, or rocky terrain. It is amazing how diverse space robotics can be. The area of research is vast and takes much effort to be in a robotics field. The intention of this project is to get an introductory hands-on experience with both mobile robots and a manipulator simulation. Calculating forward, inverse, and velocity kinematics are a big topic for this project, as well as implementation of those calculations into algorithms. 
+
+
+
+\chapter{Assumptions}
+Since the scope of this project deals with simulating a robot in outer space, there are assumptions to be made because certain things cannot be measured easily. To deal with this issue and other design factors, there are assumptions to follow. 
+
+\begin{enumerate}
+	\item The robot is a rigid body, any torque or force acted upon any link will not be deformed.
+	\item The steering design is based off the Ackermann-Steering model.
+	\item All motion or revolution will be around the z-axis.
+	\item The simulations will be in Gazebo and RVIZ. 
+\end{enumerate}
