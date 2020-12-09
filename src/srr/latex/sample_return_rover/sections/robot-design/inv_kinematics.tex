@@ -1,0 +1,59 @@
+\subsection{Arm}
+Inverse Kinematics is the opposite of Forward Kinematics. Given the end effector's position and orientation (the homogeneous transformation) the joint angles needs to be found. In this case H is the desired position and orientation. Equation~\ref{sample_return_rover:inv_kinematics:jointeq} is the equation where one or more solutions needs to be solved in order to find the joint angles ($q_{i}$).
+\begin{equation}
+	T^{0}_{n}(q_{1},...,q_{n}) = H_{1}(q_{1})\cdot\cdot\cdot H_{n}(q_{n}) = H
+	\label{sample_return_rover:inv_kinematics:jointeq} 
+\end{equation}	
+
+Inverse kinematics can be far more complex than solving forward kinematics. In some cases an unsolvable problem will be encountered. A typical approach to solving inverse kinematics problems is called \textbf{kinematic decoupling}. Essentially it approaches the problem by breaking it down into two subproblems, with the first is calculating the position of the wrist center (intersection between the wrist axes) and then finding the orientation of the wrist center.\cite{spong}
+
+For the arm, the easiest start is to solve for $\theta_{1}$. With the desired $x^{0}_{n}$ and $y^{0}_{n}$ , the arctan(y/x) can be used.
+
+
+\begin{equation}
+	\frac{y^{0}_{n}}{x^{0}_{n}} = 
+		\frac{s_{1}[d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{234}]}
+	{c_{1}[d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{234}]}
+	\label{sample_return_rover:inv_kinematics:th1}
+\end{equation}
+The numerator and denominator cancels out. The term ($s_{1}$/$c_{1}$) can be written as tan($\theta_{1}$). The equation is now 
+\begin{equation}
+	\frac{y^{0}_{n}}{x^{0}_{n}} = tan(\theta_{1})
+\end{equation}
+Now take the arctan($\theta_{1}$) to solve for ($\theta_{1}$).
+\begin{equation}
+	\theta_{1} = atan(\frac{y^{0}_{n}}{x^{0}_{n}}) =  atan2(y^{0}_{n}, x^{0}_{n})
+\end{equation}
+ $\theta_{1}$ is the only revolution in the xy plane. Therefore after $\theta_{1}$, the remaining joints turn the robot arm to a planar manipulator, meaning all the movement is parallel. Now, the equations for link i are:
+ \begin{equation} \nonumber
+ 	x^{i}_{n} = d_{2}c_{2}+a_{2}s_{2}+d_{3}c_{23}+(d_{4}+d_{5})c_{234}
+ \end{equation}
+\begin{equation}
+		y^{i}_{n}= d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{234}
+\end{equation}
+\begin{equation} \nonumber
+	z^{i}_{n} = 0
+\end{equation}
+Let's substitute $\gamma$ = $\theta_{2}$ + $\theta_{3}$ + $\theta_{4}$
+ \begin{equation} \nonumber
+	x^{i}_{n} = d_{2}c_{2}+a_{2}s_{2}+d_{3}c_{23}+(d_{4}+d_{5})c_{\gamma}
+\end{equation}
+\begin{equation}\nonumber
+	y^{i}_{n} = d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{\gamma}
+\end{equation}
+
+\begin{equation}\nonumber
+	\Rightarrow x^{i}_{n} -(d_{4}+d_{5})c_{\gamma} = d_{2}c_{2}+a_{2}s_{2}+d_{3}c_{23}
+\end{equation}
+
+\begin{equation}\nonumber
+	\Rightarrow y^{i}_{n} -(d_{4}+d_{5})s_{\gamma} = d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}
+\end{equation}
+
+From here, square both equations to add them and simplify.Equation~\ref{sample_return_rover:inv_kinematics:simplify}.
+\begin{equation}
+	\Rightarrow (-2x'd_{2}-2y'a_{2})c_{2}+(-2x'a_{2}-2y'd_{2})s_{2}+(x'^{\;2}+y'^{\;2}+d_{2}^{\;2}+a_{2}^{\;2}+d_{3}^{\; 2})
+\label{sample_return_rover:inv_kinematics:simplify}
+\end{equation}
+
+FINISH THISSSSSSSS
