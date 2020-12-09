@@ -35,4 +35,8 @@
     type="incorporate_joints_offsets_server"
     args="$(arg arm_model_name)"
     output="screen" />
+  <node
+    name="calculate_arm_kin_server"
+    pkg="srr_kinematics"
+    type="calculate_arm_kin_server" />
 </launch>

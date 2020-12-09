@@ -46,11 +46,20 @@ target_link_libraries(calculate_arm_kin_server
   ${catkin_LIBRARIES}
 )
 
+add_executable(calculate_combined_kin_server
+  src/CombinedKinContainer.cpp
+  src/CombinedKinCalculator.cpp
+)
+target_link_libraries(calculate_combined_kin_server
+  ${catkin_LIBRARIES}
+)
+
 install(TARGETS
   incorporate_joints_offsets_server
   traction_controller
   calculate_vehicle_vel_kin_server
   calculate_arm_kin_server
+  calculate_combined_kin_server
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

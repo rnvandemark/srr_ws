@@ -12,5 +12,14 @@
 
   <rosparam subst_value="True">
     /combined_model_name: $(arg combined_model_name)
+    /$(arg combined_model_name)/arm_mount_elevation: 0.034544
+    /$(arg combined_model_name)/arm_base_height_off_vehicle: 0.0381
+    /$(arg combined_model_name)/arm_base_min_height_off_ground: 0.05
+    /$(arg combined_model_name)/vehicle_front_distance_from_pick: 0.25
   </rosparam>
+
+  <node
+    name="calculate_combined_kin_server"
+    pkg="srr_kinematics"
+    type="calculate_combined_kin_server" />
 </launch>

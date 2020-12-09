@@ -4,12 +4,10 @@ from math import radians as rads
 
 from geometry_msgs.msg import Pose2D
 
-from kin_callers import VehicleVelKinCaller
+from kin_callers import CombinedKinCaller
 
-NODE_NAME = "srr_vehicle_test_vehicle_vel_kin"
-CLI_CALC_VEHICLE_VEL_KIN = "/srr_integrated/calc_vehicle_vel_kin"
-SUB_VEHICLE_VEL_KIN_DEBUG = "/srr_integrated/vehicle_vel_kin_debug"
-PUB_VEHICLE_PROGRAM = "/srr_integrated/program"
+NODE_NAME = "srr_vehicle_test_combined_kin"
+CLI_CALC_COMBINED_KIN = "/combined_integrated/calc_combined_kin"
 
 def main():
     parser = ArgumentParser()
@@ -37,13 +35,34 @@ def main():
         type=float,
         default=180.0
     )
+    parser.add_argument(
+        "-x", "--ppx",
+        help="The x position of the sample / pick point",
+        type=float,
+        default=0
+    )
+    parser.add_argument(
+        "-y", "--ppy",
+        help="The y position of the sample / pick point",
+        type=float,
+        default=0
+    )
+    parser.add_argument(
+        "-t", "--ppt",
+        help="The orientation theta of the sample / pick point",
+        type=float,
+        default=0
+    )
+    parser.add_argument(
+        "-g", "--gamma",
+        help="The orientation for the pick",
+        type=float,
+        default=180
+    )
 
     args = parser.parse_args()
     if args.p2d is None:
         print "Error: nothing to do with no waypoints"
-        return
-    if len(args.p2d) < 2:
-        print "Error: need at least two waypoints to do anything"
         return
 
     waypoints = []
@@ -59,14 +78,13 @@ def main():
             theta=rads(float(p2d_parts[2]))
         ))
 
-    caller = VehicleVelKinCaller(NODE_NAME, CLI_CALC_VEHICLE_VEL_KIN, SUB_VEHICLE_VEL_KIN_DEBUG, pub_program_topic=PUB_VEHICLE_PROGRAM)
-    response, msg_debug = caller.call(rads(args.tf), rads(args.tb), rads(args.odot), waypoints, waiti_s=0.25, waitf_s=0.25);
+	pick_point = Pose2D(x=args.ppx, y=args.ppx, theta=rads(args.ppt))
+
+    caller = CombinedKinCaller(NODE_NAME, CLI_CALC_COMBINED_KIN)
+    response = caller.call(rads(args.tf), rads(args.tb), rads(args.odot), waypoints, pick_point, rads(args.gamma), waiti_s=0.25);
 
     print "CALCULATION RESPONSE:"
     print "  {0}".format(str(response).replace("\n", "\n  "))
-    print
-    print "DEBUG MESSAGE:"
-    print "  {0}".format(str(msg_debug).replace("\n", "\n  "))
 
 if __name__ == "__main__":
     main()

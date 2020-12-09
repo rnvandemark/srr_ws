@@ -13,7 +13,8 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     double d1, d2, a2, d3, d4, d5;
-    std::string pref = "/sra_integrated/dh_param";
+    // TEMP HARDCODING MOUNTED ARM NAMESPACE
+    std::string pref = "/sra/dh_param";
     if (!n.getParam(pref+"/d1", d1) || !n.getParam(pref+"/d2", d2) || !n.getParam(pref+"/a2", a2)
         || !n.getParam(pref+"/d3", d3) || !n.getParam(pref+"/d4", d4) || !n.getParam(pref+"/d5", d5))
     {

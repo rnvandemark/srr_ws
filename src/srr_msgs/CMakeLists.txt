@@ -31,6 +31,7 @@ add_service_files(DIRECTORY srv FILES
   CalculateVehicleVelKin.srv
   CalculateArmFwdKin.srv
   CalculateArmInvKin.srv
+  CalculateCombinedKin.srv
 )
 generate_messages(
   DEPENDENCIES
