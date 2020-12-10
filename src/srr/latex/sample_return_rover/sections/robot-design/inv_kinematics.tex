@@ -42,18 +42,74 @@ Let's substitute $\gamma$ = $\theta_{2}$ + $\theta_{3}$ + $\theta_{4}$
 	y^{i}_{n} = d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{\gamma}
 \end{equation}
 
-\begin{equation}\nonumber
-	\Rightarrow x^{i}_{n} -(d_{4}+d_{5})c_{\gamma} = d_{2}c_{2}+a_{2}s_{2}+d_{3}c_{23}
+\begin{equation}
+	\Rightarrow x' = x^{i}_{n} -(d_{4}+d_{5})c_{\gamma} = d_{2}c_{2}+a_{2}s_{2}+d_{3}c_{23}
+	\label{sample_return_rover:inv_kinematics:c23}
 \end{equation}
 
-\begin{equation}\nonumber
-	\Rightarrow y^{i}_{n} -(d_{4}+d_{5})s_{\gamma} = d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}
+\begin{equation}
+	\Rightarrow y' = y^{i}_{n} -(d_{4}+d_{5})s_{\gamma} = d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}
+	\label{sample_return_rover:inv_kinematics:s23}
 \end{equation}
 
 From here, square both equations to add them and simplify.Equation~\ref{sample_return_rover:inv_kinematics:simplify}.
 \begin{equation}
-	\Rightarrow (-2x'd_{2}-2y'a_{2})c_{2}+(-2x'a_{2}-2y'd_{2})s_{2}+(x'^{\;2}+y'^{\;2}+d_{2}^{\;2}+a_{2}^{\;2}+d_{3}^{\; 2})
+	\Rightarrow (-2x'd_{2}-2y'a_{2})c_{2}+(-2x'a_{2}-2y'd_{2})s_{2}+(x'^{\;2}+y'^{\;2}+d_{2}^{\;2}+a_{2}^{\;2}-d_{3}^{\; 2})
 \label{sample_return_rover:inv_kinematics:simplify}
 \end{equation}
 
-FINISH THISSSSSSSS
+Equation~\ref{sample_return_rover:inv_kinematics:simplify} can be compared to $Pc_{\beta}$ + $Qs_{\beta}$ + R = 0 in which Equation~\ref{sample_return_rover:inv_kinematics:csgamma}  can be solved with $\gamma$:
+\begin{equation}
+	c_{\gamma} = \frac{P}{\sqrt{P^{2} + Q^{2}}} ,\:
+	s_{\gamma} = \frac{Q}{\sqrt{P^{2} + Q^{2}}}
+	\label{sample_return_rover:inv_kinematics:csgamma}
+\end{equation}
+
+\begin{equation} \nonumber
+\Rightarrow \delta = atan2(\frac{Q}{\sqrt{P^{2} + Q^{2}}},\; \frac{P}{\sqrt{P^{2} + Q^{2}}} )	
+\end{equation}
+
+\begin{equation} \nonumber
+	\Rightarrow c_{\gamma}c_{\beta} + s_{\gamma}s_{\beta} +  \frac{R}{\sqrt{P^{2} + Q^{2}}} = 0
+\end{equation}
+
+\begin{equation}
+	\beta = \gamma \pm cos^{-1} (\frac{-R}{\sqrt{P^{2} + Q^{2}}})
+	\label{sample_return_rover:inv_kinematics:beta}
+\end{equation}
+
+$\theta_{2}$ can be set to
+\begin{equation}
+	\theta_{2} = \gamma \pm cos^{-1}
+\end{equation}
+ Equation~\ref{sample_return_rover:inv_kinematics:beta} and given $\gamma$, P, Q, and R then $\theta_{2}$ and $\theta_{3}$ can be solved for: 
+\begin{equation} 
+	P = -2x'd_{2}-2y'a_{2} , 
+	\label{sample_return_rover:inv_kinematics:P}
+\end{equation}
+\begin{equation}
+	Q = -2x'a_{2}-2y'd_{2} ,
+	\label{sample_return_rover:inv_kinematics:Q}
+\end{equation}
+\begin{equation}
+	R = x'^{\;2}+y'^{\;2}+d_{2}^{\;2}+a_{2}^{\;2}-d_{3}^{\; 2}
+	\label{sample_return_rover:inv_kinematics:R}
+\end{equation}
+Then using Equation~\ref{sample_return_rover:inv_kinematics:c23} and ~\ref{sample_return_rover:inv_kinematics:s23}, cancel out $d_{3}$ and then divide y'/x' to get:
+\begin{equation}
+	tan(\theta_{2} + \theta_{3}) = atan2(\frac{y' - d_{2}s_{2}-a_{2}c_{2}} {x'-d_{2}c_{2}+a_{2}s_{2}})
+\end{equation}
+\begin{equation}\nonumber
+	\theta_{3} = atan2(y' - d_{2}s_{2}-a_{2}c_{2},\; x'-d_{2}c_{2}+a_{2}s_{2})  - \theta_{2}
+\end{equation}
+Remember that $\gamma$ = $\theta_{2}$ + $\theta_{3}$ + $\theta_{4}$, solve for $\theta_{4}$ to get
+\begin{equation}
+	\theta_{4} = \gamma - \theta_{2} - \theta_{3}
+\end{equation}
+Finally, resolving the (x,y) coordinates of the end-effector in the $i^{th}$ frame yields
+\begin{equation}
+	[x^{i}_{n} \; y^{i}_{n} \; z^{i}_{n}]^T = P^{i}_{n}, \; [x^{0}_{n}\; y^{0}_{n}\; z^{0}_{n}]^T = P^{0}_{n} 
+\end{equation}
+\begin{equation}
+	\Rightarrow P^{i}_{n} = T^{i}_{0}\cdot  P^{0}_{n}  = (T^{0}_{1}\cdot T^{1}_{2}\cdot T^{2}_{i})^{-1} \cdot P^{0}_{n}
+\end{equation}
