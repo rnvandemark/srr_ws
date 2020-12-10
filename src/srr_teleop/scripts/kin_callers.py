@@ -3,7 +3,7 @@ import rospy
 from time import sleep
 
 from srr_msgs.srv import CalculateVehicleVelKin, CalculateArmInvKin, CalculateCombinedKin
-from srr_msgs.msg import VehiclePath, VehicleVelKinDebug, VehicleVelKinSolution, ArmCartesianPose
+from srr_msgs.msg import VehiclePath, VehicleVelKinDebug, VehicleVelKinSolution, ArmCartesianPose, CombinedProgram
 
 class VehicleVelKinCaller(object):
     cli_calc_vehicle_vel_kin       = None
@@ -46,12 +46,15 @@ class VehicleVelKinCaller(object):
 
 class CombinedKinCaller(object):
     cli_calc_combined_kin = None
+    pub_combined_program  = None
 
-    def __init__(self, node_name, cli_topic):
+    def __init__(self, node_name, cli_topic, pub_program_topic=None):
         rospy.init_node(node_name, disable_signals=True)
         self.cli_calc_combined_kin = rospy.ServiceProxy(cli_topic, CalculateCombinedKin)
+        if pub_program_topic:
+            self.pub_combined_program = rospy.Publisher(pub_program_topic, CombinedProgram, queue_size=1)
 
-    def call(self, tf, tb, odot, wp, pp, gamma, waiti_s=0):
+    def call(self, tf, tb, odot, wp, pp, gamma, waiti_s=0, waitf_s=0):
         sleep(waiti_s)
         response = self.cli_calc_combined_kin(
             theta_front=tf,
@@ -61,4 +64,7 @@ class CombinedKinCaller(object):
             pick_point=pp,
             gamma=gamma
         )
+        if self.pub_combined_program:
+            self.pub_combined_program.publish(response.program)
+            sleep(waitf_s)
         return response

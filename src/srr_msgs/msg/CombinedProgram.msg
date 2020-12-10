@@ -1,0 +1,2 @@
+srr_msgs/VehicleVelKinSolution solution_vehicle
+srr_msgs/ArmJointPose solution_arm

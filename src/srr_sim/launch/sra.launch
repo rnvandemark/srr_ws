@@ -7,6 +7,7 @@
                                      shoulder_joint_controller
                                      elbow_joint_controller
                                      wrist_joint_controller" />
+  <arg name="do_arm_psm" default="1" />
   <rosparam file="$(find srr_sim)/config/arm_controllers.yaml" command="load"/>
   <rosparam subst_value="True">
     /sra_model_name: $(arg arm_model_name)
@@ -39,4 +40,9 @@
     name="calculate_arm_kin_server"
     pkg="srr_kinematics"
     type="calculate_arm_kin_server" />
+  <node
+    name="arm_program_state_machine"
+    pkg="srr_program"
+    type="psm_arm"
+    if="$(arg do_arm_psm)" />
 </launch>

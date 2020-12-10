@@ -24,6 +24,7 @@ add_message_files(DIRECTORY msg FILES
   VehicleVelKinDebug.msg
   ArmJointPose.msg
   ArmCartesianPose.msg
+  CombinedProgram.msg
 )
 add_service_files(DIRECTORY srv FILES
   CalculatePositionWithOffsets.srv

@@ -21,8 +21,24 @@ target_link_libraries(psm_vehicle
   ${catkin_LIBRARIES}
 )
 
+add_executable(psm_arm
+  src/ArmProgramStateMachineNode.cpp
+)
+target_link_libraries(psm_arm
+  ${catkin_LIBRARIES}
+)
+
+add_executable(psm_combined
+  src/CombinedProgramStateMachineNode.cpp
+)
+target_link_libraries(psm_combined
+  ${catkin_LIBRARIES}
+)
+
 install(TARGETS
   psm_vehicle
+  psm_arm
+  psm_combined
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

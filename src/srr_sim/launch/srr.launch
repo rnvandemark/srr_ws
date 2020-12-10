@@ -12,6 +12,7 @@
                                          front_right_wheel_joint_controller
                                          rear_left_wheel_joint_controller
                                          rear_right_wheel_joint_controller" />
+  <arg name="do_vehicle_psm" default="1" />
   <rosparam file="$(find srr_sim)/config/vehicle_controllers.yaml" command="load"/>
   <rosparam subst_value="True">
     /srr_model_name: $(arg vehicle_model_name)
@@ -51,5 +52,6 @@
   <node
     name="vehicle_program_state_machine"
     pkg="srr_program"
-    type="psm_vehicle" />
+    type="psm_vehicle"
+    if="$(arg do_vehicle_psm)"/>
 </launch>

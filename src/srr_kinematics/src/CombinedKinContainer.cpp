@@ -74,6 +74,6 @@ bool SRR::CombinedKinContainer::handle_combined_kin_callback(srr_msgs::Calculate
         return true;
     }
 
-    res.solution_vehicle = calc_vehicle_vel_kin.response.solution;
-    res.solution_arm = calc_arm_inv_kin.response.solution[0];
+    res.program.solution_vehicle = calc_vehicle_vel_kin.response.solution;
+    res.program.solution_arm = calc_arm_inv_kin.response.solution[0];
 }

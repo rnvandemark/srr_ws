@@ -8,6 +8,7 @@ from kin_callers import CombinedKinCaller
 
 NODE_NAME = "srr_vehicle_test_combined_kin"
 CLI_CALC_COMBINED_KIN = "/combined_integrated/calc_combined_kin"
+PUB_PROGRAM_TOPIC = "/combined_integrated/program"
 
 def main():
     parser = ArgumentParser()
@@ -80,8 +81,8 @@ def main():
 
 	pick_point = Pose2D(x=args.ppx, y=args.ppx, theta=rads(args.ppt))
 
-    caller = CombinedKinCaller(NODE_NAME, CLI_CALC_COMBINED_KIN)
-    response = caller.call(rads(args.tf), rads(args.tb), rads(args.odot), waypoints, pick_point, rads(args.gamma), waiti_s=0.25);
+    caller = CombinedKinCaller(NODE_NAME, CLI_CALC_COMBINED_KIN, PUB_PROGRAM_TOPIC)
+    response = caller.call(rads(args.tf), rads(args.tb), rads(args.odot), waypoints, pick_point, rads(args.gamma), waiti_s=0.25, waitf_s=0.25);
 
     print "CALCULATION RESPONSE:"
     print "  {0}".format(str(response).replace("\n", "\n  "))

@@ -10,5 +10,4 @@ geometry_msgs/Pose2D pick_point
 # The desired gamma when picking the sample
 float64 gamma
 ---
-srr_msgs/VehicleVelKinSolution solution_vehicle
-srr_msgs/ArmJointPose solution_arm
+srr_msgs/CombinedProgram program
