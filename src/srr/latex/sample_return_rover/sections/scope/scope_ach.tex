@@ -9,3 +9,5 @@ A list of milestones are presented below, in order of planning and achievement.
 	\item Build the arm for the rover
 	\item Calculate and create scripts for the kinematics of the arm
 \end{enumerate}
+
+The CAD model was successfully created in SolidWorks for both the arm and the vehicle. Small adjustments had to be made regarding the steering joints since there was no good reference for it. The arm model matched the rover’s well. The URDF had some issues exporting properly for both the rover and the arm because sometimes axes weren’t defined properly but they work correctly in Gazebo. The models for both of the arm and vehicle render in and, with tele-op successfully controlling joints. The controls were tuned so that the rover did not fly around in the world nor did the wheels skid around. C++ was used to write the scripts for all the kinematics. They calculate the forward, inverse and velocity kinematics. DH frames and the DH table were calculated manually.
