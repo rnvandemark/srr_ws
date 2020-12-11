@@ -1,5 +1,5 @@
-\subsection{Arm}
-Inverse Kinematics is the opposite of Forward Kinematics. Given the end effector's position and orientation (the homogeneous transformation) the joint angles needs to be found. In this case H is the desired position and orientation. Equation~\ref{sample_return_rover:inv_kinematics:jointeq} is the equation where one or more solutions needs to be solved in order to find the joint angles ($q_{i}$).
+\section{Arm}
+Inverse Kinematics can be thought of as the opposite of Forward Kinematics, such that it solves for all of the possible sets of joint angles that resolves the end effector to a desired position relative to the robot's base frame. In this case H is the desired position and orientation. Equation~\ref{sample_return_rover:inv_kinematics:jointeq} is the equation where one or more solutions needs to be solved in order to find the joint angles ($q_{i}$).
 \begin{equation}
 	T^{0}_{n}(q_{1},...,q_{n}) = H_{1}(q_{1})\cdot\cdot\cdot H_{n}(q_{n}) = H
 	\label{sample_return_rover:inv_kinematics:jointeq} 
