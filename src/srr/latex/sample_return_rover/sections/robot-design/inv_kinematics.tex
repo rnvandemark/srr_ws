@@ -1,0 +1,153 @@
+\section{Arm}
+Inverse Kinematics can be thought of as the opposite of Forward Kinematics, such that it solves for all of the possible sets of joint angles that resolves the end effector to a desired position relative to the robot's base frame. In this case, H is the desired position and orientation. Equation~\ref{sample_return_rover:inv_kinematics:jointeq} is the equation where one or more solutions needs to be solved in order to find the joint angles ($q_{i}$).
+\begin{equation}
+	T^{0}_{n}(q_{1},...,q_{n}) = H_{1}(q_{1})\cdot\cdot\cdot H_{n}(q_{n}) = H
+	\label{sample_return_rover:inv_kinematics:jointeq} 
+\end{equation}	
+
+Inverse kinematics can be far more complex than solving forward kinematics. In some cases an unsolvable problem will be encountered. A typical approach to solving inverse kinematics problems is called \textbf{kinematic decoupling}. Essentially it approaches the problem by breaking it down into two subproblems, with the first is calculating the position of the wrist center (intersection between the wrist axes) and then finding the orientation of the wrist center. \cite{spong} \\
+
+As mentioned in the forward kinematics section, $x^{0}_{n}$ and $y^{0}_{n}$ can be thought of as a projection of the length of the arm onto the ($x_{0}$,$y_{0}$) plane. This is reaffirmed when solving for the position of the base joint, $\theta{1}$, because this ratio is all that is needed to find its only solution, as seen in Equation~\ref{sample_return_rover:inv_kinematics:tanth1}.
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:tanth1}
+	\begin{split}
+		\frac{y^{0}_{n}}{x^{0}_{n}} & =
+		\frac{s_{1}[d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{234}]}
+		{c_{1}[d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{234}]} \\
+		& = tan(\theta_{1})
+	\end{split}
+\end{equation}
+
+Taking the inverse tangent of both sides of this equation results in the solution for $\theta_{1}$, as seen in Equation~\ref{sample_return_rover:inv_kinematics:th1}.
+\begin{equation}\label{sample_return_rover:inv_kinematics:th1}
+	\theta_{1} = atan2(y^{0}_{n}, x^{0}_{n})
+\end{equation}
+
+$\theta_{1}$ is the only revolution about the base's z-axis. Therefore, the subsection of the arm following $\theta_{1}$ can be thought of as a planar manipulator in the ($x_{2}$, $y_{2}$) plane, meaning all joint rotations act in parallel to the $z_{2}$ axis. For algebraic convenience, the "zero position" of this planar manipulator should point in the positive x direction of the plane it moves in. Therefore, a convenience frame \textit{i} is defined as one that is offset from frame 2 by a rotation of $-\frac{\pi}{2}$ about its z-axis. Equations~\ref{sample_return_rover:inv_kinematics:xin} and~\ref{sample_return_rover:inv_kinematics:yin} resolve the end-effector's x and y position into this frame i.
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:xin}
+	x^{i}_{n} = d_{2}c_{2}+a_{2}s_{2}+d_{3}c_{23}+(d_{4}+d_{5})c_{234}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:yin}
+	y^{i}_{n}= d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{234}
+\end{equation}
+
+Because this subsection acts as a planar manipulator in the ($x_{i}$, $y_{i}$) plane, Equation~\ref{sample_return_rover:inv_kinematics:zin} holds as such:
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:zin}
+	z^{i}_{n} = 0
+\end{equation}
+
+Perform the frame transformations seen in Equation~\ref{sample_return_rover:inv_kinematics:pin} to resolve the position of the end-effector in the $i^{th}$ frame and subsequently calculate $x^{i}_{n}$ and $y^{i}_{n}$.
+\begin{equation}\label{sample_return_rover:inv_kinematics:pin}
+	P^{i}_{n} = T^{i}_{0}\cdot  P^{0}_{n}  = (T^{0}_{1}\cdot T^{1}_{2}\cdot T^{2}_{i})^{-1} \cdot P^{0}_{n}
+\end{equation}
+
+Where:
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:define_pin}
+	P^{i}_{n} = [x^{i}_{n} \; y^{i}_{n} \; z^{i}_{n}]^T, \; P^{0}_{n} = [x^{0}_{n}\; y^{0}_{n}\; z^{0}_{n}]^T
+\end{equation}
+
+$\theta_{4}$ can be eliminated from Equations~\ref{sample_return_rover:inv_kinematics:xin_gamma} and~\ref{sample_return_rover:inv_kinematics:yin_gamma} by substituting in Equation~\ref{sample_return_rover:fwd_kinematics:gamma}.
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:xin_gamma}
+	x^{i}_{n} = d_{2}c_{2}+a_{2}s_{2}+d_{3}c_{23}+(d_{4}+d_{5})c_{\gamma}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:yin_gamma}
+	y^{i}_{n} = d_{2}s_{2}+a_{2}c_{2}+d_{3}s_{23}+(d_{4}+d_{5})s_{\gamma}
+\end{equation}
+
+Furthermore, define the variables $x'$ and $y'$ as the difference between $x^{i}_{n}$ and $y^{i}_{n}$ and the length of the linkage distal to the wrist joint in the x and y axes, respectively, as seen in Equations~\ref{sample_return_rover:inv_kinematics:xprime} and~\ref{sample_return_rover:inv_kinematics:yprime}. Substituting them into Equations~\ref{sample_return_rover:inv_kinematics:xin_gamma} and~\ref{sample_return_rover:inv_kinematics:yin_gamma} yields Equations~\ref{sample_return_rover:inv_kinematics:xprime_gamma} and~\ref{sample_return_rover:inv_kinematics:yprime_gamma}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:xprime}
+	x' = x^{i}_{n} -(d_{4}+d_{5})c_{\gamma}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:yprime}
+	y' = y^{i}_{n} -(d_{4}+d_{5})s_{\gamma}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:xprime_gamma}
+	x' - d_{2}c_{2} + a_{2}s_{2} = d_{3}c_{23}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:yprime_gamma}
+	y' - d_{2}s_{2} - a_{2}c_{2} = d_{3}s_{23}
+\end{equation}
+
+From here, squaring both sides of both equations, adding them together, and simplifying by grouping the $c_{2}$, $s_{2}$, and the rest of the terms together, results in Equation~\ref{sample_return_rover:inv_kinematics:simplify}.
+\begin{equation}\label{sample_return_rover:inv_kinematics:simplify}
+	(-2x'd_{2} - 2y'a_{2})c_{2} + (2x'a_{2} - 2y'd_{2})s_{2} + (x'^{2} + y'^{2} + d_{2}^{2} + a_{2}^{2} - d_{3}^{2}) = 0
+\end{equation}
+
+This follows the general form of Equation~\ref{sample_return_rover:inv_kinematics:pqr}. To solve this general equation for its angle $\beta$, define the angle $\delta$ with Equation~\ref{sample_return_rover:inv_kinematics:csgamma}.
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:pqr}
+	Pc_{\beta} + Qs_{\beta} + R = 0
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:csgamma}
+	c_{\delta} = \frac{P}{\sqrt{P^{2} + Q^{2}}} ,\:
+	s_{\delta} = \frac{Q}{\sqrt{P^{2} + Q^{2}}}
+\end{equation}
+
+Therefore:
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:delta}
+	\delta = atan2\left(\frac{Q}{\sqrt{P^{2} + Q^{2}}},\; \frac{P}{\sqrt{P^{2} + Q^{2}}}\right)
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:sum_sines_cosines}
+	c_{\delta}c_{\beta} + s_{\delta}s_{\beta} +  \frac{R}{\sqrt{P^{2} + Q^{2}}} = 0
+\end{equation}
+
+Finally, for $\beta = \theta_{2}$:
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:beta}
+	\theta_{2} = \delta \pm cos^{-1}\left(\frac{-R}{\sqrt{P^{2} + Q^{2}}}\right)
+\end{equation}
+
+Where:
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:p}
+	P = -2x'd_{2} - 2y'a_{2}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:q}
+	Q = 2x'a_{2} - 2y'd_{2}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:r}
+	R = x'^{\;2} + y'^{\;2} + d_{2}^{2} + a_{2}^{2} - d_{3}^{2}
+\end{equation}
+
+Solving for $c_{23}$ and $s_{23}$ from Equations~\ref{sample_return_rover:inv_kinematics:xprime} and~\ref{sample_return_rover:inv_kinematics:yprime} yields Equations~\ref{sample_return_rover:inv_kinematics:c23} and~\ref{sample_return_rover:inv_kinematics:s23}. Dividing them by one another results in Equation~\ref{sample_return_rover:inv_kinematics:t23}, and taking the inverse tangent of both sides allows for the solution seen in Equation~\ref{sample_return_rover:inv_kinematics:th3}.
+\begin{equation}\label{sample_return_rover:inv_kinematics:c23}
+	c_{23} = \frac{x' - d_{2}c_{2} + a_{2}s_{2}}{d3}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:s23}
+	s_{23} = \frac{y' - d_{2}s_{2} - a_{2}c_{2}}{d3}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:t23}
+	tan(\theta_{2} + \theta_{3}) = \frac{y' - d_{2}s_{2} - a_{2}c_{2}}{x'- d_{2}c_{2} + a_{2}s_{2}}
+\end{equation}
+
+\begin{equation}\label{sample_return_rover:inv_kinematics:th3}
+	\theta_{3} = atan2(y' - d_{2}s_{2} - a_{2}c_{2}, x'- d_{2}c_{2} + a_{2}s_{2}) - \theta_{2}
+\end{equation}
+
+Finally, $\theta_{4}$ can be solved using Equation~\ref{sample_return_rover:fwd_kinematics:gamma}.
+
+\begin{equation}
+	\theta_{4} = \gamma - \theta_{2} - \theta_{3}
+\end{equation}
+
+Therefore, $\theta_{1}$ has up to a single unique solution, $\theta_{2}$ has up to two unique solutions, and both $\theta_{3}$ and $\theta_{4}$ have up to a single unique solution for each unique solution of $\theta_{2}$. In other words, there are either zero, one, or two unique solutions to this overall inverse kinematic problem.
+
+\section{Combined}
+With the combination of vehicle velocity kinematics and the arm's inverse kinematics, the vehicle and subsequent arm movement can be calculated such that the vehicle can traverse the surface to approach a sample at a known (x,y) position with a desired orientation $\theta$ relative to it, as well as a the desired orientation of the robot's gripper relative to the surface $\gamma$.

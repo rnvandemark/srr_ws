@@ -1,0 +1,69 @@
+\documentclass[a4paper, 12pt]{report}
+
+\usepackage[pagestyles]{titlesec}
+\usepackage[backend=bibtex]{biblatex}
+
+\usepackage[printonlyused]{acronym}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{array}
+\usepackage[margin=1in]{geometry}
+
+\title{Mars Sample-Return Rover \\
+\large ENPM 662 Final Project}
+\date{December 2020}
+\author{Robert Vandemark \and Diane Ngo}
+
+\addbibresource{references.bib}
+\nocite{*}
+
+\acrodef{SRR}[SRR]{\emph{Sample-Return Rover}}
+\acrodef{4DOF}[4DOF]{\emph{Four Degrees of Freedom}}
+\acrodef{5DOF}[5DOF]{\emph{Five Degrees of Freedom}}
+\acrodef{ICC}[ICC]{\emph{Instantaneous Center of Curvature}}
+
+\titleformat{\chapter}[block]{\Huge\bfseries}{\thechapter}{1em}{\Huge\bfseries}
+
+\titlespacing{\chapter}{0pt}{0pt}{10pt}
+\renewcommand{\baselinestretch}{1.15}
+
+\begin{document}
+	
+	\setcounter{page}{1}
+	\maketitle
+	
+	\tableofcontents
+	\newpage
+	
+	\chapter{Abstract}
+	\input{sections/abstract/abstract.tex}
+
+	\chapter{Introduction}
+	\input{sections/introduction/introduction.tex}
+
+	\chapter{Robot Design}
+	\input{sections/robot-design/robot_design.tex}
+
+	\chapter{Forward Kinematics}
+	\input{sections/robot-design/fwd_kinematics.tex}
+
+	\chapter{Velocity Kinematics}
+	\input{sections/robot-design/vel_kinematics.tex}
+
+	\chapter{Inverse Kinematics}
+	\input{sections/robot-design/inv_kinematics.tex}
+
+	\chapter{Scope of Achievement}
+	\input{sections/scope/scope_ach.tex}
+
+	\chapter{Model Validation and Testing}
+	\input{sections/scope/model_validation.tex}
+
+	\chapter{Conclusion}
+	\input{sections/scope/conclusion.tex}
+	
+	\begin{center}
+		\printbibliography[heading=bibintoc, title={Bibliography}]
+	\end{center}
+\end{document}
